@@ -2,11 +2,11 @@ import { Link, Outlet } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider.tsx";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User } from "lucide-react";
 
@@ -23,7 +23,7 @@ export default function MainLayout() {
                 <div className="container flex h-16 items-center justify-between">
                     <div className="flex gap-6 md:gap-10">
                         <Link to="/" className="flex items-center space-x-2">
-                            <span className="font-bold text-xl">Crystal 💚 React</span>
+                            <span className="font-bold text-xl">Crystal</span>
                         </Link>
                         <nav className="hidden md:flex gap-6">
                             {navigation.map((item) => (
