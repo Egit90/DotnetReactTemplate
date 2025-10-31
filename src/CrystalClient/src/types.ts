@@ -1,12 +1,12 @@
-import { type AufyStorage } from './aufy-storage.js';
+import { type CrystalStorage } from './aufy-storage.js';
 import { type AxiosInstance } from 'axios';
 
-export interface AufyClientOptions {
+export interface CrystalClientOptions {
     apiBaseUrl: string;
     axiosInstance: AxiosInstance;
     authApiPrefix?: string;
     accountApiPrefix?: string;
-    storage?: AufyStorage;
+    storage?: CrystalStorage;
 }
 
 export interface AuthUser {

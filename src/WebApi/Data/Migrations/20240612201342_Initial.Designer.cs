@@ -20,7 +20,7 @@ namespace WebApi.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
 
-            modelBuilder.Entity("Aufy.Core.AufyRefreshToken", b =>
+            modelBuilder.Entity("Crystal.Core.CrystalRefreshToken", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("TEXT");
@@ -34,7 +34,7 @@ namespace WebApi.Data.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("AufyRefreshTokens", (string)null);
+                    b.ToTable("CrystalRefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

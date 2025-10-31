@@ -1,6 +1,6 @@
 # Crystal
 
-A modern web application built with ASP.NET Core 9.0 and React, featuring user authentication powered by Aufy.
+A modern web application built with ASP.NET Core 9.0 and React, featuring user authentication powered by Crystal.
 
 ## Prerequisites
 
@@ -34,7 +34,7 @@ From Visual Studio: Right-click the `WebApi` project → `Manage User Secrets`
 
 Or use the command line:
 ```bash
-dotnet user-secrets set "Aufy:JwtBearer:SigningKey" "your-secure-256-bit-key-here"
+dotnet user-secrets set "Crystal:JwtBearer:SigningKey" "your-secure-256-bit-key-here"
 ```
 
 > [!CAUTION]
@@ -71,11 +71,11 @@ Add your OAuth credentials to User Secrets:
 
 ```json
 {
-  "Aufy:Providers:GitHub:ClientId": "your-github-client-id",
-  "Aufy:Providers:GitHub:ClientSecret": "your-github-client-secret",
+  "Crystal:Providers:GitHub:ClientId": "your-github-client-id",
+  "Crystal:Providers:GitHub:ClientSecret": "your-github-client-secret",
 
-  "Aufy:Providers:Discord:ClientId": "your-discord-client-id",
-  "Aufy:Providers:Discord:ClientSecret": "your-discord-client-secret"
+  "Crystal:Providers:Discord:ClientId": "your-discord-client-id",
+  "Crystal:Providers:Discord:ClientSecret": "your-discord-client-secret"
 }
 ```
 
@@ -98,7 +98,7 @@ Crystal/
 ├── Crystal.sln           # Solution file
 ├── Directory.Packages.props  # Centralized NuGet package versions
 └── src/
-    ├── AufyClient/       # Shared TypeScript client library
+    ├── CrystalClient/       # Shared TypeScript client library
     ├── Client.React/     # React frontend (Vite + TypeScript + Tailwind)
     ├── Crystal.Core/     # Core shared library
     └── WebApi/           # ASP.NET Core backend
@@ -126,7 +126,7 @@ Crystal/
 **Backend:**
 - ASP.NET Core 9.0
 - Entity Framework Core 9.0
-- Aufy authentication library
+- Crystal authentication library
 - SQLite database
 - Serilog logging
 
@@ -140,5 +140,5 @@ Crystal/
 
 ## Attribution
 
-This project is based on the [Aufy Starters](https://github.com/damianostre/aufy-starters) template.
-Learn more about Aufy at [https://aufy.dev](https://aufy.dev)
+This project is based on the [Crystal Starters](https://github.com/damianostre/aufy-starters) template.
+Learn more about Crystal at [https://aufy.dev](https://aufy.dev)

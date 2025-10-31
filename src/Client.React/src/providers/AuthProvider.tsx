@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { AufyClient } from 'aufy-client/src/aufy-client.ts';
+import { CrystalClient } from 'aufy-client/src/aufy-client.ts';
 import { createAxiosInstance } from 'aufy-client/src/axios-utils.ts';
 import { AuthUser } from 'aufy-client/src/types.ts';
 
 export const axios = createAxiosInstance(import.meta.env.VITE_API_URL);
-export const aufy = new AufyClient({
+export const aufy = new CrystalClient({
     apiBaseUrl: import.meta.env.VITE_API_URL,
     axiosInstance: axios,
 });
@@ -44,6 +44,6 @@ export const useAuth = () => {
 
 export interface AuthContextProps {
     user: AuthUser | null;
-    aufy: AufyClient;
+    aufy: CrystalClient;
 }
 

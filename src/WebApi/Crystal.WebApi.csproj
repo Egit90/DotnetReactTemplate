@@ -17,8 +17,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aufy.EntityFrameworkCore"/>
-        <PackageReference Include="Aufy.FluentEmail"/>
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.AspNetCore.SpaProxy"/>
@@ -42,6 +40,9 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Client.React\Client.React.csproj" />
+        <ProjectReference Include="..\Crystal.Core\Crystal.Core.csproj" />
+        <ProjectReference Include="..\Crystal.EntityFrameworkCore\Crystal.EntityFrameworkCore.csproj" />
+        <ProjectReference Include="..\Crystal.FluentEmail\Crystal.FluentEmail.csproj" />
     </ItemGroup>
 
     <ItemGroup>

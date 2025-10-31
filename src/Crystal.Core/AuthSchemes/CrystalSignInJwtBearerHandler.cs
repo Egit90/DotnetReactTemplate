@@ -1,0 +1,78 @@
+using Crystal.Core.Abstractions;
+using Crystal.Core.Models;
+using Crystal.Core.Options;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+
+namespace Crystal.Core.AuthSchemes;
+
+public class CrystalSignInJwtBearerHandler(
+    IOptionsMonitor<CrystalJwtBearerOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder,
+    IOptions<CrystalOptions> aufyOptions,
+    IJwtTokenService tokenService,
+    IRefreshTokenManager refreshTokenManager)
+    : SignInAuthenticationHandler<CrystalJwtBearerOptions>(options, logger, encoder)
+{
+    protected override async Task HandleSignInAsync(ClaimsPrincipal user, AuthenticationProperties? properties)
+    {
+        var (token, expiresAt) = tokenService.CreateAccessToken(user);
+        var refreshToken = await refreshTokenManager.CreateTokenAsync(user);
+        var (refreshJwtToken, refreshExpiresAt) = tokenService.CreateBearerRefreshToken(refreshToken);
+
+        Context.Response.Cookies.Append(
+            CrystalAuthSchemeDefaults.RefreshTokenCookieName,
+            refreshJwtToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = refreshExpiresAt,
+            });
+        
+        var useCookie = properties?.GetParameter<bool?>("useCookie") ?? false;
+        if (useCookie)
+        {
+            Context.Response.Cookies.Append(
+                CrystalAuthSchemeDefaults.AccessTokenCookieName,
+                token,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = expiresAt,
+                });
+        }
+        
+        var accessTokenResponse = new AccessTokenResponse
+        {
+            AccessToken = useCookie ? null : token,
+            ExpiresIn = (long)(expiresAt - DateTime.UtcNow).TotalSeconds,
+        };
+
+        await Context.Response.WriteAsJsonAsync(
+            accessTokenResponse, AccessTokenResponseJsonSerializerContext.Default.AccessTokenResponse);
+    }
+
+    protected override Task HandleSignOutAsync(AuthenticationProperties? properties)
+    {
+        refreshTokenManager.ClearTokenAsync(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        Context.Response.Cookies.Delete(CrystalAuthSchemeDefaults.RefreshTokenCookieName);
+        return Task.CompletedTask;
+    }
+
+    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        throw new NotSupportedException();
+    }
+}

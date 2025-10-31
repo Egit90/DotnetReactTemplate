@@ -53,7 +53,7 @@ namespace WebApi.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AufyRefreshTokens",
+                name: "CrystalRefreshTokens",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
@@ -62,7 +62,7 @@ namespace WebApi.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AufyRefreshTokens", x => x.UserId);
+                    table.PrimaryKey("PK_CrystalRefreshTokens", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -228,7 +228,7 @@ namespace WebApi.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AufyRefreshTokens");
+                name: "CrystalRefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

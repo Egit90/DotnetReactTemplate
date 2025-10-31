@@ -1,0 +1,44 @@
+using Crystal.Core.Abstractions;
+using Crystal.Core.Models;
+using Crystal.Core.Options;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace Crystal.Core.AuthSchemes;
+
+public class CrystalPolicySignInExternalHandler(
+    IOptionsMonitor<PolicySchemeOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder)
+    : PolicySchemeHandler(options, logger, encoder)
+{
+
+    protected override Task HandleSignInAsync(ClaimsPrincipal user, AuthenticationProperties? properties)
+    {
+        properties ??= new AuthenticationProperties();
+        
+        var failed = properties.GetParameter<bool>("failed");
+        if (failed)
+        {
+            Context.Response.Redirect(properties.RedirectUri);
+            return Task.CompletedTask;
+        }
+
+        var signup = properties.GetParameter<bool>("signup");
+        if (signup)
+        {
+            return Context.SignInAsync(
+                CrystalAuthSchemeDefaults.SignUpExternalScheme,
+                user,
+                properties);
+        }
+
+        return Context.SignInAsync(
+            CrystalAuthSchemeDefaults.SignInExternalScheme,
+            user,
+            properties);
+    }
+}

@@ -27,7 +27,7 @@ export default function MainLayout() {
                         <div className="flex h-16 justify-between">
                             <div className="flex">
                                 <Link to={"/"} className="flex flex-shrink-0 items-center ">
-                                    <h1 className="font-bold primary-color hover:primary-color">Aufy 💚 React</h1>
+                                    <h1 className="font-bold primary-color hover:primary-color">Crystal 💚 React</h1>
                                 </Link>
                                 <div className="-my-px ml-6 flex space-x-8">
                                     {navigation.map((item) => (

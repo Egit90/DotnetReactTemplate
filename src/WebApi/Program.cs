@@ -1,9 +1,9 @@
 using WebApi.Data;
-using Aufy.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using WebApi;
+using Crystal.Core.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
@@ -18,7 +18,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.SetupAufy(builder.Configuration);
+builder.Services.SetupCrystal(builder.Configuration);
 
 builder.Services.Configure<IdentityOptions>(options => { options.SignIn.RequireConfirmedEmail = false; });
 
@@ -45,14 +45,14 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapAufyEndpoints();
+app.MapCrystalEndpoints();
 
 app.MapFallbackToFile("index.html");
 
 try
 {
     app.Run();
-} 
+}
 catch (Exception e)
 {
     Log.Fatal(e, "An error occurred while starting the application");

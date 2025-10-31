@@ -1,8 +1,8 @@
-import { aufyDefaultStorage, type AufyStorage } from './aufy-storage.js';
+import { aufyDefaultStorage, type CrystalStorage } from './aufy-storage.js';
 import { createAxiosInstance } from './axios-utils.js';
 import Axios, { type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import type {
-    AccountInfoResponse, AufyClientOptions,
+    AccountInfoResponse, CrystalClientOptions,
     AuthUser, ChangePasswordRequest,
     ExternalChallengeRequest, ResetPasswordRequest,
     SignInRequest, SignUpExternalRequest,
@@ -11,11 +11,11 @@ import type {
     TokenResponse, WhoAmIResponse,
 } from './types.js';
 
-export class AufyClient {
+export class CrystalClient {
     private readonly apiBaseUrl: string;
     private readonly authApiPrefix: string;
     private readonly accountApiPrefix: string;
-    private readonly storage: AufyStorage;
+    private readonly storage: CrystalStorage;
     private readonly axios: AxiosInstance;
     private onSignOut: () => void = () => {
         return;
@@ -24,7 +24,7 @@ export class AufyClient {
         return;
     };
 
-    constructor(options: AufyClientOptions) {
+    constructor(options: CrystalClientOptions) {
         this.apiBaseUrl = options.apiBaseUrl;
         this.authApiPrefix = options.authApiPrefix || '/auth';
         this.accountApiPrefix = options.accountApiPrefix || '/account';
@@ -201,7 +201,7 @@ export class AufyClient {
     }
 }
 
-export const authRequestInterceptorFactory = (storage: AufyStorage) => (config: InternalAxiosRequestConfig) => {
+export const authRequestInterceptorFactory = (storage: CrystalStorage) => (config: InternalAxiosRequestConfig) => {
     const token = storage.getToken();
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;

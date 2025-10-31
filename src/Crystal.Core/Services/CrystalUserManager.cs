@@ -1,0 +1,278 @@
+using Crystal.Core.Abstractions;
+using Crystal.Core.Models;
+using Crystal.Core.Options;
+﻿using System.Security.Claims;
+using Crystal.Core.Abstractions;
+using Crystal.Core.Endpoints;
+using Crystal.Core.Models;
+using Crystal.Core.Options;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace Crystal.Core.Services;
+
+public class CrystalUserManager<TUser> : UserManager<TUser>, ICrystalUserManager
+    where TUser : IdentityUser, ICrystalUser, new()
+{
+    private readonly IOptions<CrystalOptions> _options;
+    private readonly ILogger<CrystalUserManager<TUser>> _logger;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IAuthenticationSchemeProvider _schemes;
+
+    public async Task<(bool result, string? error)> ShouldUseExternalSignUpFlow(ClaimsIdentity identity)
+    {
+        var (result, error) = await CheckLogin(identity);
+        if (error is not null || result is null)
+        {
+            _logger.LogError("Error checking login: {Error}", error);
+            return (false, error ?? "Error occurred");
+        }
+
+        var (_, user) = result;
+        if (user is not null)
+        {
+            _logger.LogInformation("User already exists, should not sign up");
+            return (false, null);
+        }
+
+        // If custom external signup flow is disabled, we use only sign in endpoint
+        if (CrystalOptions.Internal.CustomExternalSignUpFlow is false)
+        {
+            return (false, null);
+        }
+
+        //
+        if (_options.Value.AutoAccountLinking is false)
+        {
+            return (false, null);
+        }
+
+
+        var userToLink = await FindUserToLinkLogin(identity);
+        if (userToLink is not null)
+        {
+            return (false, null);
+        }
+
+        return (true, null);
+    }
+
+    public async Task<(TUser? user, string? error)> LinkLoginAsync(string userId, ClaimsIdentity identity)
+    {
+        var (checkLoginResult, error) = await CheckLogin(identity);
+        if (error is not null || checkLoginResult is null)
+        {
+            return (null, error ?? "Error occured");
+        }
+
+        var (providerKey, userWithLogin) = checkLoginResult;
+        if (userWithLogin is not null)
+        {
+            _logger.LogInformation("Cannot link login, user already exists. User: {UserId}", userWithLogin.Id);
+            return (null, null);
+        }
+
+        var userToLink = await FindByIdAsync(userId);
+        if (userToLink is null)
+        {
+            return (null, "User not found");
+        }
+
+        if (identity.AuthenticationType is null)
+        {
+            return (null, "AuthenticationType is missing in identity");
+        }
+
+        var scheme = await _schemes.GetSchemeAsync(identity.AuthenticationType);
+        if (scheme is null)
+        {
+            return (null, $"Cannot find scheme {identity.AuthenticationType}");
+        }
+
+        var result = await AddLoginAsync(
+            userToLink, new UserLoginInfo(scheme.Name, providerKey, scheme.DisplayName));
+        if (!result.Succeeded)
+        {
+            _logger.LogError(
+                "Failed to add login info to user {UserId}: {Errors}",
+                userToLink.Id,
+                string.Join(", ", result.Errors.Select(e => e.Description)));
+            return (null, "Failed to add login info to user");
+        }
+
+        return (userToLink, null);
+    }
+
+    public async Task<(TUser? user, string? error)> TryAutoLinkLoginAsync(ClaimsIdentity identity)
+    {
+        var (checkLoginResult, error) = await CheckLogin(identity);
+        if (error is not null || checkLoginResult is null)
+        {
+            return (null, error ?? "Error occured");
+        }
+
+        var (providerKey, user) = checkLoginResult;
+        if (user is not null)
+        {
+            _logger.LogInformation("Cannot link login, user already exists. User: {UserId}", user.Id);
+            return (null, null);
+        }
+
+        var userToLink = await FindUserToLinkLogin(identity);
+        if (userToLink is null)
+        {
+            return (null, null);
+        }
+
+
+        if (identity.AuthenticationType is null)
+        {
+            return (null, "AuthenticationType is missing in identity");
+        }
+
+        var scheme = await _schemes.GetSchemeAsync(identity.AuthenticationType);
+        if (scheme is null)
+        {
+            return (null, $"Cannot find scheme {identity.AuthenticationType}");
+        }
+
+        var result = await AddLoginAsync(
+            userToLink, new UserLoginInfo(scheme.Name, providerKey, scheme.DisplayName));
+        if (!result.Succeeded)
+        {
+            _logger.LogError(
+                "Failed to add login info to user {UserId}: {Errors}",
+                userToLink.Id,
+                string.Join(", ", result.Errors.Select(e => e.Description)));
+            return (null, "Failed to add login info to user");
+        }
+
+        return (userToLink, null);
+    }
+
+    private async Task<TUser?> FindUserToLinkLogin(ClaimsIdentity identity)
+    {
+        var email = identity.FindFirst(ClaimTypes.Email);
+        var userToLink = email?.Value is not null ? await FindByEmailAsync(email.Value) : null;
+        return userToLink;
+    }
+
+    public async Task<(CheckLoginResult<TUser>? result, string? error)> CheckLogin(ClaimsIdentity identity)
+    {
+        var providerKey = identity.FindFirst(ClaimTypes.NameIdentifier);
+        if (providerKey is null)
+        {
+            return (null, "NameIdentifier claim is missing");
+        }
+
+        if (identity.AuthenticationType is null)
+        {
+            return (null, "AuthenticationType is missing in identity");
+        }
+
+        var user = await FindByLoginAsync(identity.AuthenticationType, providerKey.Value);
+        if (user is null)
+        {
+            return (new CheckLoginResult<TUser> { ProviderKey = providerKey.Value }, null);
+        }
+
+        return (new CheckLoginResult<TUser> { User = user, ProviderKey = providerKey.Value }, null);
+
+    }
+
+    public async Task<(TUser? user, ProblemHttpResult? problem)> CreateUserWithLoginAsync<TModel>(
+        string providerKey,
+        HttpContext context,
+        TModel req,
+        ClaimsPrincipal claimsPrincipal) where TModel : class
+    {
+        var email = claimsPrincipal.FindFirst(ClaimTypes.Email);
+        var name = claimsPrincipal.FindFirst(ClaimTypes.Name);
+        var user = new TUser
+        {
+            UserName = name?.Value,
+            Email = email?.Value,
+            EmailConfirmed = false,
+        };
+
+        var events = _serviceProvider.GetService<ISignUpExternalEndpointEvents<TUser, TModel>>();
+        if (events is not null)
+        {
+            var userCreatingProblem = await events.UserCreatingAsync(req, context.Request, user);
+            if (userCreatingProblem is not null)
+            {
+                return (null, userCreatingProblem);
+            }
+        }
+
+        var result = await CreateAsync(user);
+        if (!result.Succeeded)
+        {
+            _logger.LogError("Error creating user: {Email}. Result: {Result}", user.Email, result);
+            return (null, TypedResults.Problem(result.ToValidationProblem()));
+        }
+
+        if (claimsPrincipal.Identity?.AuthenticationType is null)
+        {
+            _logger.LogInformation("User {UserId} has no authentication type", claimsPrincipal.Identity?.Name);
+            return (null, TypedResults.Problem("There was an error creating user"));
+        }
+
+        var scheme = await _schemes.GetSchemeAsync(claimsPrincipal.Identity.AuthenticationType);
+        result = await AddLoginAsync(
+            user,
+            new UserLoginInfo(
+                claimsPrincipal.Identity.AuthenticationType,
+                providerKey,
+                scheme?.DisplayName));
+
+        if (!result.Succeeded)
+        {
+            _logger.LogError(
+                "Failed to add login info to user {UserId}: {Errors}",
+                user.Id,
+                string.Join(", ", result.Errors.Select(e => e.Description)));
+
+            return (null, TypedResults.Problem("There was an error creating user"));
+        }
+
+        result = await AddToRolesAsync(user, _options.Value.DefaultRoles);
+        if (!result.Succeeded)
+        {
+            _logger.LogError("Error adding user to roles: {Result}", result);
+            return (null, TypedResults.Problem("Error occured", statusCode: 500));
+        }
+
+        if (events is not null)
+        {
+            await events.UserCreatedAsync(req, context.Request, user);
+        }
+
+        return (user, null);
+    }
+
+    public CrystalUserManager(
+        IOptions<CrystalOptions> options,
+        IUserStore<TUser> store,
+        IOptions<IdentityOptions> optionsAccessor,
+        IPasswordHasher<TUser> passwordHasher,
+        IEnumerable<IUserValidator<TUser>> userValidators,
+        IEnumerable<IPasswordValidator<TUser>> passwordValidators,
+        ILookupNormalizer keyNormalizer,
+        IdentityErrorDescriber errors,
+        IServiceProvider services,
+        ILogger<CrystalUserManager<TUser>> logger,
+        IAuthenticationSchemeProvider schemes)
+        : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
+    {
+        _options = options;
+        _logger = logger;
+        _schemes = schemes;
+        _serviceProvider = services;
+    }
+}

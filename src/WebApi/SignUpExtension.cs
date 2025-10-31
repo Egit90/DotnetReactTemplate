@@ -1,4 +1,4 @@
-﻿using Aufy.Core.Endpoints;
+﻿using Crystal.Core.Endpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using WebApi.Data;
 

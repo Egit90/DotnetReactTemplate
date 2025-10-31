@@ -423,3 +423,5 @@ dist-ssr
 //logs-emailslogs-emails
 app.db-shm
 app.db-wal
+
+plan.md
