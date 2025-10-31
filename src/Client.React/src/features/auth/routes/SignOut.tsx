@@ -2,8 +2,8 @@ import {Navigate} from "react-router-dom";
 import {useAuth} from "../../../providers/AuthProvider.tsx";
 
 export const SignOut = () => {    
-    const { aufy } = useAuth();
-    aufy.signOut().then(() => {
+    const { authClient } = useAuth();
+    authClient.signOut().then(() => {
         // Do nothing
     }).catch(() => {
         // Do nothing

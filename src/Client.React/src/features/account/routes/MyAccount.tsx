@@ -6,10 +6,10 @@ import { useSearchParams } from 'react-router-dom';
 import {ExternalProviders} from "../../auth/components/ExternalProviders.tsx";
 
 export const MyAccount = () => {
-    const { aufy } = useAuth();
+    const { authClient } = useAuth();
     const [user, setUser] = useState<AccountInfoResponse>();
     useEffect(() => {
-        aufy.accountInfo().then((res) => {
+        authClient.accountInfo().then((res) => {
             setUser(res);
         });
     }, []);
@@ -24,7 +24,7 @@ export const MyAccount = () => {
         if (failed) {
             alert("Failed to link account");
         } else {
-            aufy.linkLogin().then((res) => {
+            authClient.linkLogin().then((res) => {
                 setUser(res);
             }).catch(() => {
                 alert("Failed to link account");

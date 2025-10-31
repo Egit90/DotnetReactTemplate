@@ -3,12 +3,12 @@ import {useState} from "react";
 import {ChallengeMode} from "crystal-client/src/types.ts";
 
 export const ExternalProviders = ({mode, hide}: { mode: ChallengeMode, hide?: string[] }) => {
-    const {aufy} = useAuth();
+    const {authClient} = useAuth();
     const [disabled, setDisabled] = useState(false)
 
     const challenge = (provider: string) => {
         if (disabled) return;
-        aufy.externalChallenge({provider, mode});
+        authClient.externalChallenge({provider, mode});
         setDisabled(true);
     };
 

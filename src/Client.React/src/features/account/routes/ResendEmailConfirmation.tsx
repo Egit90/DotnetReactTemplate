@@ -8,7 +8,7 @@ import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 export const ResendEmailConfirmation = () => {
     const [apiErrors, setApiErrors] = useState<string[] | null>();
     const [notification, setNotification] = useState<string>();
-    const { aufy } = useAuth();
+    const { authClient } = useAuth();
 
     const {
         register,
@@ -19,7 +19,7 @@ export const ResendEmailConfirmation = () => {
         resolver: zodResolver(validationSchema),
     });
     const onSubmit: SubmitHandler<FormModel> = data => {
-        return aufy.resendEmailConfirmation(data.email).then(() => {
+        return authClient.resendEmailConfirmation(data.email).then(() => {
             setApiErrors(null);
             setNotification("Email sent successfully");
             reset();

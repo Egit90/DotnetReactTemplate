@@ -19,9 +19,9 @@ export const ResetPasswordForm = () => {
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<FormModel>({
         resolver: zodResolver(validationSchema),
     });
-    const { aufy } = useAuth();
+    const { authClient } = useAuth();
     const onSubmit: SubmitHandler<FormModel> = data => {
-        aufy.resetPassword({email: data.email, password: data.password, code: code}).then(() => {
+        authClient.resetPassword({email: data.email, password: data.password, code: code}).then(() => {
             navigate("/reset-password/confirmation");
         }).catch((error) => {
             setApiErrors(extractApiErrors(error) ?? ["Error occured"]);

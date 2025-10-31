@@ -13,9 +13,9 @@ export const SignInForm = () => {
         resolver: zodResolver(validationSchema),
     });
 
-    const { aufy } = useAuth();
+    const { authClient } = useAuth();
     const onSubmit: SubmitHandler<FormModel> = data => {
-        aufy.signIn({email: data.email, password: data.password}).then(() => {
+        authClient.signIn({email: data.email, password: data.password}).then(() => {
             navigate("/");
         }).catch((error) => {
             setApiErrors(extractApiErrors(error) ?? ["Error occured"]);

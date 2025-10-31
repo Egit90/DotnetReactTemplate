@@ -4,10 +4,10 @@ import { useEffect } from "react";
 
 export const SignUpExternal = () => {
     const navigate = useNavigate();
-    const { aufy } = useAuth();
+    const { authClient } = useAuth();
 
     useEffect(() => {
-        aufy.signUpExternal({}).then(() => {
+        authClient.signUpExternal({}).then(() => {
             navigate("/profile")
         }).catch(() => {
             navigate("/signin?error=external-signin-failed")
