@@ -2,7 +2,7 @@ import { type AuthUser } from './types.js';
 
 const storagePrefix = 'aufy_';
 
-export const aufyDefaultStorage: CrystalStorage = {
+export const crystalDefaultStorage: CrystalStorage = {
     getUser: () => {
         return JSON.parse(window.localStorage.getItem(`${storagePrefix}user`) as string);
     },

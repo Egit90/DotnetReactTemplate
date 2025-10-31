@@ -10,29 +10,45 @@ A modern web application built with ASP.NET Core 9.0 and React, featuring user a
 
 ## Getting Started
 
-### 1. Open the Solution
+### 1. Clone and Open the Solution
 
 Open `Crystal.sln` in your preferred IDE (Visual Studio, Rider, or VS Code).
 
-### 2. Initialize the Database
+### 2. Install Dependencies
 
-Open the command line in the `src/WebApi` folder and run:
+The project uses npm for frontend dependencies. Navigate to the Client.React folder and install:
+
+```bash
+cd src/Client.React
+npm install
+```
+
+The Crystal Client library also needs its dependencies:
+
+```bash
+cd ../CrystalClient
+npm install
+```
+
+### 3. Initialize the Database
+
+Open the command line in the `src/Crystal.WebApi` folder and run:
 
 ```bash
 dotnet ef database update
 ```
 
-This creates a SQLite database (`app.db`) in the `src/WebApi` folder with all necessary tables.
+This creates a SQLite database (`app.db`) in the `src/Crystal.WebApi` folder with all necessary tables.
 
-### 3. Configure JWT Authentication
+### 4. Configure JWT Authentication
 
-The JWT Bearer settings are in `appsettings.json` (`src/WebApi`). The Issuer and Audience are already set to `Crystal.WebApi` and `Crystal.Client`.
+The JWT Bearer settings are in `appsettings.json` (`src/Crystal.WebApi`). The Issuer and Audience are already set to `Crystal.WebApi` and `Crystal.Client`.
 
 **Important:** Set a secure signing key using User Secrets:
 
-From Visual Studio: Right-click the `WebApi` project → `Manage User Secrets`
+From Visual Studio: Right-click the `Crystal.WebApi` project → `Manage User Secrets`
 
-Or use the command line:
+Or use the command line in the `src/Crystal.WebApi` folder:
 ```bash
 dotnet user-secrets set "Crystal:JwtBearer:SigningKey" "your-secure-256-bit-key-here"
 ```
@@ -42,7 +58,7 @@ dotnet user-secrets set "Crystal:JwtBearer:SigningKey" "your-secure-256-bit-key-
 
 More about [managing secrets in ASP.NET Core](https://learn.microsoft.com/aspnet/core/security/app-secrets)
 
-### 4. Configure HTTPS Certificates
+### 5. Configure HTTPS Certificates
 
 Both WebApi and Client projects use HTTPS. Trust the development certificates:
 
@@ -59,9 +75,7 @@ For the client certificate on Linux:
 dotnet dev-certs https --format pem -ep ~/.aspnet/https/crystal.client.pem --no-password
 ```
 
-
-
-### 5. Configure Social Logins (Optional)
+### 6. Configure Social Logins (Optional)
 
 The app supports Discord and GitHub OAuth. Callback URLs:
 - Discord: `https://localhost:7050/api/auth/external/callback/discord`
@@ -81,27 +95,67 @@ Add your OAuth credentials to User Secrets:
 
 ## Running the Application
 
-The `WebApi` project has two launch profiles:
+### Option 1: Automatic (Recommended for Development)
 
-- **WebApiWithClient** - Runs both WebApi and React client via SPA Proxy (recommended)
-- **WebApi** - Runs only the API; run the client separately with `npm run dev` in `src/Client.React`
+Run the API with the SPA proxy, which automatically starts both the backend and frontend:
+
+```bash
+dotnet run --project src/Crystal.WebApi --launch-profile WebApiWithClient
+```
+
+This will:
+- Start the API on https://localhost:7050
+- Automatically start the React dev server on https://localhost:5000
+- Enable hot module reloading for React changes
+
+**Access the application at: https://localhost:7050**
+
+### Option 2: Manual (Run Separately)
+
+If you prefer to run them separately:
+
+**Terminal 1 - Start the React dev server:**
+```bash
+cd src/Client.React
+npm run dev
+```
+
+**Terminal 2 - Start the API:**
+```bash
+dotnet run --project src/Crystal.WebApi --launch-profile WebApi
+```
 
 ### Development URLs:
-- **WebApi:** https://localhost:7050
-- **React Client:** https://localhost:5000
+- **Application:** https://localhost:7050 (recommended)
+- **React Dev Server:** https://localhost:5000 (when running separately)
 - **Swagger UI:** https://localhost:7050/swagger
+
+## Building for Production
+
+Build the React client:
+```bash
+cd src/Client.React
+npm run build
+```
+
+Build the .NET solution:
+```bash
+dotnet build
+```
 
 ## Project Structure
 
 ```
 Crystal/
-├── Crystal.sln           # Solution file
-├── Directory.Packages.props  # Centralized NuGet package versions
+├── Crystal.sln              # Solution file
+├── Directory.Packages.props # Centralized NuGet package versions
 └── src/
     ├── CrystalClient/       # Shared TypeScript client library
-    ├── Client.React/     # React frontend (Vite + TypeScript + Tailwind)
-    ├── Crystal.Core/     # Core shared library
-    └── WebApi/           # ASP.NET Core backend
+    ├── Client.React/        # React frontend (Vite + TypeScript + Tailwind)
+    ├── Crystal.Core/        # Core authentication library
+    ├── Crystal.WebApi/      # ASP.NET Core backend
+    ├── Crystal.EntityFrameworkCore/  # EF Core integration
+    └── Crystal.FluentEmail/ # Email sending functionality
 ```
 
 ## Features
@@ -110,7 +164,7 @@ Crystal/
 - OAuth integration (GitHub, Discord)
 - Email confirmation workflow
 - Password reset functionality
-- JWT authentication
+- JWT authentication with refresh tokens
 - React SPA with TypeScript
 - Tailwind CSS for styling
 - SQLite database
@@ -118,8 +172,9 @@ Crystal/
 ## Development Notes
 
 - Email confirmation is disabled in development
-- All emails are saved to `src/WebApi/logs/emails` in development mode
-- SQLite database: `src/WebApi/app.db`
+- All emails are saved to `src/Crystal.WebApi/logs/emails` in development mode
+- SQLite database: `src/Crystal.WebApi/app.db`
+- The application uses SPA proxy in development for seamless integration
 
 ## Technology Stack
 
@@ -129,6 +184,7 @@ Crystal/
 - Crystal authentication library
 - SQLite database
 - Serilog logging
+- FluentEmail
 
 **Frontend:**
 - React 18.3
@@ -137,6 +193,31 @@ Crystal/
 - React Router 6
 - Tailwind CSS 3.4
 - React Hook Form + Zod
+- Axios for API calls
+
+## Troubleshooting
+
+### "Certificate not found" error
+Make sure you've generated the HTTPS certificates:
+```bash
+dotnet dev-certs https --trust
+dotnet dev-certs https --format pem -ep ~/.aspnet/https/crystal.client.pem --no-password
+```
+
+### React client won't start
+Make sure you've installed all dependencies:
+```bash
+cd src/Client.React && npm install
+cd ../CrystalClient && npm install
+```
+
+### Database errors
+Reset and recreate the database:
+```bash
+cd src/Crystal.WebApi
+dotnet ef database drop
+dotnet ef database update
+```
 
 ## Attribution
 

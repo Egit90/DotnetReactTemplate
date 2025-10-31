@@ -1,4 +1,4 @@
-import { aufyDefaultStorage, type CrystalStorage } from './aufy-storage.js';
+import { crystalDefaultStorage, type CrystalStorage } from './crystal-storage.js';
 import { createAxiosInstance } from './axios-utils.js';
 import Axios, { type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import type {
@@ -28,7 +28,7 @@ export class CrystalClient {
         this.apiBaseUrl = options.apiBaseUrl;
         this.authApiPrefix = options.authApiPrefix || '/auth';
         this.accountApiPrefix = options.accountApiPrefix || '/account';
-        this.storage = options.storage || aufyDefaultStorage;
+        this.storage = options.storage || crystalDefaultStorage;
         this.axios = options.axiosInstance;
     }
 
