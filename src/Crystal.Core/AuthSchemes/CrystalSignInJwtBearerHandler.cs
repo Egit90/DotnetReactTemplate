@@ -17,7 +17,7 @@ public class CrystalSignInJwtBearerHandler(
     IOptionsMonitor<CrystalJwtBearerOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder,
-    IOptions<CrystalOptions> aufyOptions,
+    IOptions<CrystalOptions> crystalOptions,
     IJwtTokenService tokenService,
     IRefreshTokenManager refreshTokenManager)
     : SignInAuthenticationHandler<CrystalJwtBearerOptions>(options, logger, encoder)

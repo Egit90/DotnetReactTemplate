@@ -49,6 +49,7 @@ The JWT Bearer settings are in `appsettings.json` (`src/Crystal.WebApi`). The Is
 From Visual Studio: Right-click the `Crystal.WebApi` project → `Manage User Secrets`
 
 Or use the command line in the `src/Crystal.WebApi` folder:
+
 ```bash
 dotnet user-secrets set "Crystal:JwtBearer:SigningKey" "your-secure-256-bit-key-here"
 ```
@@ -63,6 +64,7 @@ More about [managing secrets in ASP.NET Core](https://learn.microsoft.com/aspnet
 Both WebApi and Client projects use HTTPS. Trust the development certificates:
 
 **Windows & macOS:**
+
 ```bash
 dotnet dev-certs https --trust
 ```
@@ -71,6 +73,7 @@ dotnet dev-certs https --trust
 Trust certificates manually for web browsers ([guide](https://stackoverflow.com/questions/72226270/valid-https-certificate-for-dotnet-development-on-localhost-ubuntu))
 
 For the client certificate on Linux:
+
 ```bash
 dotnet dev-certs https --format pem -ep ~/.aspnet/https/crystal.client.pem --no-password
 ```
@@ -78,6 +81,7 @@ dotnet dev-certs https --format pem -ep ~/.aspnet/https/crystal.client.pem --no-
 ### 6. Configure Social Logins (Optional)
 
 The app supports Discord and GitHub OAuth. Callback URLs:
+
 - Discord: `https://localhost:7050/api/auth/external/callback/discord`
 - GitHub: `https://localhost:7050/api/auth/external/callback/github`
 
@@ -104,6 +108,7 @@ dotnet run --project src/Crystal.WebApi --launch-profile WebApiWithClient
 ```
 
 This will:
+
 - Start the API on https://localhost:7050
 - Automatically start the React dev server on https://localhost:5000
 - Enable hot module reloading for React changes
@@ -115,17 +120,20 @@ This will:
 If you prefer to run them separately:
 
 **Terminal 1 - Start the React dev server:**
+
 ```bash
 cd src/Client.React
 npm run dev
 ```
 
 **Terminal 2 - Start the API:**
+
 ```bash
 dotnet run --project src/Crystal.WebApi --launch-profile WebApi
 ```
 
 ### Development URLs:
+
 - **Application:** https://localhost:7050 (recommended)
 - **React Dev Server:** https://localhost:5000 (when running separately)
 - **Swagger UI:** https://localhost:7050/swagger
@@ -133,12 +141,14 @@ dotnet run --project src/Crystal.WebApi --launch-profile WebApi
 ## Building for Production
 
 Build the React client:
+
 ```bash
 cd src/Client.React
 npm run build
 ```
 
 Build the .NET solution:
+
 ```bash
 dotnet build
 ```
@@ -179,6 +189,7 @@ Crystal/
 ## Technology Stack
 
 **Backend:**
+
 - ASP.NET Core 9.0
 - Entity Framework Core 9.0
 - Crystal authentication library
@@ -187,6 +198,7 @@ Crystal/
 - FluentEmail
 
 **Frontend:**
+
 - React 18.3
 - TypeScript 5.6
 - Vite 5.4
@@ -198,21 +210,27 @@ Crystal/
 ## Troubleshooting
 
 ### "Certificate not found" error
+
 Make sure you've generated the HTTPS certificates:
+
 ```bash
 dotnet dev-certs https --trust
 dotnet dev-certs https --format pem -ep ~/.aspnet/https/crystal.client.pem --no-password
 ```
 
 ### React client won't start
+
 Make sure you've installed all dependencies:
+
 ```bash
 cd src/Client.React && npm install
 cd ../CrystalClient && npm install
 ```
 
 ### Database errors
+
 Reset and recreate the database:
+
 ```bash
 cd src/Crystal.WebApi
 dotnet ef database drop
@@ -221,5 +239,5 @@ dotnet ef database update
 
 ## Attribution
 
-This project is based on the [Crystal Starters](https://github.com/damianostre/aufy-starters) template.
+This project is based on the [Aufy Starters](https://github.com/damianostre/aufy-starters) template.
 Learn more about Crystal at [https://aufy.dev](https://aufy.dev)

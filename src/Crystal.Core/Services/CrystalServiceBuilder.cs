@@ -25,13 +25,13 @@ public class CrystalServiceBuilder<TUser> where TUser : IdentityUser, ICrystalUs
 
     internal CrystalServiceBuilder(
         IServiceCollection services,
-        CrystalOptions aufyOptions,
+        CrystalOptions crystalOptions,
         IdentityBuilder identityBuilder,
         AuthenticationBuilder authenticationBuilder,
         IConfiguration configuration)
     {
         Services = services;
-        CrystalOptions = aufyOptions;
+        CrystalOptions = crystalOptions;
         IdentityBuilder = identityBuilder;
         Configuration = configuration;
         AuthenticationBuilder = authenticationBuilder;
