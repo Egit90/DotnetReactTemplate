@@ -11,9 +11,9 @@ export const ChangePasswordForm = () => {
     const {register, handleSubmit, formState: { isSubmitting, errors }} = useForm<FormModel>({
         resolver: zodResolver(validationSchema),
     });
-    const { aufy } = useAuth();
+    const { authClient } = useAuth();
     const onSubmit: SubmitHandler<FormModel> = data => {
-        return aufy.changePassword({password: data.password, newPassword: data.newPassword}).then(() => {
+        return authClient.changePassword({password: data.password, newPassword: data.newPassword}).then(() => {
             setNotification("Password changed successfully");
         }).catch((error) => {
             setApiErrors(extractApiErrors(error) ?? ["Error occured"]);

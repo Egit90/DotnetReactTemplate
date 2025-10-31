@@ -4,13 +4,13 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import { useAuth } from '../../../providers/AuthProvider.tsx';
 
 export const ForgotPassword = () => {
-    const { aufy } = useAuth();
+    const { authClient } = useAuth();
 
     const {register, handleSubmit, formState: {errors}} = useForm<FormModel>({
         resolver: zodResolver(validationSchema),
     });
     const onSubmit: SubmitHandler<FormModel> = data => {
-        aufy.forgotPassword(data.email)
+        authClient.forgotPassword(data.email)
             .then(() => {
                 alert("Password reset email sent");
             });

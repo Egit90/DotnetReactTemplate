@@ -1,6 +1,6 @@
 import { type AuthUser } from './types.js';
 
-const storagePrefix = 'aufy_';
+const storagePrefix = 'crystal_';
 
 export const crystalDefaultStorage: CrystalStorage = {
     getUser: () => {

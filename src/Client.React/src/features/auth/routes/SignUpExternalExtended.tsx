@@ -8,14 +8,14 @@ import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 
 export const SignUpExternalExtended = () => {
     const [apiErrors, setApiErrors] = useState<string[]>();
-    const { aufy } = useAuth();
+    const { authClient } = useAuth();
     const navigate = useNavigate();
     const {register, handleSubmit, formState: {isSubmitting, errors}} = useForm<FormModel>({
         resolver: zodResolver(validationSchema),
     });
 
     const onSubmit: SubmitHandler<FormModel> = data => {
-        return aufy.signUpExternal({
+        return authClient.signUpExternal({
             aboutMe: data.aboutMe,
             mySiteUrl: data.mySiteUrl,
         }).then(() => {

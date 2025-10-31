@@ -10,12 +10,12 @@ export const ConfirmEmail = () => {
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const { aufy } = useAuth();
+    const { authClient } = useAuth();
 
     useEffect(() => {
             if (valid) {
                 setLoading(true);
-                aufy.confirmEmail(code, userId).then(() => {
+                authClient.confirmEmail(code, userId).then(() => {
                     setLoading(false);
                     setSuccess(true);
                 }).catch(() => {
