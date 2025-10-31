@@ -10,21 +10,21 @@ namespace Crystal.Core.AuthSchemes;
 public static class JwtBearerAuthSchemeHelper
 {
     public static void ConfigureBearerAuth(
-        this JwtBearerOptions bearerOptions, CrystalJwtBearerOptions aufyBearerOptions)
+        this JwtBearerOptions bearerOptions, CrystalJwtBearerOptions jwtBearerOptions)
     {
-        if (aufyBearerOptions.SigningKey is null)
+        if (jwtBearerOptions.SigningKey is null)
         {
-            throw new ArgumentNullException(nameof(aufyBearerOptions.SigningKey));
+            throw new ArgumentNullException(nameof(jwtBearerOptions.SigningKey));
         }
-        
-        var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(aufyBearerOptions.SigningKey));
+
+        var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtBearerOptions.SigningKey));
         bearerOptions.TokenValidationParameters = new TokenValidationParameters
         {
             IssuerSigningKey = key,
             ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
-            ValidAudience = aufyBearerOptions.Audience,
-            ValidIssuer = aufyBearerOptions.Issuer,
+            ValidAudience = jwtBearerOptions.Audience,
+            ValidIssuer = jwtBearerOptions.Issuer,
         };
         
         bearerOptions.Events ??= new JwtBearerEvents();

@@ -31,16 +31,16 @@ public static class ExternalLoginHelper
         return builder;
     }
 
-    public static void Configure(this OAuthOptions oauth, string scheme, CrystalOptions aufyOptions)
+    public static void Configure(this OAuthOptions oauth, string scheme, CrystalOptions crystalOptions)
     {
-        if (!aufyOptions.Providers.TryGetValue(scheme, out var provider))
+        if (!crystalOptions.Providers.TryGetValue(scheme, out var provider))
         {
             throw new($"Provider {scheme} is not configured");
         }
-        
+
         oauth.ClientId = provider.ClientId ?? throw new($"ClientId for provider {scheme} is not configured");
         oauth.ClientSecret = provider.ClientSecret ?? throw new($"ClientSecret for provider {scheme} is not configured");
-        oauth.CallbackPath = aufyOptions.AuthApiBasePath + "/external/callback/" + scheme.ToLower();
+        oauth.CallbackPath = crystalOptions.AuthApiBasePath + "/external/callback/" + scheme.ToLower();
         oauth.SignInScheme = CrystalAuthSchemeDefaults.SignInExternalPolicyScheme;
         
         foreach (var scope in provider.Scopes ?? [])
