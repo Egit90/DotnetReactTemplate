@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal.WebApi", "src\WebApi\Crystal.WebApi.csproj", "{E4250B28-4732-45E7-B0AC-03DB7C1562F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal.WebApi", "src\Crystal.WebApi\Crystal.WebApi.csproj", "{E4250B28-4732-45E7-B0AC-03DB7C1562F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.React", "src\Client.React\Client.React.csproj", "{6D3CC5BE-3672-49D1-9E2E-A72E3981DE44}"
 EndProject

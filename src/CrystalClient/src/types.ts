@@ -1,4 +1,4 @@
-import { type CrystalStorage } from './aufy-storage.js';
+import { type CrystalStorage } from './crystal-storage.js';
 import { type AxiosInstance } from 'axios';
 
 export interface CrystalClientOptions {
