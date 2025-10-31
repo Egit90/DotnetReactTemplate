@@ -3,7 +3,7 @@ import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState} from "react";
 import { useAuth } from '../../../providers/AuthProvider.tsx';
-import { extractApiErrors } from 'aufy-client/src/axios-utils.ts';
+import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 
 export const ChangePasswordForm = () => {
     const [apiErrors, setApiErrors] = useState<string[]>();

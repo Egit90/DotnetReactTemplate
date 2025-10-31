@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ChangePasswordForm } from '../components/ChangePasswordForm.tsx';
 import { useAuth } from '../../../providers/AuthProvider.tsx';
-import { AccountInfoResponse } from 'aufy-client/src/types.ts';
+import { AccountInfoResponse } from 'crystal-client/src/types.ts';
 import { useSearchParams } from 'react-router-dom';
 import {ExternalProviders} from "../../auth/components/ExternalProviders.tsx";
 

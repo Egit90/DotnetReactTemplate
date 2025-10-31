@@ -1,6 +1,6 @@
 ﻿import {useAuth} from "../../../providers/AuthProvider.tsx";
 import {useState} from "react";
-import {ChallengeMode} from "aufy-client/src/types.ts";
+import {ChallengeMode} from "crystal-client/src/types.ts";
 
 export const ExternalProviders = ({mode, hide}: { mode: ChallengeMode, hide?: string[] }) => {
     const {aufy} = useAuth();

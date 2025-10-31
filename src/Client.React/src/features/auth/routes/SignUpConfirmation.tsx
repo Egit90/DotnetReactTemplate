@@ -1,5 +1,5 @@
 import {Link, useLocation} from "react-router-dom";
-import { SignUpResponse } from 'aufy-client/src/types.ts';
+import { SignUpResponse } from 'crystal-client/src/types.ts';
 
 export const SignUpConfirmation = () => {
     const location = useLocation();

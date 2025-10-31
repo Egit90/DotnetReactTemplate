@@ -1,23 +1,22 @@
-import {Link, Outlet} from "react-router-dom";
-import {useAuth} from "../../providers/AuthProvider.tsx";
+import { Link, Outlet } from "react-router-dom";
+import { useAuth } from "../../providers/AuthProvider.tsx";
 
 const navigation = [
-    {name: 'Features', href: '/features', current: false},
-    {name: 'Docs', href: 'https://aufy.dev/manual/introduction/', current: false},
+    { name: 'Features', href: '/features', current: false },
 ]
 
 const userNavigation = [
-    {name: 'My Account', href: '/profile', requireAuth: true},
-    {name: 'Sign out', href: '/signout', requireAuth: true},
-    {name: 'Sign in', href: '/signin', requireAuth: false},
+    { name: 'My Account', href: '/profile', requireAuth: true },
+    { name: 'Sign out', href: '/signout', requireAuth: true },
+    { name: 'Sign in', href: '/signin', requireAuth: false },
 ]
 
-function classNames({classes}: { classes?: string[] }) {
+function classNames({ classes }: { classes?: string[] }) {
     return classes ? classes.filter(Boolean).join(' ') : ' '
 }
 
 export default function MainLayout() {
-    const {user} = useAuth();
+    const { user } = useAuth();
 
     return (
         <>
@@ -54,7 +53,7 @@ export default function MainLayout() {
                                         to={item.href}
                                         className='cursor-pointer block px-4 py-2 text-sm text-gray-700'
                                     >
-                                        {item.name} 
+                                        {item.name}
                                     </Link>
                                 )}
                             </div>
@@ -65,7 +64,7 @@ export default function MainLayout() {
                 <div className="py-10">
                     <main>
                         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                            <Outlet/>
+                            <Outlet />
                         </div>
                     </main>
                 </div>

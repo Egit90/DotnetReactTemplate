@@ -3,7 +3,7 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import { useAuth } from '../../../providers/AuthProvider.tsx';
-import { extractApiErrors } from 'aufy-client/src/axios-utils.ts';
+import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 
 export const ResendEmailConfirmation = () => {
     const [apiErrors, setApiErrors] = useState<string[] | null>();
