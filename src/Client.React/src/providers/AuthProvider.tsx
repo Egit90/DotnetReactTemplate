@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { CrystalClient } from 'aufy-client/src/aufy-client.ts';
-import { createAxiosInstance } from 'aufy-client/src/axios-utils.ts';
-import { AuthUser } from 'aufy-client/src/types.ts';
+import { CrystalClient } from 'crystal-client/src/crystal-client.ts';
+import { createAxiosInstance } from 'crystal-client/src/axios-utils.ts';
+import { AuthUser } from 'crystal-client/src/types.ts';
 
 export const axios = createAxiosInstance(import.meta.env.VITE_API_URL);
 export const aufy = new CrystalClient({
