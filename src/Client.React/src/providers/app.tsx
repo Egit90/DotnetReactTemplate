@@ -3,6 +3,7 @@ import {ErrorBoundary} from 'react-error-boundary';
 import {HelmetProvider} from 'react-helmet-async';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {AuthProvider} from "./AuthProvider.tsx";
+import {ThemeProvider} from "./ThemeProvider.tsx";
 
 const ErrorFallback = () => {
     return (
@@ -33,9 +34,11 @@ export const AppProvider = ({children}: AppProviderProps) => {
         >
             <ErrorBoundary FallbackComponent={ErrorFallback}>
                 <HelmetProvider>
-                    <AuthProvider>
-                        <Router>{children}</Router>
-                    </AuthProvider>
+                    <ThemeProvider defaultTheme="system" storageKey="crystal-ui-theme">
+                        <AuthProvider>
+                            <Router>{children}</Router>
+                        </AuthProvider>
+                    </ThemeProvider>
                 </HelmetProvider>
             </ErrorBoundary>
         </React.Suspense>
