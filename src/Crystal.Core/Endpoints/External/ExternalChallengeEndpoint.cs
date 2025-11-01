@@ -1,6 +1,4 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.External;
 
 public class ExternalChallengeEndpoint<TUser> : IAuthEndpoint where TUser : ICrystalUser
 {

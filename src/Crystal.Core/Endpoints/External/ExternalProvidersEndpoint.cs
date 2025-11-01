@@ -1,13 +1,10 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.External;
 
 public class ExternalProvidersEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, ICrystalUser
 {
@@ -22,13 +19,8 @@ public class ExternalProvidersEndpoint<TUser> : IAuthEndpoint where TUser : Iden
             {
                 Providers = schemes
             };
-        
+
             return TypedResults.Ok(res);
         }).AllowAnonymous();
     }
-}
-
-public class ExternalProvidersResponse
-{
-    public List<string> Providers { get; set; } = new();
 }

@@ -1,6 +1,4 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.Password;
 
 public class PasswordResetEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
 {
@@ -28,7 +26,7 @@ public class PasswordResetEndpoint<TUser> : IAccountEndpoint where TUser : Ident
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.Code);
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.Email);
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.Password);
-                    
+
                     var user = await manager.FindByEmailAsync(req.Email);
                     if (user == null)
                     {
@@ -42,7 +40,7 @@ public class PasswordResetEndpoint<TUser> : IAccountEndpoint where TUser : Ident
                     {
                         //clear refresh token on password reset
                         await refreshTokenManager.ClearTokenAsync(user.Id);
-                        
+
                         logger.LogInformation("User: {UserId} reset password successfully", user.Id);
                         return TypedResults.Ok();
                     }
@@ -57,11 +55,4 @@ public class PasswordResetEndpoint<TUser> : IAccountEndpoint where TUser : Ident
             .AddEndpointFilter<ValidationEndpointFilter<PasswordResetRequest>>()
             .AllowAnonymous();
     }
-}
-
-public class PasswordResetRequest
-{
-    [Required] public string? Code { get; set; }
-    [Required, EmailAddress] public string? Email { get; set; }
-    [Required] public string? Password { get; set; }
 }

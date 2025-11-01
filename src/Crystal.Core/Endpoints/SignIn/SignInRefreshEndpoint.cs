@@ -1,6 +1,3 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
-﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Crystal.Core.AuthSchemes;
 using Microsoft.AspNetCore.Authentication;
@@ -10,9 +7,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using SignInResult = Microsoft.AspNetCore.Mvc.SignInResult;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.SignIn;
 
 public class SignInRefreshEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, ICrystalUser
 {
@@ -20,7 +16,7 @@ public class SignInRefreshEndpoint<TUser> : IAuthEndpoint where TUser : Identity
     {
         return builder.MapPost(
                 "/signin/refresh",
-                async Task<Results<SignInHttpResult, UnauthorizedHttpResult, EmptyHttpResult>> ( 
+                async Task<Results<SignInHttpResult, UnauthorizedHttpResult, EmptyHttpResult>> (
                     [FromQuery] bool? useCookie,
                     [FromServices] UserManager<TUser> manager,
                     [FromServices] IRefreshTokenManager refreshTokenManager,
@@ -29,12 +25,12 @@ public class SignInRefreshEndpoint<TUser> : IAuthEndpoint where TUser : Identity
                 {
                     var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
                     var token = context.User.FindFirstValue(CrystalClaimTypes.RefreshToken);
-                    
+
                     if (userId == null || token == null)
                     {
                         return TypedResults.Unauthorized();
                     }
-                    
+
                     var user = await manager.FindByIdAsync(userId);
                     if (user == null)
                     {
@@ -48,7 +44,7 @@ public class SignInRefreshEndpoint<TUser> : IAuthEndpoint where TUser : Identity
 
                     signInManager.UseCookie = useCookie ?? false;
                     await signInManager.SignInAsync(user, new AuthenticationProperties(), context.User.Identity.AuthenticationType);
-                    
+
                     return TypedResults.Empty;
                 })
             .RequireAuthorization(b =>

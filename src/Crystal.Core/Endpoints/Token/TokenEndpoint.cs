@@ -1,20 +1,14 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Crystal.Core.AuthSchemes;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.Token;
 
 public class TokenEndpoint<TUser> : IAuthEndpoint where TUser : class, ICrystalUser
 {
@@ -27,7 +21,7 @@ public class TokenEndpoint<TUser> : IAuthEndpoint where TUser : class, ICrystalU
             {
                 ArgumentException.ThrowIfNullOrWhiteSpace(req.Email);
                 ArgumentException.ThrowIfNullOrWhiteSpace(req.Password);
-                
+
                 manager.AuthenticationScheme = CrystalAuthSchemeDefaults.BearerTokenScheme;
 
                 var result =
@@ -36,7 +30,7 @@ public class TokenEndpoint<TUser> : IAuthEndpoint where TUser : class, ICrystalU
                 {
                     logger.LogInformation("User {Email} failed to sign in. Result: {Result}", req.Email, result);
                     return TypedResults.Problem(
-                        "Invalid email or password", 
+                        "Invalid email or password",
                         statusCode: StatusCodes.Status401Unauthorized);
                 }
 
@@ -45,10 +39,4 @@ public class TokenEndpoint<TUser> : IAuthEndpoint where TUser : class, ICrystalU
             .AddEndpointFilter<ValidationEndpointFilter<TokenRequest>>()
             .AllowAnonymous();
     }
-}
-
-public class TokenRequest
-{
-    [Required, EmailAddress] public string? Email { get; set; }
-    [Required] public string? Password { get; set; }
 }

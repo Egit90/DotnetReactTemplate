@@ -3,6 +3,7 @@ using Crystal.Core.Models;
 using Crystal.Core.Options;
 ﻿using Crystal.Core.AuthSchemes;
 using Crystal.Core.Endpoints;
+using Crystal.Core.Endpoints.SignUp;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;

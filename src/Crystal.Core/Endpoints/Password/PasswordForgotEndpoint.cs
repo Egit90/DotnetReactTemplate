@@ -1,8 +1,6 @@
-using Crystal.Core.Abstractions;
 using Crystal.Core.Services.EmailSender;
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
-using Crystal.Core.Services.EmailSender;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +10,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.Password;
 
 public class PasswordForgotEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
 {
@@ -37,7 +35,7 @@ public class PasswordForgotEndpoint<TUser> : IAccountEndpoint where TUser : Iden
                     return TypedResults.Ok();
                 }
 
-                if (identityOptions.Value.SignIn.RequireConfirmedEmail && user is not {EmailConfirmed: true})
+                if (identityOptions.Value.SignIn.RequireConfirmedEmail && user is not { EmailConfirmed: true })
                 {
                     //Don't leak information about the user
                     return TypedResults.Ok();
@@ -57,9 +55,4 @@ public class PasswordForgotEndpoint<TUser> : IAccountEndpoint where TUser : Iden
             .AddEndpointFilter<ValidationEndpointFilter<PasswordForgotRequest>>()
             .AllowAnonymous();
     }
-}
-
-public class PasswordForgotRequest
-{
-    [Required, EmailAddress] public string? Email { get; set; }
 }

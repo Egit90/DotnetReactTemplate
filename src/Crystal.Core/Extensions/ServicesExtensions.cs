@@ -1,6 +1,14 @@
 using Crystal.Core.Abstractions;
 using Crystal.Core.AuthSchemes;
 using Crystal.Core.Endpoints;
+using Crystal.Core.Endpoints.Account;
+using Crystal.Core.Endpoints.Email;
+using Crystal.Core.Endpoints.External;
+using Crystal.Core.Endpoints.Password;
+using Crystal.Core.Endpoints.SignIn;
+using Crystal.Core.Endpoints.SignOut;
+using Crystal.Core.Endpoints.SignUp;
+using Crystal.Core.Endpoints.Token;
 using Crystal.Core.Options;
 using Crystal.Core.Services;
 using Crystal.Core.Services.EmailSender;

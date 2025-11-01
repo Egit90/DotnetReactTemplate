@@ -1,5 +1,4 @@
 using Crystal.Core.Services.EmailSender;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.SignUp;
 
 public class SignUpEndpoint<TUser, TModel> : IAuthEndpoint where TModel : SignUpRequest where TUser : IdentityUser, ICrystalUser, new()
 {
@@ -92,48 +91,4 @@ public class SignUpEndpoint<TUser, TModel> : IAuthEndpoint where TModel : SignUp
             .AddEndpointFilter<ValidationEndpointFilter<TModel>>()
             .AllowAnonymous();
     }
-}
-
-/// <summary>
-/// Extension point for the SignUpEndpoint.
-/// </summary>
-/// <typeparam name="TUser"></typeparam>
-/// <typeparam name="TModel"></typeparam>
-public interface ISignUpEndpointEvents<in TUser, in TModel> where TModel : SignUpRequest where TUser : ICrystalUser
-{
-    /// <summary>
-    /// Called when a user is being created. <br/>
-    /// Return a ProblemHttpResult if the user can't be created.
-    /// </summary>
-    /// <param name="model"></param>
-    /// <param name="httpRequest"></param>
-    /// <param name="user"></param>
-    /// <returns></returns>
-    Task<ProblemHttpResult?> UserCreatingAsync(TModel model, HttpRequest httpRequest, TUser user)
-    {
-        return Task.FromResult<ProblemHttpResult?>(null);
-    }
-
-    /// <summary>
-    /// Called when a user is created and saved to the database.
-    /// </summary>
-    /// <param name="model"></param>
-    /// <param name="httpRequest"></param>
-    /// <param name="user"></param>
-    /// <returns></returns>
-    Task UserCreatedAsync(TModel model, HttpRequest httpRequest, TUser user)
-    {
-        return Task.CompletedTask;
-    }
-}
-
-public class SignUpRequest
-{
-    [Required, EmailAddress] public string? Email { get; set; }
-    [Required] public string? Password { get; set; }
-}
-
-public class SignUpResponse
-{
-    public bool RequiresEmailConfirmation { get; set; }
 }
