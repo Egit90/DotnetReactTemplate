@@ -3,11 +3,16 @@ import { ChangePasswordForm } from '../components/ChangePasswordForm.tsx';
 import { useAuth } from '../../../providers/AuthProvider.tsx';
 import { AccountInfoResponse } from 'crystal-client/src/types.ts';
 import { useSearchParams } from 'react-router-dom';
-import {ExternalProviders} from "../../auth/components/ExternalProviders.tsx";
+import { ExternalProviders } from "../../auth/components/ExternalProviders.tsx";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Mail, Key, Link2, Shield } from "lucide-react";
+import { toast } from "sonner";
 
 export const MyAccount = () => {
     const { authClient } = useAuth();
     const [user, setUser] = useState<AccountInfoResponse>();
+
     useEffect(() => {
         authClient.accountInfo().then((res) => {
             setUser(res);
@@ -22,56 +27,105 @@ export const MyAccount = () => {
         if (!link) return;
 
         if (failed) {
-            alert("Failed to link account");
+            toast.error("Failed to link account");
         } else {
             authClient.linkLogin().then((res) => {
                 setUser(res);
+                toast.success("Account linked successfully");
             }).catch(() => {
-                alert("Failed to link account");
+                toast.error("Failed to link account");
             });
         }
     }, [link, failed]);
 
-    return (<>
-            <div>
-                <div className="px-4 sm:px-0">
-                    <h3 className="text-base font-semibold leading-7 text-gray-900">Profile Information</h3>
+    return (
+        <div className="max-w-7xl mx-auto p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-6">
+                    {/* Profile Information Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Mail className="h-5 w-5 text-primary" />
+                                Profile Information
+                            </CardTitle>
+                            <CardDescription>
+                                Manage your account details and settings
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Email */}
+                            <div className="flex flex-col gap-2">
+                                <dt className="text-sm font-medium text-foreground">Email address</dt>
+                                <dd className="text-sm text-muted-foreground">{user?.email}</dd>
+                            </div>
+
+                            {/* Logins */}
+                            <div className="flex flex-col gap-2">
+                                <dt className="text-sm font-medium text-foreground">Linked logins</dt>
+                                <dd className="flex flex-wrap gap-2">
+                                    {user?.logins.map((login) => (
+                                        <Badge key={login} variant="secondary" className="capitalize">
+                                            {login}
+                                        </Badge>
+                                    ))}
+                                </dd>
+                            </div>
+
+                            {/* Roles */}
+                            <div className="flex flex-col gap-2">
+                                <dt className="text-sm font-medium text-foreground">Roles</dt>
+                                <dd className="flex flex-wrap gap-2">
+                                    {user?.roles.map((role) => (
+                                        <Badge key={role} variant="outline" className="capitalize">
+                                            <Shield className="h-3 w-3 mr-1" />
+                                            {role}
+                                        </Badge>
+                                    ))}
+                                </dd>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Link Additional Logins Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Link2 className="h-5 w-5 text-primary" />
+                                Link Additional Logins
+                            </CardTitle>
+                            <CardDescription>
+                                Connect other accounts to sign in with multiple providers
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <ExternalProviders mode="LinkLogin" hide={user?.logins} />
+                        </CardContent>
+                    </Card>
                 </div>
-                <div className="mt-6 border-t border-gray-100">
-                    <dl className="divide-y divide-gray-100">
-                        <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                            <dt className="text-sm font-medium leading-6 text-gray-900">Email address</dt>
-                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{user?.email}</dd>
-                        </div>
 
-                        <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                            <dt className="text-sm font-medium leading-6 text-gray-900">Logins</dt>
-                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{user?.logins.join(', ')}</dd>
-                        </div>
-
-                        <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                            <dt className="text-sm font-medium leading-6 text-gray-900">Link logins</dt>
-                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:max-w-[480px]">
-                                <ExternalProviders mode="LinkLogin" hide={user?.logins}/>
-                            </dd>
-                        </div>
-
-                        {user?.hasPassword && <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                            <dt className="text-sm font-medium leading-6 text-gray-900">Change password</dt>
-                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                <div className="mt-10 sm:w-full sm:max-w-[480px]">
-                                    <ChangePasswordForm/>
-                                </div>
-                            </dd>
-                        </div>}
-
-                        <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                            <dt className="text-sm font-medium leading-6 text-gray-900">Roles</dt>
-                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{user?.roles.join(', ')}</dd>
-                        </div>
-                    </dl>
+                {/* Right Column */}
+                <div>
+                    {/* Change Password Card */}
+                    {user?.hasPassword && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Key className="h-5 w-5 text-primary" />
+                                    Change Password
+                                </CardTitle>
+                                <CardDescription>
+                                    Update your password to keep your account secure
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <ChangePasswordForm />
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             </div>
-        </>
+        </div>
     );
 };

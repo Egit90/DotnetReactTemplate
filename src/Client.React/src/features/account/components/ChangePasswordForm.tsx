@@ -1,116 +1,89 @@
-import {SubmitHandler, useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from '../../../providers/AuthProvider.tsx';
 import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export const ChangePasswordForm = () => {
-    const [apiErrors, setApiErrors] = useState<string[]>();
-    const [notification, setNotification] = useState<string>();
-    const {register, handleSubmit, formState: { isSubmitting, errors }} = useForm<FormModel>({
+    const { register, handleSubmit, formState: { isSubmitting, errors }, reset } = useForm<FormModel>({
         resolver: zodResolver(validationSchema),
     });
     const { authClient } = useAuth();
-    const onSubmit: SubmitHandler<FormModel> = data => {
-        return authClient.changePassword({password: data.password, newPassword: data.newPassword}).then(() => {
-            setNotification("Password changed successfully");
-        }).catch((error) => {
-            setApiErrors(extractApiErrors(error) ?? ["Error occured"]);
-        });
+
+    const onSubmit: SubmitHandler<FormModel> = async (data) => {
+        try {
+            await authClient.changePassword({ password: data.password, newPassword: data.newPassword });
+            toast.success("Password changed successfully");
+            reset();
+        } catch (error) {
+            const errors = extractApiErrors(error) ?? ["Error occurred"];
+            errors.forEach(err => toast.error(err));
+        }
     };
 
-    return <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" method="POST" noValidate={true}>
+    return (
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" method="POST" noValidate={true}>
+            <FieldGroup>
+                <Field>
+                    <FieldLabel htmlFor="password">Current Password</FieldLabel>
+                    <Input
+                        {...register("password")}
+                        id="password"
+                        type="password"
+                        autoComplete="current-password"
+                        required
+                    />
+                    {errors.password?.message && (
+                        <p className="mt-2 text-sm text-destructive">
+                            {errors.password.message}
+                        </p>
+                    )}
+                </Field>
 
-        {apiErrors && <div className="rounded-md bg-red-50 p-4">
-            <div className="flex">
-                <div className="ml-3">
-                    <div className="mt-2 text-sm text-red-700">
-                        <ul role="list" className="list-disc space-y-1 pl-5">
-                            {apiErrors.map((error, index) => <li key={index}>{error}</li>)}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>}
-        
-        {notification && <div className="rounded-md bg-green-50 p-4">
-            <div className="flex">
-                <div className="ml-3">
-                    <div className="mt-2 text-sm text-green-700">
-                        <ul role="list" className="list-disc space-y-1 pl-5">
-                            <li>{notification}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>}
+                <Field>
+                    <FieldLabel htmlFor="newPassword">New Password</FieldLabel>
+                    <Input
+                        {...register("newPassword")}
+                        id="newPassword"
+                        type="password"
+                        autoComplete="new-password"
+                        required
+                    />
+                    {errors.newPassword?.message && (
+                        <p className="mt-2 text-sm text-destructive">
+                            {errors.newPassword.message}
+                        </p>
+                    )}
+                </Field>
 
-        <div>
-            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                Password
-            </label>
-            <div className="mt-2">
-                <input
-                    {...register("password", {required: true})}
-                    type="password"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
-                />
-            </div>
-            <p className="mt-2 text-sm text-red-600" id="email-error">
-                {errors.password?.message}
-            </p>
+                <Field>
+                    <FieldLabel htmlFor="confirmNewPassword">Confirm New Password</FieldLabel>
+                    <Input
+                        {...register("confirmNewPassword")}
+                        id="confirmNewPassword"
+                        type="password"
+                        autoComplete="new-password"
+                        required
+                    />
+                    {errors.confirmNewPassword?.message && (
+                        <p className="mt-2 text-sm text-destructive">
+                            {errors.confirmNewPassword.message}
+                        </p>
+                    )}
+                </Field>
 
-        </div>
-
-        <div>
-            <label htmlFor="newPassword" className="block text-sm font-medium leading-6 text-gray-900">
-                New Password
-            </label>
-            <div className="mt-2">
-                <input
-                    {...register("newPassword", {required: true})}
-                    type="password"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
-                />
-            </div>
-            <p className="mt-2 text-sm text-red-600" id="email-error">
-                {errors.newPassword?.message}
-            </p>
-
-        </div>
-
-        <div>
-            <label htmlFor="confirmNewPassword" className="block text-sm font-medium leading-6 text-gray-900">
-                Confirm New Password
-            </label>
-            <div className="mt-2">
-                <input
-                    {...register("confirmNewPassword", {
-                        required: true,
-                    })}
-                    type="password"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
-                />
-            </div>
-            <p className="mt-2 text-sm text-red-600" id="confirmPassword-error">
-                {errors.confirmNewPassword?.message}
-            </p>
-        </div>
-
-        <div>
-            <button
-                type="submit"
-                className="flex w-full justify-center rounded-md hover:primary-bg primary-bg px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                disabled={isSubmitting}
-            >
-                {isSubmitting ? "Processing..." : "Change"}
-            </button>
-        </div>
-    </form>
+                <Field>
+                    <Button type="submit" disabled={isSubmitting} className="w-full">
+                        {isSubmitting ? "Changing password..." : "Change Password"}
+                    </Button>
+                </Field>
+            </FieldGroup>
+        </form>
+    );
 };
 
 const validationSchema = z.object({
