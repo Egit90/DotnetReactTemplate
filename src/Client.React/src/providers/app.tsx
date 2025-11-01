@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {ErrorBoundary} from 'react-error-boundary';
-import {HelmetProvider} from 'react-helmet-async';
-import {BrowserRouter as Router} from 'react-router-dom';
-import {AuthProvider} from "./AuthProvider.tsx";
-import {ThemeProvider} from "./ThemeProvider.tsx";
-import {Toaster} from "sonner";
+import { ErrorBoundary } from 'react-error-boundary';
+import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { AuthProvider } from "./AuthProvider.tsx";
+import { ThemeProvider } from "./ThemeProvider.tsx";
+import { Toaster } from "sonner";
 
 const ErrorFallback = () => {
     return (
@@ -24,7 +24,7 @@ type AppProviderProps = {
     children: React.ReactNode;
 };
 
-export const AppProvider = ({children}: AppProviderProps) => {
+export const AppProvider = ({ children }: AppProviderProps) => {
     return (
         <React.Suspense
             fallback={
@@ -39,7 +39,7 @@ export const AppProvider = ({children}: AppProviderProps) => {
                         <AuthProvider>
                             <Router>
                                 {children}
-                                <Toaster richColors position="top-right" />
+                                <Toaster closeButton richColors position="top-right" />
                             </Router>
                         </AuthProvider>
                     </ThemeProvider>
