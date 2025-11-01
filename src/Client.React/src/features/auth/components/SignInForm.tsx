@@ -1,114 +1,116 @@
-import {Link, useNavigate} from "react-router-dom";
-import {SubmitHandler, useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
-import {useAuth} from "../../../providers/AuthProvider.tsx";
+import { Link, useNavigate } from "react-router-dom";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "../../../providers/AuthProvider.tsx";
 import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+import {
+    Field,
+    FieldDescription,
+    FieldGroup,
+    FieldLabel,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { toast } from "sonner";
+export function SignInForm({ className, ...props }: React.ComponentProps<"div">) {
 
-export const SignInForm = () => {
-    const [apiErrors, setApiErrors] = useState<string[]>();
     const navigate = useNavigate();
-    const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<FormModel>({
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormModel>({
         resolver: zodResolver(validationSchema),
     });
 
     const { authClient } = useAuth();
-    const onSubmit: SubmitHandler<FormModel> = data => {
-        authClient.signIn({email: data.email, password: data.password}).then(() => {
+    const onSubmit: SubmitHandler<FormModel> = async data => {
+        try {
+            await authClient.signIn({ email: data.email, password: data.password })
             navigate("/");
-        }).catch((error) => {
-            setApiErrors(extractApiErrors(error) ?? ["Error occured"]);
-        });
+        } catch (error) {
+            const errors = extractApiErrors(error) ?? ["Error occurred"];
+            errors.forEach(err => {
+                console.log("Showing toast for:", err);
+                toast.error(err);
+            });
+        }
     };
 
-    return <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmit(onSubmit)} noValidate={true}>
-
-        {apiErrors && <div className="rounded-md bg-red-50 p-4">
-            <div className="flex">
-                <div className="ml-3">
-                    <div className="mt-2 text-sm text-red-700">
-                        <ul role="list" className="list-disc space-y-1 pl-5">
-                            {apiErrors.map((error, index) => <li key={index}>{error}</li>)}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>}
-
-        <div>
-            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                Email address
-            </label>
-            <div className="mt-2">
-                <input
-                    {...register("email")}
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
-                />
-            </div>
-            <p className="mt-2 text-sm text-red-600" id="email-error">
-                {errors.email?.message}
-            </p>
+    return (
+        <div className={cn("flex flex-col gap-6", className)} {...props}>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Login to your account</CardTitle>
+                    <CardDescription>
+                        Enter your email below to login to your account
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form method="POST" action="#" onSubmit={handleSubmit(onSubmit)} noValidate={true}>
+                        <FieldGroup>
+                            <Field>
+                                <FieldLabel htmlFor="email">Email</FieldLabel>
+                                <Input
+                                    {...register("email")}
+                                    id="email"
+                                    type="email"
+                                    autoComplete="email"
+                                    placeholder="m@example.com"
+                                    required
+                                />
+                            </Field>
+                            <p className="mt-2 text-sm text-destructive" id="email-error">
+                                {errors.email?.message}
+                            </p>
+                            <Field>
+                                <div className="flex items-center">
+                                    <FieldLabel htmlFor="password">Password</FieldLabel>
+                                    <Link
+                                        to="/forgot-password"
+                                        className="ml-auto inline-block text-sm text-primary underline-offset-4 hover:underline"
+                                    >
+                                        Forgot your password?
+                                    </Link>
+                                </div>
+                                <Input
+                                    {...register("password")}
+                                    id="password" type="password" autoComplete="current-password"
+                                    required />
+                            </Field>
+                            <p className="mt-2 text-sm text-destructive" id="password-error">
+                                {errors.password?.message}
+                            </p>
+                            <Field>
+                                <Button type="submit" disabled={isSubmitting}>
+                                    {isSubmitting ? "Logging in..." : "Login"}
+                                </Button>
+                                <Button variant="outline" type="button">
+                                    Login with Google
+                                </Button>
+                                <FieldDescription className="text-center">
+                                    Don&apos;t have an account? <Link to="/signup" className="text-primary hover:underline">Sign up</Link>
+                                </FieldDescription>
+                            </Field>
+                        </FieldGroup>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
-
-        <div>
-            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                Password
-            </label>
-            <div className="mt-2">
-                <input
-                    {...register("password")}
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
-                />
-            </div>
-            <p className="mt-2 text-sm text-red-600" id="email-error">
-                {errors.password?.message}
-            </p>
-        </div>
-
-        <div className="flex items-center justify-between">
-            <div className="flex items-center"></div>
-
-            <div className="text-sm leading-6">
-                <Link to="/forgot-password" className="font-semibold primary-color hover:primary-color">
-                    Forgot password?
-                </Link>
-            </div>
-        </div>
-
-        <div>
-            <button
-                type="submit"
-                className="flex w-full justify-center rounded-md primary-bg px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:primary-bg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:primary-bg-darker"
-                disabled={isSubmitting}
-            >
-                {isSubmitting ? "Signing in..." : "Sign in"}
-            </button>
-        </div>
-
-        <div className="flex items-center justify-between">
-            <div className="text-sm leading-6">
-                Not a member?
-                <Link to="/signup" className="ml-3 font-semibold primary-color hover:primary-color">
-                    Sign up now
-                </Link>
-            </div>
-        </div>
-    </form>
-};
+    )
+}
 
 const validationSchema = z.object({
     email: z
-        .string().min(1, {message: "Email is required"})
-        .email({message: "Must be a valid email",}),
+        .string().min(1, { message: "Email is required" })
+        .email({ message: "Must be a valid email", }),
     password: z
         .string()
-        .min(1, {message: "Password is required"}),
+        .min(1, { message: "Password is required" }),
 });
 type FormModel = z.infer<typeof validationSchema>;

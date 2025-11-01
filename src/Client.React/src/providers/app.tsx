@@ -4,6 +4,7 @@ import {HelmetProvider} from 'react-helmet-async';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {AuthProvider} from "./AuthProvider.tsx";
 import {ThemeProvider} from "./ThemeProvider.tsx";
+import {Toaster} from "sonner";
 
 const ErrorFallback = () => {
     return (
@@ -36,7 +37,10 @@ export const AppProvider = ({children}: AppProviderProps) => {
                 <HelmetProvider>
                     <ThemeProvider defaultTheme="system" storageKey="crystal-ui-theme">
                         <AuthProvider>
-                            <Router>{children}</Router>
+                            <Router>
+                                {children}
+                                <Toaster richColors position="top-right" />
+                            </Router>
                         </AuthProvider>
                     </ThemeProvider>
                 </HelmetProvider>
