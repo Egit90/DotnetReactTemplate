@@ -1,126 +1,111 @@
-import {Link, useNavigate} from "react-router-dom";
-import {SubmitHandler, useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from '../../../providers/AuthProvider.tsx';
 import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
+import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { cn } from "@/lib/utils.ts";
 
-export const SignUpForm = () => {
-    const [apiErrors, setApiErrors] = useState<string[]>();
-    const { authClient } = useAuth();
+
+export function SignUpForm({ className, ...props }: React.ComponentProps<"div">) {
+
     const navigate = useNavigate();
-    const {register, handleSubmit, formState: { isSubmitting, errors }} = useForm<FormModel>({
+
+    const { authClient } = useAuth();
+    const { register, handleSubmit, formState: { isSubmitting, errors } } = useForm<FormModel>({
         resolver: zodResolver(validationSchema),
     });
-    const onSubmit: SubmitHandler<FormModel> = data => {
-        return authClient.signUp({email: data.email, password: data.password}).then((res) => {
-            navigate("/signup/confirmation", {state: {...res}});
-        }).catch((error) => {
-            setApiErrors(extractApiErrors(error) ?? ["Error occured"]);
-        });
+    const onSubmit: SubmitHandler<FormModel> = async data => {
+        try {
+            const res = await authClient.signUp({ email: data.email, password: data.password });
+            navigate("/signup/confirmation", { state: { ...res } });
+        } catch (error) {
+            const errors = extractApiErrors(error) ?? ["Error occurred"];
+            errors.forEach(err => toast.error(err));
+        }
     };
 
-    return <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" method="POST" noValidate={true}>
-
-        {apiErrors && <div className="rounded-md bg-red-50 p-4">
-            <div className="flex">
-                <div className="ml-3">
-                    <div className="mt-2 text-sm text-red-700">
-                        <ul role="list" className="list-disc space-y-1 pl-5">
-                            {apiErrors.map((error, index) => <li key={index}>{error}</li>)}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>}
-
-        <div>
-            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                Email address
-            </label>
-            <div className="mt-2">
-                <input
-                    {...register("email")}
-                    type="email"
-                    autoComplete="email"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
-                />
-            </div>
-            <p className="mt-2 text-sm text-red-600" id="email-error">
-                {errors.email?.message}
-            </p>
+    return (
+        <div className={cn("flex flex-col gap-6", className)} {...props}>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Create a new Account</CardTitle>
+                    <CardDescription>
+                        Enter your email below to create a new account
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form method="POST" action="#" onSubmit={handleSubmit(onSubmit)} noValidate={true}>
+                        <FieldGroup>
+                            <Field>
+                                <FieldLabel htmlFor="email">Email</FieldLabel>
+                                <Input
+                                    {...register("email")}
+                                    id="email"
+                                    type="email"
+                                    autoComplete="email"
+                                    placeholder="m@example.com"
+                                    required
+                                />
+                            </Field>
+                            <p className="mt-2 text-sm text-destructive" id="email-error">
+                                {errors.email?.message}
+                            </p>
+                            <Field>
+                                <FieldLabel htmlFor="password">Password</FieldLabel>
+                                <Input
+                                    {...register("password")}
+                                    id="password"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    required />
+                            </Field>
+                            <p className="mt-2 text-sm text-destructive" id="password-error">
+                                {errors.password?.message}
+                            </p>
+                            <Field>
+                                <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
+                                <Input
+                                    {...register("confirmPassword")}
+                                    id="confirmPassword"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    required />
+                            </Field>
+                            <p className="mt-2 text-sm text-destructive" id="confirmPassword-error">
+                                {errors.confirmPassword?.message}
+                            </p>
+                            <Field>
+                                <Button type="submit" disabled={isSubmitting}>
+                                    {isSubmitting ? "Creating account..." : "Sign Up"}
+                                </Button>
+                                <FieldDescription className="text-center">
+                                    Already have an account? <Link to="/signin" className="text-primary hover:underline">Sign in</Link>
+                                </FieldDescription>
+                            </Field>
+                        </FieldGroup>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
-
-        <div>
-            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                Password
-            </label>
-            <div className="mt-2">
-                <input
-                    {...register("password", {required: true})}
-                    type="password"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
-                />
-            </div>
-            <p className="mt-2 text-sm text-red-600" id="email-error">
-                {errors.password?.message}
-            </p>
-
-        </div>
-
-        <div>
-            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                Confirm Password
-            </label>
-            <div className="mt-2">
-                <input
-                    {...register("confirmPassword", {
-                        required: true,
-                        validate: (value, formValues) => value === formValues.password
-                    })}
-                    type="password"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
-                />
-            </div>
-            <p className="mt-2 text-sm text-red-600" id="confirmPassword-error">
-                {errors.confirmPassword?.message}
-            </p>
-        </div>
-
-        <div>
-            <button
-                type="submit"
-                className="flex w-full justify-center rounded-md hover:primary-bg primary-bg px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                disabled={isSubmitting}
-            >
-                {isSubmitting ? "Signing up..." : "Sign up"}
-            </button>
-        </div>
-
-        <div className="flex items-center justify-between">
-            <div className="text-sm leading-6">
-                Already have an account?
-                <Link to="/signin" className="ml-3 font-semibold primary-color hover:primary-color">
-                    Sign in
-                </Link>
-            </div>
-        </div>
-    </form>
-};
+    )
+}
 
 const validationSchema = z.object({
     email: z
-        .string().min(1, {message: "Email is required"})
-        .email({message: "Must be a valid email",}),
+        .string().min(1, { message: "Email is required" })
+        .email({ message: "Must be a valid email", }),
     password: z
         .string()
-        .min(6, {message: "Password must be at least 6 characters"}),
+        .min(6, { message: "Password must be at least 6 characters" }),
     confirmPassword: z
         .string()
-        .min(1, {message: "Confirm Password is required"}),
+        .min(1, { message: "Confirm Password is required" }),
 })
     .refine((data) => data.password === data.confirmPassword, {
         path: ["confirmPassword"],
