@@ -10,6 +10,7 @@ export const createAxiosInstance = (apiBaseUrl: string, config?: CreateAxiosDefa
 };
 
 export const extractApiErrors = (error: any) => {
+    console.log(error);
     if (!Axios.isAxiosError(error)) return null;
 
     const e = error as AxiosError;
@@ -19,6 +20,5 @@ export const extractApiErrors = (error: any) => {
     if (!data.errors) return null;
 
     const errors = data.errors as any;
-    return Object.keys(errors).flatMap(key => errors[key]);
+    return Object.keys(errors).flatMap((key) => errors[key]);
 };
-
