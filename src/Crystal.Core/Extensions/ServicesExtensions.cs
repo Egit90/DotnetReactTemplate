@@ -31,12 +31,8 @@ public static class ServicesExtensions
         this IServiceCollection services, IConfiguration configuration, Action<CrystalOptions>? configureOptions = null)
         where TUser : IdentityUser, ICrystalUser, new()
     {
-        var opts = configuration.GetSection(CrystalOptions.SectionPath).Get<CrystalOptions>();
-        if (opts is null)
-        {
-            throw new("CrystalOptions is not configured in appsettings.json");
-        }
-        
+        var opts = configuration.GetSection(CrystalOptions.SectionPath).Get<CrystalOptions>()
+                   ?? throw new("CrystalOptions is not configured in appsettings.json");
         configureOptions?.Invoke(opts);
 
         services.AddOptions<CrystalOptions>().BindConfiguration(CrystalOptions.SectionPath).Configure(o => configureOptions?.Invoke(o));
@@ -47,40 +43,39 @@ public static class ServicesExtensions
             o.SigningKey = opts.JwtBearer.SigningKey;
         });
 
-        services.AddScoped<IRefreshTokenManager, RefreshTokenManager>();
-        services.AddScoped<IJwtTokenService, JwtTokenService>();
-        services.AddScoped<ICrystalEmailSenderManager<TUser>, CrystalEmailSenderManager<TUser>>();
+        services.AddScoped<IRefreshTokenManager, RefreshTokenManager>()
+                .AddScoped<IJwtTokenService, JwtTokenService>()
+                .AddScoped<ICrystalEmailSenderManager<TUser>, CrystalEmailSenderManager<TUser>>();
 
         if (opts.EnableEmailPasswordFlow)
         {
-            services.AddSingleton<IAuthEndpoint, SignInEndpoint<TUser>>();
-            services.AddSingleton<IAuthEndpoint, TokenRefreshEndpoint<TUser>>();
-            services.AddSingleton<IAuthEndpoint, TokenEndpoint<TUser>>();
-            
-            services.AddSingleton<IAccountEndpoint, PasswordForgotEndpoint<TUser>>();
-            services.AddSingleton<IAccountEndpoint, PasswordResetEndpoint<TUser>>();
-            services.AddSingleton<IAccountEndpoint, PasswordChangeEndpoint<TUser>>();
-            services.AddSingleton<IAccountEndpoint, EmailConfirmationResendEndpoint<TUser>>();
-            services.AddSingleton<IAccountEndpoint, EmailConfirmEndpoint<TUser>>();
+            services.AddSingleton<IAuthEndpoint, SignInEndpoint<TUser>>()
+                    .AddSingleton<IAuthEndpoint, TokenRefreshEndpoint<TUser>>()
+                    .AddSingleton<IAuthEndpoint, TokenEndpoint<TUser>>()
+                    .AddSingleton<IAccountEndpoint, PasswordForgotEndpoint<TUser>>()
+                    .AddSingleton<IAccountEndpoint, PasswordResetEndpoint<TUser>>()
+                    .AddSingleton<IAccountEndpoint, PasswordChangeEndpoint<TUser>>()
+                    .AddSingleton<IAccountEndpoint, EmailConfirmationResendEndpoint<TUser>>()
+                    .AddSingleton<IAccountEndpoint, EmailConfirmEndpoint<TUser>>();
 
             if (opts.EnableSignUp)
             {
                 services.AddSingleton<IAuthEndpoint, SignUpEndpoint<TUser, SignUpRequest>>();
             }
         }
-        
+
         if (opts.EnableExternalProvidersFlow)
         {
-            services.AddSingleton<IAuthEndpoint, ExternalChallengeEndpoint<TUser>>();
-            services.AddSingleton<IAuthEndpoint, ExternalProvidersEndpoint<TUser>>();
-            services.AddSingleton<IAuthEndpoint, SignInExternalEndpoint<TUser>>();
-            services.AddSingleton<IAccountEndpoint, LinkExternalLoginEndpoint<TUser>>();
+            services.AddSingleton<IAuthEndpoint, ExternalChallengeEndpoint<TUser>>()
+                    .AddSingleton<IAuthEndpoint, ExternalProvidersEndpoint<TUser>>()
+                    .AddSingleton<IAuthEndpoint, SignInExternalEndpoint<TUser>>()
+                    .AddSingleton<IAccountEndpoint, LinkExternalLoginEndpoint<TUser>>();
         }
-        
-        services.AddSingleton<IAuthEndpoint, SignInRefreshEndpoint<TUser>>();
-        services.AddSingleton<IAuthEndpoint, SignOutEndpoint<TUser>>();
-        services.AddSingleton<IAuthEndpoint, WhoAmIEndpoint<TUser>>();
-        services.AddSingleton<IAccountEndpoint, AccountInfoEndpoint<TUser>>();
+
+        services.AddSingleton<IAuthEndpoint, SignInRefreshEndpoint<TUser>>()
+                .AddSingleton<IAuthEndpoint, SignOutEndpoint<TUser>>()
+                .AddSingleton<IAuthEndpoint, WhoAmIEndpoint<TUser>>()
+                .AddSingleton<IAccountEndpoint, AccountInfoEndpoint<TUser>>();
 
         var identityBuilder = services
             .AddIdentityCore<TUser>()
