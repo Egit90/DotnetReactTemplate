@@ -36,8 +36,7 @@ export function SignInForm({ className, ...props }: React.ComponentProps<"div">)
         } catch (error) {
             const errors = extractApiErrors(error) ?? ["Error occurred"];
             errors.forEach(err => {
-                console.log("Showing toast for:", err);
-                toast.error(err);
+                toast.error(err, { dismissible: true, duration: 10000 });
             });
         }
     };

@@ -21,8 +21,7 @@ public static class CrystalServiceBuilderExtensions
     {
         if (builder.Configuration.GetSection(FluentEmailOptions.SectionName).Exists())
         {
-            builder.Services.Configure<FluentEmailOptions>(
-                builder.Configuration.GetSection(FluentEmailOptions.SectionName));
+            builder.Services.Configure<FluentEmailOptions>(builder.Configuration.GetSection(FluentEmailOptions.SectionName));
         }
         else
         {

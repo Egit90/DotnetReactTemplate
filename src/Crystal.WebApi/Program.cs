@@ -20,7 +20,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.SetupCrystal(builder.Configuration);
 
-builder.Services.Configure<IdentityOptions>(options => { options.SignIn.RequireConfirmedEmail = false; });
+builder.Services.Configure<IdentityOptions>(options => { options.SignIn.RequireConfirmedEmail = true; });
 
 var app = builder.Build();
 

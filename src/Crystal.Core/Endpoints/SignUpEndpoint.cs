@@ -1,8 +1,6 @@
-using Crystal.Core.Abstractions;
 using Crystal.Core.Services.EmailSender;
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
-using Crystal.Core.Services.EmailSender;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -33,7 +31,7 @@ public class SignUpEndpoint<TUser, TModel> : IAuthEndpoint where TModel : SignUp
                 {
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.Email, nameof(req.Email));
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.Password, nameof(req.Password));
-                    
+
                     var user = await manager.FindByEmailAsync(req.Email);
                     if (user != null)
                     {
@@ -115,7 +113,7 @@ public interface ISignUpEndpointEvents<in TUser, in TModel> where TModel : SignU
     {
         return Task.FromResult<ProblemHttpResult?>(null);
     }
-    
+
     /// <summary>
     /// Called when a user is created and saved to the database.
     /// </summary>

@@ -26,7 +26,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"div">)
             navigate("/signup/confirmation", { state: { ...res } });
         } catch (error) {
             const errors = extractApiErrors(error) ?? ["Error occurred"];
-            errors.forEach(err => toast.error(err));
+            errors.forEach(err => toast.error(err, { dismissible: true, duration: Infinity }));
         }
     };
 
