@@ -1,6 +1,4 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -9,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.Password;
 
 public class PasswordChangeEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
 {
@@ -24,7 +22,7 @@ public class PasswordChangeEndpoint<TUser> : IAccountEndpoint where TUser : Iden
                 {
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.Password);
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.NewPassword);
-                    
+
                     var user = await manager.GetUserAsync(context.User);
                     if (user == null)
                     {
@@ -39,17 +37,11 @@ public class PasswordChangeEndpoint<TUser> : IAccountEndpoint where TUser : Iden
                             "User {UserId} failed to change password. Result: {Result}", user.Id, result);
                         return TypedResults.Problem(result.ToValidationProblem());
                     }
-                    
+
                     logger.LogInformation("User {UserId} changed password successfully", user.Id);
                     return TypedResults.Empty;
                 })
             .AddEndpointFilter<ValidationEndpointFilter<ChangePasswordRequest>>()
             .RequireAuthorization();
     }
-}
-
-public class ChangePasswordRequest
-{
-    [Required] public string? Password { get; set; }
-    [Required] public string? NewPassword { get; set; }
 }

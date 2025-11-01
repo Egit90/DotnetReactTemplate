@@ -1,7 +1,4 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
-﻿using System.ComponentModel.DataAnnotations;
-using Crystal.Core.AuthSchemes;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.SignIn;
 
 public class SignInEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, ICrystalUser
 {
@@ -31,9 +28,9 @@ public class SignInEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, I
             {
                 ArgumentException.ThrowIfNullOrWhiteSpace(req.Email);
                 ArgumentException.ThrowIfNullOrWhiteSpace(req.Password);
-                
+
                 var events = serviceProvider.GetService<ISignInEndpointEvents<TUser>>();
-                
+
                 var user = await userManager.FindByEmailAsync(req.Email);
                 if (user == null)
                 {
@@ -41,31 +38,31 @@ public class SignInEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, I
                     {
                         await events.UserNotFound(req, context);
                     }
-                    
+
                     logger.LogInformation("User {Email} failed to sign in. Reason: User not found", req.Email);
                     return TypedResults.Problem(SignInResult.Failed.ToValidationProblem());
                 }
-                
+
                 signInManager.UseCookie = useCookie ?? false;
                 var result = await signInManager.PasswordSignInAsync(
                     user, req.Password, isPersistent: false, lockoutOnFailure: true);
-                
+
                 if (!result.Succeeded)
                 {
                     if (events is not null)
                     {
                         await events.SignInFailedAsync(req, context, result);
                     }
-                    
+
                     logger.LogInformation("User {Email} failed to sign in. Result: {Result}", req.Email, result);
                     return TypedResults.Problem(result.ToValidationProblem());
                 }
-                
+
                 if (events is not null)
                 {
                     await events.SignInSucceededAsync(user, context);
                 }
-                
+
                 logger.LogInformation("User {Email} signed in", req.Email);
 
                 return TypedResults.Empty;
@@ -73,29 +70,4 @@ public class SignInEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, I
             .AddEndpointFilter<ValidationEndpointFilter<SignInRequest>>()
             .AllowAnonymous();
     }
-}
-
-public class SignInRequest
-{
-    [Required, EmailAddress] public string? Email { get; set; }
-    [Required] public string? Password { get; set; }
-}
-
-/// <summary>
-/// Extension point for the SignInEndpoint.
-/// </summary>
-/// <typeparam name="TUser"></typeparam>
-public interface ISignInEndpointEvents<in TUser> where TUser : ICrystalUser
-{
-    Task SignInSucceededAsync(TUser user, HttpContext context);
-    
-    /// <summary>
-    /// Called when a user fails to sign in.
-    /// </summary>
-    Task SignInFailedAsync(SignInRequest request, HttpContext context, SignInResult result);
-    
-    /// <summary>
-    /// User not found.
-    /// </summary>
-    Task UserNotFound(SignInRequest request, HttpContext context);
 }

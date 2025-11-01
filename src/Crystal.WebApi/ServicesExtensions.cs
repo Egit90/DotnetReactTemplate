@@ -1,7 +1,7 @@
 using AspNet.Security.OAuth.Discord;
 using AspNet.Security.OAuth.GitHub;
 using Crystal.Core.AuthSchemes;
-using Crystal.Core.Endpoints;
+using Crystal.Core.Endpoints.SignUp;
 using Crystal.Core.Extensions;
 using Crystal.Core.Services;
 using Crystal.EntityFrameworkCore;

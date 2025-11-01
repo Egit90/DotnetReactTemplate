@@ -1,4 +1,5 @@
 ﻿using Crystal.Core.Endpoints;
+using Crystal.Core.Endpoints.SignUp;
 using Microsoft.AspNetCore.Http.HttpResults;
 using WebApi.Data;
 

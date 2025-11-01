@@ -1,15 +1,11 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
-﻿using System.Security.Claims;
 using Crystal.Core.AuthSchemes;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.SignOut;
 
 public class SignOutEndpoint<TUser> : IAuthEndpoint where TUser : ICrystalUser
 {

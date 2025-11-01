@@ -1,9 +1,6 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Crystal.Core.AuthSchemes;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -11,9 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.Account;
 
 public class LinkExternalLoginEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser, new()
 {

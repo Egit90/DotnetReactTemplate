@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.SignUp;
 
 public class SignUpExternalEndpoint<TUser, TModel> : IAuthEndpoint
     where TModel : class

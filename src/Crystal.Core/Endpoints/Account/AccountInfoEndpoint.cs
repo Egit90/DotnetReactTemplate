@@ -1,6 +1,4 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -8,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 
-namespace Crystal.Core.Endpoints;
+namespace Crystal.Core.Endpoints.Account;
 
 public class AccountInfoEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
 {
@@ -26,10 +24,10 @@ public class AccountInfoEndpoint<TUser> : IAccountEndpoint where TUser : Identit
                 logger.LogError("User: {UserId} not found, but it is authenticated", userId);
                 return TypedResults.NotFound();
             }
-            
+
             var logins = await userManager.GetLoginsAsync(user);
             var roles = await userManager.GetRolesAsync(user);
-            
+
             var res = new AccountInfoResponse
             {
                 Email = user.Email,
@@ -38,17 +36,8 @@ public class AccountInfoEndpoint<TUser> : IAccountEndpoint where TUser : Identit
                 Roles = roles.ToList(),
                 Logins = logins.Select(l => l.LoginProvider).ToList()
             };
-            
+
             return TypedResults.Ok(res);
         });
     }
-}
-
-public class AccountInfoResponse
-{
-    public string? Email { get; set; }
-    public string? Username { get; set; }
-    public List<string> Roles { get; set; } = new();
-    public List<string> Logins { get; set; } = new();
-    public bool HasPassword { get; set; }
 }

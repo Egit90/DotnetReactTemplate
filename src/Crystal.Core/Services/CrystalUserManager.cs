@@ -4,6 +4,7 @@ using Crystal.Core.Options;
 ﻿using System.Security.Claims;
 using Crystal.Core.Abstractions;
 using Crystal.Core.Endpoints;
+using Crystal.Core.Endpoints.SignUp;
 using Crystal.Core.Models;
 using Crystal.Core.Options;
 using Microsoft.AspNetCore.Authentication;
