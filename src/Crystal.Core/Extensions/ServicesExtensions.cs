@@ -1,4 +1,3 @@
-using Crystal.Core.Abstractions;
 using Crystal.Core.AuthSchemes;
 using Crystal.Core.Endpoints;
 using Crystal.Core.Endpoints.Account;
@@ -9,8 +8,6 @@ using Crystal.Core.Endpoints.SignIn;
 using Crystal.Core.Endpoints.SignOut;
 using Crystal.Core.Endpoints.SignUp;
 using Crystal.Core.Endpoints.Token;
-using Crystal.Core.Options;
-using Crystal.Core.Services;
 using Crystal.Core.Services.EmailSender;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -119,10 +116,8 @@ public static class ServicesExtensions
                     };
                     o.ConfigureBearerAuth(opts.JwtBearer);
                 })
-            .AddScheme<CrystalJwtBearerOptions, CrystalSignInJwtBearerHandler>(
-                CrystalAuthSchemeDefaults.BearerSignInScheme, _ => { })
-            .AddScheme<CrystalJwtBearerOptions, CrystalTokenJwtBearerHandler>(
-                CrystalAuthSchemeDefaults.BearerTokenScheme, _ => { })
+            .AddScheme<CrystalJwtBearerOptions, CrystalSignInJwtBearerHandler>(CrystalAuthSchemeDefaults.BearerSignInScheme, _ => { })
+            .AddScheme<CrystalJwtBearerOptions, CrystalTokenJwtBearerHandler>(CrystalAuthSchemeDefaults.BearerTokenScheme, _ => { })
             .AddJwtBearer(CrystalAuthSchemeDefaults.RefreshTokenScheme, o =>
             {
                 o.Events ??= new JwtBearerEvents();
@@ -138,8 +133,7 @@ public static class ServicesExtensions
                 };
                 o.ConfigureBearerAuth(opts.JwtBearer);
             })
-            .AddScheme<PolicySchemeOptions, CrystalPolicySignInExternalHandler>(
-                CrystalAuthSchemeDefaults.SignInExternalPolicyScheme, _ => { })
+            .AddScheme<PolicySchemeOptions, CrystalPolicySignInExternalHandler>(CrystalAuthSchemeDefaults.SignInExternalPolicyScheme, _ => { })
             .AddCookie(CrystalAuthSchemeDefaults.SignInExternalScheme, o =>
             {
                 o.Cookie.SameSite = SameSiteMode.None;

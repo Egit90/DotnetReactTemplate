@@ -8,7 +8,7 @@ namespace Crystal.Core.Options;
 public class CrystalOptions
 {
     public const string SectionPath = "Crystal";
-    
+
     public string AuthApiBasePath { get; set; } = "/api/auth";
     public string AccountApiBasePath { get; set; } = "/api/account";
     public string[] DefaultRoles { get; set; } = [];
@@ -17,7 +17,7 @@ public class CrystalOptions
     public bool EnableEmailPasswordFlow { get; set; } = true;
     public bool EnableExternalProvidersFlow { get; set; } = true;
     public bool EnableSignUp { get; set; } = true;
-    
+
     public ClientAppOptions ClientApp { get; set; } = new();
     public CrystalJwtBearerOptions JwtBearer { get; set; } = new();
     public CrystalProviders Providers { get; set; } = new();
@@ -38,7 +38,7 @@ public class ClientAppOptions
 public class CrystalJwtBearerOptions : AuthenticationSchemeOptions
 {
     public const string SectionPath = "Crystal:JwtBearer";
-    
+
     public string? SigningKey { get; set; }
     public string? Issuer { get; set; }
     public string? Audience { get; set; }

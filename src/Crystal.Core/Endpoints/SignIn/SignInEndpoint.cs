@@ -44,8 +44,7 @@ public class SignInEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, I
                 }
 
                 signInManager.UseCookie = useCookie ?? false;
-                var result = await signInManager.PasswordSignInAsync(
-                    user, req.Password, isPersistent: false, lockoutOnFailure: true);
+                var result = await signInManager.PasswordSignInAsync(user, req.Password, isPersistent: false, lockoutOnFailure: true);
 
                 if (!result.Succeeded)
                 {
