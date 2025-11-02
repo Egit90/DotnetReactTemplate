@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using WebApi;
+using WebApi.Endpoints;
 using Crystal.Core.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,21 @@ builder.Services.SetupCrystal(builder.Configuration);
 builder.Services.Configure<IdentityOptions>(options => { options.SignIn.RequireConfirmedEmail = true; });
 
 var app = builder.Build();
+
+// Seed roles
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        await RoleSeeder.SeedRolesAsync(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding roles");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -46,6 +62,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapCrystalEndpoints();
+app.MapRoleEndpoints();
 
 app.MapFallbackToFile("index.html");
 

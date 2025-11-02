@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
 
 namespace Crystal.Core.AuthSchemes;
 
@@ -17,7 +18,6 @@ public class CrystalSignInJwtBearerHandler(
     IOptionsMonitor<CrystalJwtBearerOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder,
-    IOptions<CrystalOptions> crystalOptions,
     IJwtTokenService tokenService,
     IRefreshTokenManager refreshTokenManager)
     : SignInAuthenticationHandler<CrystalJwtBearerOptions>(options, logger, encoder)
@@ -38,7 +38,7 @@ public class CrystalSignInJwtBearerHandler(
                 SameSite = SameSiteMode.None,
                 Expires = refreshExpiresAt,
             });
-        
+
         var useCookie = properties?.GetParameter<bool?>("useCookie") ?? false;
         if (useCookie)
         {
@@ -53,7 +53,7 @@ public class CrystalSignInJwtBearerHandler(
                     Expires = expiresAt,
                 });
         }
-        
+
         var accessTokenResponse = new AccessTokenResponse
         {
             AccessToken = useCookie ? null : token,

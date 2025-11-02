@@ -1,7 +1,4 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Models;
-using Crystal.Core.Options;
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
@@ -21,7 +18,7 @@ public class JwtTokenService(IOptions<CrystalOptions> options) : IJwtTokenServic
         {
             throw new ArgumentNullException(nameof(options.Value.JwtBearer.SigningKey));
         }
-        
+
         var expiresAt = DateTime.UtcNow.AddMinutes(options.Value.JwtBearer.AccessTokenExpiresInMinutes);
         var descriptor = new SecurityTokenDescriptor
         {
@@ -38,14 +35,14 @@ public class JwtTokenService(IOptions<CrystalOptions> options) : IJwtTokenServic
         var handler = new JwtSecurityTokenHandler();
         return (handler.WriteToken(handler.CreateToken(descriptor)), expiresAt);
     }
-    
+
     public (string token, DateTime expiresAt) CreateBearerRefreshToken(CrystalRefreshToken token)
     {
         if (options.Value.JwtBearer.SigningKey is null)
         {
             throw new ArgumentNullException(nameof(options.Value.JwtBearer.SigningKey));
         }
-        
+
         var descriptor = new SecurityTokenDescriptor
         {
             Issuer = options.Value.JwtBearer.Issuer,
