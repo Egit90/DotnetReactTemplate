@@ -11,6 +11,7 @@ export interface CrystalClientOptions {
 
 export interface AuthUser {
     email: string;
+    roles?: string[];
 }
 
 export interface SignUpRequest {

@@ -19,6 +19,7 @@ import type {
     TokenResponse,
     WhoAmIResponse,
 } from './types.js';
+import { jwtDecode } from 'jwt-decode';
 
 export class CrystalClient {
     private readonly apiBaseUrl: string;
@@ -51,14 +52,23 @@ export class CrystalClient {
     }
 
     async signUp(data: SignUpRequest): Promise<SignUpResponse> {
-        const response = await this.axios.post<SignUpResponse>(this.authApiPrefix + '/signup', data);
+        const response = await this.axios.post<SignUpResponse>(
+            this.authApiPrefix + '/signup',
+            data,
+        );
         return response.data;
     }
 
     async signIn(data: SignInRequest): Promise<AuthUser> {
         const tokenRes = await this.axios.post<TokenResponse>(this.authApiPrefix + '/signin', data);
 
-        const user = { email: data.email } as AuthUser;
+        const decoded: any = jwtDecode(tokenRes.data.access_token);
+
+        const user = {
+            email: data.email,
+            roles: Array.isArray(decoded.role) ? decoded.role : [decoded.role],
+        } as AuthUser;
+
         this.storage.setUser(user);
         this.storage.setToken(tokenRes.data.access_token);
 
