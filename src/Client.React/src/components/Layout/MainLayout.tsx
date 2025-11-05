@@ -11,13 +11,19 @@ import {
 import { CircleIcon, User } from "lucide-react";
 import { Suspense, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useRole } from "@/hooks/useRoles.ts";
+import { Badge } from "../ui/badge.tsx";
 
 
 export default function MainLayout() {
     return (
         <section className="flex flex-col min-h-screen bg-background">
             <Header />
-            <Outlet />
+            <section className="py-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <Outlet />
+                </div>
+            </section>
         </section>
     );
 }
@@ -25,6 +31,7 @@ export default function MainLayout() {
 function UserMenu() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { user } = useAuth();
+    const { isAdmin } = useRole();
 
     if (!user) {
         return (
@@ -43,6 +50,15 @@ function UserMenu() {
                     <div className="flex items-center justify-center h-full w-full rounded-full bg-gradient-to-br from-green-400 to-emerald-600">
                         <User className="h-5 w-5 text-white" />
                     </div>
+                    {/* Badge indicator on avatar */}
+                    {isAdmin() && (
+                        <Badge
+                            variant='destructive'
+                            className="absolute -top-1 -right-1 h-5 px-1.5 text-[9px] font-bold pointer-events-none"
+                        >
+                            A
+                        </Badge>
+                    )}
                     <span className="sr-only">User menu</span>
                 </Button>
             </DropdownMenuTrigger>
