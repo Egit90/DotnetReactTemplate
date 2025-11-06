@@ -9,16 +9,37 @@ export const createAxiosInstance = (apiBaseUrl: string, config?: CreateAxiosDefa
     });
 };
 
-export const extractApiErrors = (error: any) => {
-    console.log(error);
+export const extractApiErrors = (error: any): string[] | null => {
     if (!Axios.isAxiosError(error)) return null;
 
     const e = error as AxiosError;
     if (!e.response?.data) return null;
 
     const data = e.response.data as any;
-    if (!data.errors) return null;
 
-    const errors = data.errors as any;
-    return Object.keys(errors).flatMap((key) => errors[key]);
+    if (data.detail) {
+        return [data.detail];
+    }
+
+    if (data.errors && typeof data.errors === 'object') {
+        return Object.keys(data.errors).flatMap((key) => data.errors[key]);
+    }
+
+    if (data.message) {
+        return [data.message];
+    }
+
+    if (data.error) {
+        return [data.error];
+    }
+
+    if (Array.isArray(data.Errors)) {
+        return data.Errors.map((err: any) => err.description || err.message);
+    }
+
+    if (e.response.statusText) {
+        return [e.response.statusText];
+    }
+
+    return null;
 };
