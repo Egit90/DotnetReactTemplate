@@ -63,10 +63,10 @@ export class CrystalClient {
         const tokenRes = await this.axios.post<TokenResponse>(this.authApiPrefix + '/signin', data);
 
         const decoded: any = jwtDecode(tokenRes.data.access_token);
-
         const user = {
-            email: data.email,
+            email: decoded.email,
             roles: Array.isArray(decoded.role) ? decoded.role : [decoded.role],
+            name: decoded.unique_name,
         } as AuthUser;
 
         this.storage.setUser(user);

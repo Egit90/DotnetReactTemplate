@@ -16,8 +16,8 @@ import { ResendEmailConfirmation } from "../features/account/routes/ResendEmailC
 import { SignUpExternal } from "../features/auth/routes/SignUpExternal.tsx";
 import { SignUp } from '../features/auth/routes/SignUp.tsx';
 import { RoleProtectedRoute } from './ProtectedRoutes.tsx';
-import { AdminDashboard } from '@/features/admin/AdminDashboard.tsx';
 import { Unauthorized } from '@/features/misc/routes/Unauthorized.tsx';
+import AdminDashboard from '@/features/admin/dashboard/AdminDashboard.tsx';
 export const AppRoutes = () => {
     const routes = [
         { path: '/signin', element: <SignIn /> },
@@ -44,15 +44,15 @@ export const AppRoutes = () => {
                 { path: '/reset-password/confirmation', element: <ResetPasswordConfirmation /> },
                 { path: '/confirm-email', element: <ConfirmEmail /> },
                 { path: '/unauthorized', element: <Unauthorized /> },
-                {
-                    path: "/admin",
-                    element: <RoleProtectedRoute allowedRoles={["Admin"]} />,
-                    children: [
-                        { path: "dashboard", element: <AdminDashboard /> }
-                    ]
-                }
             ]
         },
+        {
+            path: "/admin",
+            element: <RoleProtectedRoute allowedRoles={["Admin"]} />,
+            children: [
+                { path: "dashboard", element: <AdminDashboard /> }
+            ]
+        }
     ];
 
     const element = useRoutes([...routes]);
