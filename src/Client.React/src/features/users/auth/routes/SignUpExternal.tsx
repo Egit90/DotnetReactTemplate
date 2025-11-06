@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import {useAuth} from "../../../providers/AuthProvider.tsx";
+import { useAuth } from "@/providers/AuthProvider.tsx";
 import { useEffect } from "react";
 
 export const SignUpExternal = () => {

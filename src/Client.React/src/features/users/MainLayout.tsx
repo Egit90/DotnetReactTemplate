@@ -12,7 +12,7 @@ import { CircleIcon, User } from "lucide-react";
 import { Suspense, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useRole } from "@/hooks/useRoles.ts";
-import { Badge } from "../ui/badge.tsx";
+import { Badge } from "@/components/ui/badge.tsx";
 
 
 export default function MainLayout() {

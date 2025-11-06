@@ -1,23 +1,23 @@
 import { useRoutes } from 'react-router-dom';
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
-import { Home } from "../features/misc/routes/Home.tsx";
-import { SignIn } from "../features/auth/routes/SignIn.tsx";
-import { SignOut } from "../features/auth/routes/SignOut.tsx";
-import { SignUpConfirmation } from "../features/auth/routes/SignUpConfirmation.tsx";
-import { ChallengeCallback } from "../features/auth/routes/ChallengeCallback.tsx";
-import MainLayout from "../components/Layout/MainLayout.tsx";
-import { Features } from "../features/misc/routes/Features.tsx";
-import { ForgotPassword } from "../features/account/routes/ForgotPassword.tsx";
-import { ResetPassword } from "../features/account/routes/ResetPassword.tsx";
-import { ResetPasswordConfirmation } from "../features/account/routes/ResetPasswordConfirmation.tsx";
-import { ConfirmEmail } from "../features/account/routes/ConfirmEmail.tsx";
-import { MyAccount } from "../features/account/routes/MyAccount.tsx";
-import { ResendEmailConfirmation } from "../features/account/routes/ResendEmailConfirmation.tsx";
-import { SignUpExternal } from "../features/auth/routes/SignUpExternal.tsx";
-import { SignUp } from '../features/auth/routes/SignUp.tsx';
+import { SignIn } from '@/features/users/auth/routes/SignIn.tsx';
+import { SignOut } from '@/features/users/auth/routes/SignOut.tsx';
+import { SignUp } from '@/features/users/auth/routes/SignUp.tsx';
+import { SignUpExternal } from '@/features/users/auth/routes/SignUpExternal.tsx';
+import { MyAccount } from '@/features/users/account/routes/MyAccount.tsx';
+import { Home } from 'lucide-react';
+import { Features } from '@/features/users/misc/routes/Features.tsx';
+import { SignUpConfirmation } from '@/features/users/auth/routes/SignUpConfirmation.tsx';
+import { ResendEmailConfirmation } from '@/features/users/account/routes/ResendEmailConfirmation.tsx';
+import { ChallengeCallback } from '@/features/users/auth/routes/ChallengeCallback.tsx';
+import { ForgotPassword } from '@/features/users/account/routes/ForgotPassword.tsx';
+import { ResetPassword } from '@/features/users/account/routes/ResetPassword.tsx';
+import { ResetPasswordConfirmation } from '@/features/users/account/routes/ResetPasswordConfirmation.tsx';
+import { ConfirmEmail } from '@/features/users/account/routes/ConfirmEmail.tsx';
+import { Unauthorized } from '@/features/users/misc/routes/Unauthorized.tsx';
 import { RoleProtectedRoute } from './ProtectedRoutes.tsx';
-import { Unauthorized } from '@/features/misc/routes/Unauthorized.tsx';
-import AdminDashboard from '@/features/admin/dashboard/AdminDashboard.tsx';
+import MainLayout from '@/features/users/MainLayout.tsx';
+import AdminDashboard from '@/features/admin/dashboard/route/AdminDashboard.tsx';
 export const AppRoutes = () => {
     const routes = [
         { path: '/signin', element: <SignIn /> },

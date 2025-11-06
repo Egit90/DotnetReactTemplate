@@ -1,25 +1,17 @@
 import * as React from "react"
 import {
   ArrowUpCircleIcon,
-  BarChartIcon,
-  CameraIcon,
   ClipboardListIcon,
   DatabaseIcon,
-  FileCodeIcon,
   FileIcon,
-  FileTextIcon,
-  FolderIcon,
-  HelpCircleIcon,
   LayoutDashboardIcon,
-  ListIcon,
   SearchIcon,
   SettingsIcon,
   UsersIcon,
 } from "lucide-react"
 
-import { NavDocuments } from "@/components/nav-documents"
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
+import { NavMain } from "@/features/admin/dashboard/components/nav-main"
+import { NavSecondary } from "@/features/admin/dashboard/components/nav-secondary"
 import {
   Sidebar,
   SidebarContent,
@@ -33,11 +25,6 @@ import { useAuth } from "@/providers/AuthProvider"
 import { NavUser } from "./nav-user"
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -45,72 +32,9 @@ const data = {
       icon: LayoutDashboardIcon,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: ListIcon,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: BarChartIcon,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: FolderIcon,
-    },
-    {
-      title: "Team",
+      title: "Manage Users",
       url: "#",
       icon: UsersIcon,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: CameraIcon,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: FileTextIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: FileCodeIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
     },
   ],
   navSecondary: [
@@ -118,11 +42,6 @@ const data = {
       title: "Settings",
       url: "#",
       icon: SettingsIcon,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: HelpCircleIcon,
     },
     {
       title: "Search",
@@ -162,7 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="#">
                 <ArrowUpCircleIcon className="h-5 w-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">Crystal</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -170,7 +89,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

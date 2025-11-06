@@ -1,9 +1,9 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useAuth } from '../../../providers/AuthProvider.tsx';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, AlertCircle, Loader2, XCircle } from 'lucide-react';
+import { useAuth } from "@/providers/AuthProvider";
+import { Button } from "@/components/ui/button";
 
 export const ConfirmEmail = () => {
     const [params] = useSearchParams();

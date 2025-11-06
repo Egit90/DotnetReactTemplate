@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from '../../../providers/AuthProvider.tsx';
+import { useAuth } from '@/providers/AuthProvider.tsx';
 import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";

@@ -1,26 +1,28 @@
-import {Link, useNavigate} from "react-router-dom";
-import {SubmitHandler, useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
-import { useAuth } from '../../../providers/AuthProvider.tsx';
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useAuth } from '@/providers/AuthProvider.tsx';
 import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 
-export const SignUpFormExtended = () => {
-    const [apiErrors, setApiErrors] = useState<string[]>();
-    const { authClient } = useAuth();
+export const ResetPasswordForm = () => {
+    const [params] = useSearchParams();
+    const code = params.get("code");
     const navigate = useNavigate();
-    const {register, handleSubmit, formState: { isSubmitting, errors }} = useForm<FormModel>({
+    if (!code) {
+        throw new Error("Invalid code");
+    }
+
+    const [apiErrors, setApiErrors] = useState<string[]>();
+
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormModel>({
         resolver: zodResolver(validationSchema),
     });
+    const { authClient } = useAuth();
     const onSubmit: SubmitHandler<FormModel> = data => {
-        return authClient.signUp({
-            email: data.email, 
-            password: data.password,
-            aboutMe: data.aboutMe,
-            mySiteUrl: data.mySiteUrl,
-        }).then((res) => {
-            navigate("/signup/confirmation", {state: {...res}});
+        authClient.resetPassword({ email: data.email, password: data.password, code: code }).then(() => {
+            navigate("/reset-password/confirmation");
         }).catch((error) => {
             setApiErrors(extractApiErrors(error) ?? ["Error occured"]);
         });
@@ -58,45 +60,12 @@ export const SignUpFormExtended = () => {
         </div>
 
         <div>
-            <label htmlFor="aboutMe" className="block text-sm font-medium leading-6 text-gray-900">
-                About me
-            </label>
-            <div className="mt-2">
-                <input
-                    {...register("aboutMe")}
-                    type="text"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
-                />
-            </div>
-            <p className="mt-2 text-sm text-red-600" id="email-error">
-                {errors.aboutMe?.message}
-            </p>
-        </div>
-
-        <div>
-            <label htmlFor="mySiteUrl" className="block text-sm font-medium leading-6 text-gray-900">
-                My Site URL
-            </label>
-            <div className="mt-2">
-                <input
-                    {...register("mySiteUrl")}
-                    type="text"
-                    autoComplete="email"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
-                />
-            </div>
-            <p className="mt-2 text-sm text-red-600" id="email-error">
-                {errors.mySiteUrl?.message}
-            </p>
-        </div>
-        
-        <div>
             <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                 Password
             </label>
             <div className="mt-2">
                 <input
-                    {...register("password", {required: true})}
+                    {...register("password", { required: true })}
                     type="password"
                     required
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
@@ -134,37 +103,22 @@ export const SignUpFormExtended = () => {
                 className="flex w-full justify-center rounded-md hover:primary-bg primary-bg px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 disabled={isSubmitting}
             >
-                {isSubmitting ? "Signing up..." : "Sign up"}
+                {isSubmitting ? "Processing..." : "Reset Password"}
             </button>
-        </div>
-
-        <div className="flex items-center justify-between">
-            <div className="text-sm leading-6">
-                Already have an account?
-                <Link to="/signin" className="ml-3 font-semibold primary-color hover:primary-color">
-                    Sign in
-                </Link>
-            </div>
         </div>
     </form>
 };
 
 const validationSchema = z.object({
     email: z
-        .string().min(1, {message: "Email is required"})
-        .email({message: "Must be a valid email",}),
-    aboutMe: z
-        .string()
-        .max(100, {message: "About me must be at most 100 characters"}),
-    mySiteUrl: z
-        .string()
-        .url({message: "Must be a valid URL"}),
+        .string().min(1, { message: "Email is required" })
+        .email({ message: "Must be a valid email", }),
     password: z
         .string()
-        .min(6, {message: "Password must be at least 6 characters"}),
+        .min(6, { message: "Password must be at least 6 characters" }),
     confirmPassword: z
         .string()
-        .min(1, {message: "Confirm Password is required"}),
+        .min(1, { message: "Confirm Password is required" }),
 })
     .refine((data) => data.password === data.confirmPassword, {
         path: ["confirmPassword"],

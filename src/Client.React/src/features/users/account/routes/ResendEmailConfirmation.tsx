@@ -1,8 +1,8 @@
-import {useState} from "react";
-import {SubmitHandler, useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {z} from "zod";
-import { useAuth } from '../../../providers/AuthProvider.tsx';
+import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useAuth } from '@/providers/AuthProvider.tsx';
 import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 
 export const ResendEmailConfirmation = () => {
@@ -13,7 +13,7 @@ export const ResendEmailConfirmation = () => {
     const {
         register,
         handleSubmit,
-        formState: {errors, isSubmitting, isSubmitSuccessful},
+        formState: { errors, isSubmitting, isSubmitSuccessful },
         reset
     } = useForm<FormModel>({
         resolver: zodResolver(validationSchema),
@@ -24,7 +24,7 @@ export const ResendEmailConfirmation = () => {
             setNotification("Email sent successfully");
             reset();
         }).catch((error) => {
-            setApiErrors(extractApiErrors(error) ?? ["Error occured"]);
+            setApiErrors(extractApiErrors(error) ?? ["Error occurred"]);
         });
     };
 
@@ -92,7 +92,7 @@ export const ResendEmailConfirmation = () => {
 
 const validationSchema = z.object({
     email: z
-        .string().min(1, {message: "Email is required"})
-        .email({message: "Must be a valid email",})
+        .string().min(1, { message: "Email is required" })
+        .email({ message: "Must be a valid email", })
 });
 type FormModel = z.infer<typeof validationSchema>;

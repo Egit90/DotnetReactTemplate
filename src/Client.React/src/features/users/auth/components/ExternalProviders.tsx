@@ -1,14 +1,14 @@
-﻿import {useAuth} from "../../../providers/AuthProvider.tsx";
-import {useState} from "react";
-import {ChallengeMode} from "crystal-client/src/types.ts";
+﻿import { useAuth } from "@/providers/AuthProvider.tsx";
+import { useState } from "react";
+import { ChallengeMode } from "crystal-client/src/types.ts";
 
-export const ExternalProviders = ({mode, hide}: { mode: ChallengeMode, hide?: string[] }) => {
-    const {authClient} = useAuth();
+export const ExternalProviders = ({ mode, hide }: { mode: ChallengeMode, hide?: string[] }) => {
+    const { authClient } = useAuth();
     const [disabled, setDisabled] = useState(false)
 
     const challenge = (provider: string) => {
         if (disabled) return;
-        authClient.externalChallenge({provider, mode});
+        authClient.externalChallenge({ provider, mode });
         setDisabled(true);
     };
 
@@ -17,7 +17,7 @@ export const ExternalProviders = ({mode, hide}: { mode: ChallengeMode, hide?: st
             onClick={() => challenge("discord")}
             className={(disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer")
                 + " flex w-full items-center justify-center gap-3 rounded-md bg-[#5865F2] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]"}
-            style={{maxWidth: "15rem"}}
+            style={{ maxWidth: "15rem" }}
         >
             <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 21 16">
                 <path
@@ -30,7 +30,7 @@ export const ExternalProviders = ({mode, hide}: { mode: ChallengeMode, hide?: st
             onClick={() => challenge("github")}
             className={(disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer")
                 + " max-w-xs flex w-full items-center justify-center gap-3 rounded-md bg-[#24292F] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#24292F]"}
-            style={{maxWidth: "15rem"}}
+            style={{ maxWidth: "15rem" }}
         >
             <svg className="h-5 w-5 block" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                 <path
