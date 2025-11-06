@@ -1,16 +1,16 @@
-import {Link, useNavigate} from "react-router-dom";
-import {SubmitHandler, useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
-import {useAuth} from "../../../providers/AuthProvider.tsx";
+import { Link, useNavigate } from "react-router-dom";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useAuth } from "@/providers/AuthProvider.tsx";
 import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 
 export const SignUpExternalExtended = () => {
     const [apiErrors, setApiErrors] = useState<string[]>();
     const { authClient } = useAuth();
     const navigate = useNavigate();
-    const {register, handleSubmit, formState: {isSubmitting, errors}} = useForm<FormModel>({
+    const { register, handleSubmit, formState: { isSubmitting, errors } } = useForm<FormModel>({
         resolver: zodResolver(validationSchema),
     });
 
@@ -104,14 +104,14 @@ export const SignUpExternalExtended = () => {
                 </div>
                 <div>
                     <Link to="/"
-                          className="text-sm font-medium leading-6 text-gray-600 hover:text-gray-900">
+                        className="text-sm font-medium leading-6 text-gray-600 hover:text-gray-900">
                         <svg
                             className="w-4 h-4 inline-block"
                             viewBox="0 0 1024 1024"
                             xmlns="http://www.w3.org/2000/svg">
-                            <path fill="#000000" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"/>
+                            <path fill="#000000" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z" />
                             <path fill="#000000"
-                                  d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"/>
+                                d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z" />
                         </svg>
                         Home
                     </Link>
@@ -124,9 +124,9 @@ export const SignUpExternalExtended = () => {
 const validationSchema = z.object({
     aboutMe: z
         .string()
-        .max(100, {message: "About me must be at most 100 characters"}),
+        .max(100, { message: "About me must be at most 100 characters" }),
     mySiteUrl: z
         .string()
-        .url({message: "Must be a valid URL"}),
+        .url({ message: "Must be a valid URL" }),
 });
 type FormModel = z.infer<typeof validationSchema>;

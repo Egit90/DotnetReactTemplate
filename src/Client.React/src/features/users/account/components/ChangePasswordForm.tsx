@@ -1,7 +1,7 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from '../../../providers/AuthProvider.tsx';
+import { useAuth } from '@/providers/AuthProvider.tsx';
 import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -89,13 +89,13 @@ export const ChangePasswordForm = () => {
 const validationSchema = z.object({
     password: z
         .string()
-        .min(6, {message: "Password must be at least 6 characters"}),
+        .min(6, { message: "Password must be at least 6 characters" }),
     newPassword: z
         .string()
-        .min(6, {message: "Password must be at least 6 characters"}),
+        .min(6, { message: "Password must be at least 6 characters" }),
     confirmNewPassword: z
         .string()
-        .min(1, {message: "Confirm Password is required"}),
+        .min(1, { message: "Confirm Password is required" }),
 })
     .refine((data) => data.newPassword === data.confirmNewPassword, {
         path: ["confirmPassword"],

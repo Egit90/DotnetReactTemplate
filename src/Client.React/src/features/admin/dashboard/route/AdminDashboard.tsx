@@ -1,5 +1,5 @@
-import { AppSidebar } from "@/features/admin/dashboard/app-sidebar"
-import { SiteHeader } from "@/components/site-header"
+import { AppSidebar } from "@/features/admin/dashboard/components/app-sidebar"
+import { SiteHeader } from "@/features/admin/dashboard/components/site-header"
 import {
     SidebarInset,
     SidebarProvider,

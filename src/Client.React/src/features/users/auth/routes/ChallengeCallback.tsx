@@ -1,6 +1,6 @@
-import {useAuth} from "../../../providers/AuthProvider.tsx";
-import {useNavigate, useSearchParams} from "react-router-dom";
-import {useEffect} from "react";
+import { useAuth } from "@/providers/AuthProvider.tsx";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
 
 export const ChallengeCallback = () => {
     const navigate = useNavigate();

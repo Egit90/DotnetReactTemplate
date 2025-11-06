@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useAuth } from '../../../providers/AuthProvider.tsx';
 import { Link } from "react-router-dom";
 import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 import { Button } from "@/components/ui/button"
@@ -22,6 +21,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "sonner";
 import { ArrowLeft, House, Mail, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/providers/AuthProvider";
 
 
 export const ForgotPassword = () => {
