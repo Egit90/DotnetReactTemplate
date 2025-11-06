@@ -25,6 +25,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"div">)
             const res = await authClient.signUp({ email: data.email, password: data.password });
             navigate("/signup/confirmation", { state: { ...res } });
         } catch (error) {
+            console.log(error)
             const errors = extractApiErrors(error) ?? ["Error occurred"];
             errors.forEach(err => toast.error(err, { dismissible: true, duration: Infinity }));
         }
