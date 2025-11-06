@@ -10,8 +10,6 @@ import {
   UsersIcon,
 } from "lucide-react"
 
-import { NavMain } from "@/features/admin/dashboard/components/nav-main"
-import { NavSecondary } from "@/features/admin/dashboard/components/nav-secondary"
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +21,8 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/providers/AuthProvider"
 import { NavUser } from "./nav-user"
+import { NavMain } from "./nav-main"
+import { NavSecondary } from "./nav-secondary"
 
 const data = {
   navMain: [
