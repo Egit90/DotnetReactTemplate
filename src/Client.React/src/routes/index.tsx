@@ -5,7 +5,7 @@ import { SignOut } from '@/features/users/auth/routes/SignOut.tsx';
 import { SignUp } from '@/features/users/auth/routes/SignUp.tsx';
 import { SignUpExternal } from '@/features/users/auth/routes/SignUpExternal.tsx';
 import { MyAccount } from '@/features/users/account/routes/MyAccount.tsx';
-import { Home } from 'lucide-react';
+import { Home } from '@/features/users/misc/routes/Home.tsx';
 import { Features } from '@/features/users/misc/routes/Features.tsx';
 import { SignUpConfirmation } from '@/features/users/auth/routes/SignUpConfirmation.tsx';
 import { ResendEmailConfirmation } from '@/features/users/account/routes/ResendEmailConfirmation.tsx';
@@ -17,7 +17,8 @@ import { ConfirmEmail } from '@/features/users/account/routes/ConfirmEmail.tsx';
 import { Unauthorized } from '@/features/users/misc/routes/Unauthorized.tsx';
 import { RoleProtectedRoute } from './ProtectedRoutes.tsx';
 import MainLayout from '@/features/users/MainLayout.tsx';
-import AdminDashboard from '@/features/admin/dashboard/route/AdminDashboard.tsx';
+import AdminHome from '@/features/admin/home/home.tsx';
+import { AdminLayout } from '@/features/admin/layout/admin-layout.tsx';
 export const AppRoutes = () => {
     const routes = [
         { path: '/signin', element: <SignIn /> },
@@ -48,9 +49,9 @@ export const AppRoutes = () => {
         },
         {
             path: "/admin",
-            element: <RoleProtectedRoute allowedRoles={["Admin"]} />,
+            element: <RoleProtectedRoute allowedRoles={["Admin"]}><AdminLayout /> </RoleProtectedRoute>,
             children: [
-                { path: "dashboard", element: <AdminDashboard /> }
+                { index: true, element: <AdminHome /> }
             ]
         }
     ];
