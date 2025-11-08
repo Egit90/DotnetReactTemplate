@@ -42,4 +42,8 @@ export class AdminApi {
     async updateUserRoles(userId: string, roleNames: string[]): Promise<void> {
         await this.axios.put(`${this.adminApiPrefix}/users/${userId}/roles`, { roleNames });
     }
+
+    async resendEmailConfirmation(userId: string): Promise<void> {
+        await this.axios.post(`${this.adminApiPrefix}/users/${userId}/resend-confirmation`);
+    }
 }

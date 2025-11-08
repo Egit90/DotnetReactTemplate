@@ -13,8 +13,9 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Loader2, Trash2, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react"
+import { Loader2, Trash2, ExternalLink, ChevronLeft, ChevronRight, Mail, KeyRound } from "lucide-react"
 import { EditUserDialog } from "../components/EditUserDialog";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 export const UserManagement = () => {
     const { authClient } = useAuth();
@@ -64,14 +65,27 @@ export const UserManagement = () => {
     }
 
     const handleDelete = async (userId: string) => {
-        if (!confirm('Are you sure you want to delete this user?')) return;
-
         try {
             await authClient.admin.deleteUser(userId);
             await refetchUsers();
         } catch (error) {
-            console.error(error)
             setErrors(extractApiErrors(error) || ['Failed to delete user']);
+        }
+    }
+
+    const handleResendEmailConfirmation = async (id: string) => {
+        try {
+            await authClient.admin.resendEmailConfirmation(id);
+        } catch (error) {
+            setErrors(extractApiErrors(error) || ['Failed to resend confirmation user']);
+        }
+    }
+
+    const handleSendChangePassword = async (email: string) => {
+        try {
+            await authClient.forgotPassword(email);
+        } catch (error) {
+            setErrors(extractApiErrors(error) || ['Failed to send password reset email.']);
         }
     }
 
@@ -158,13 +172,27 @@ export const UserManagement = () => {
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
                                                     <EditUserDialog user={user} onUserUpdated={refetchUsers} />
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => handleDelete(user.id)}
+                                                    <ConfirmDialog
+                                                        msg="Are you sure you want to delete this user?"
+                                                        onConfirm={() => handleDelete(user.id)}
+                                                        title="Delete user"
                                                     >
                                                         <Trash2 className="h-4 w-4 text-destructive" />
-                                                    </Button>
+                                                    </ConfirmDialog>
+                                                    <ConfirmDialog
+                                                        msg="Are you sure you want to resend confirmation?"
+                                                        onConfirm={() => handleResendEmailConfirmation(user.id)}
+                                                        title="Resend confirmation email"
+                                                    >
+                                                        <Mail className="h-4 w-4" />
+                                                    </ConfirmDialog>
+                                                    <ConfirmDialog
+                                                        msg="Are you sure you want to send change password email?"
+                                                        onConfirm={() => handleSendChangePassword(user.email)}
+                                                        title="Send password reset email"
+                                                    >
+                                                        <KeyRound className="h-4 w-4" />
+                                                    </ConfirmDialog>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
