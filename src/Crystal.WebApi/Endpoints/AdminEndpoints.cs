@@ -1,5 +1,10 @@
+using System.Text;
+using Crystal.Core.Options;
+using Crystal.Core.Services.EmailSender;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using WebApi.Data;
 using WebApi.Extensions;
 
@@ -27,6 +32,9 @@ public static class AdminEndpoints
 
         // Get system stats (Admin only)
         group.MapGet("/stats", GetStats);
+
+        // Resend Email Confirmation (Admin only)
+        group.MapPost("/users/{userId}/resend-confirmation", ResendEmailConfirmation);
     }
 
     private static async Task<IResult> UpdateUserRoles(
@@ -176,6 +184,47 @@ public static class AdminEndpoints
             ConfirmedUsers = confirmedUsers,
             UnconfirmedUsers = totalUsers - confirmedUsers
         });
+    }
+
+    private static async Task<IResult> ResendEmailConfirmation(
+        string userId,
+        UserManager<MyUser> userManager,
+        ICrystalEmailSenderManager<MyUser> emailSender,
+        IOptions<CrystalOptions> options,
+        ILogger<Program> logger,
+        HttpRequest httpRequest)
+    {
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null) return Results.NotFound(new { Error = "User not found" });
+
+            if (user.EmailConfirmed) return Results.BadRequest(new { Error = "Email already confirmed" });
+
+            // Generate confirmation token
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+            // Build confirmation link
+            var baseUri = new Uri(
+                        new Uri(options.Value.ClientApp.BaseUrl ?? $"{httpRequest.Scheme}://{httpRequest.Host}"),
+                        options.Value.ClientApp.EmailConfirmationPath);
+            var link = new Uri(baseUri, $"?code={code}&userId={user.Id}");
+
+            // Send email
+            await emailSender.SendEmailConfirmationAsync(user, link.ToString());
+
+            return Results.Ok(new { Message = "Confirmation email sent successfully" });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error occurred while resending confirmation email. UserId: {UserId}", userId);
+            return Results.Problem(
+                title: "Unexpected error",
+                detail: "An unexpected error occurred. Please try again later.",
+                statusCode: 500
+            );
+        }
     }
 }
 

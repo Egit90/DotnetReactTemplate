@@ -64,7 +64,7 @@ public class SignUpEndpoint<TUser, TModel> : IAuthEndpoint where TModel : SignUp
                     if (!result.Succeeded)
                     {
                         logger.LogError("Error adding user to roles: {Result}", result);
-                        return TypedResults.Problem("Error occured", statusCode: 500);
+                        return TypedResults.Problem("Error occurred", statusCode: 500);
                     }
 
                     if (events is not null)
