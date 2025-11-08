@@ -20,6 +20,7 @@ import type {
     WhoAmIResponse,
 } from './types.js';
 import { jwtDecode } from 'jwt-decode';
+import { AdminApi } from './admin/api.js';
 
 export class CrystalClient {
     private readonly apiBaseUrl: string;
@@ -34,12 +35,17 @@ export class CrystalClient {
         return;
     };
 
+    // Admin API instance
+    public readonly admin: AdminApi;
+
     constructor(options: CrystalClientOptions) {
         this.apiBaseUrl = options.apiBaseUrl;
         this.authApiPrefix = options.authApiPrefix || '/auth';
         this.accountApiPrefix = options.accountApiPrefix || '/account';
         this.storage = options.storage || crystalDefaultStorage;
         this.axios = options.axiosInstance;
+
+        this.admin = new AdminApi(this.axios, options.adminApiPrefix);
     }
 
     getUser(): AuthUser | null {

@@ -5,6 +5,7 @@ export interface CrystalClientOptions {
     apiBaseUrl: string;
     axiosInstance: AxiosInstance;
     authApiPrefix?: string;
+    adminApiPrefix?: string;
     accountApiPrefix?: string;
     storage?: CrystalStorage;
 }

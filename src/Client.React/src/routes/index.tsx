@@ -19,6 +19,8 @@ import { RoleProtectedRoute } from './ProtectedRoutes.tsx';
 import MainLayout from '@/features/users/MainLayout.tsx';
 import AdminHome from '@/features/admin/home/home.tsx';
 import { AdminLayout } from '@/features/admin/layout/admin-layout.tsx';
+import { UserManagement } from '@/features/admin/userManagement/route/page.tsx';
+
 export const AppRoutes = () => {
     const routes = [
         { path: '/signin', element: <SignIn /> },
@@ -51,7 +53,8 @@ export const AppRoutes = () => {
             path: "/admin",
             element: <RoleProtectedRoute allowedRoles={["Admin"]}><AdminLayout /> </RoleProtectedRoute>,
             children: [
-                { index: true, element: <AdminHome /> }
+                { index: true, element: <AdminHome /> },
+                { path: 'user-management', element: <UserManagement /> }
             ]
         }
     ];
