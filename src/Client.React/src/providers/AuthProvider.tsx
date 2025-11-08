@@ -7,6 +7,7 @@ export const axios = createAxiosInstance(import.meta.env.VITE_API_URL);
 export const authClient = new CrystalClient({
     apiBaseUrl: import.meta.env.VITE_API_URL,
     axiosInstance: axios,
+    adminApiPrefix: import.meta.env.VITE_ADMIN_API_BASE_PATH
 });
 
 const AuthContext = createContext<AuthContextProps>({ user: null } as AuthContextProps);
