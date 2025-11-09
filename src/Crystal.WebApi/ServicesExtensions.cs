@@ -1,9 +1,7 @@
 using AspNet.Security.OAuth.Discord;
 using AspNet.Security.OAuth.GitHub;
 using Crystal.Core.AuthSchemes;
-using Crystal.Core.Endpoints.SignUp;
 using Crystal.Core.Extensions;
-using Crystal.Core.Services;
 using Crystal.EntityFrameworkCore;
 using Crystal.FluentEmail;
 using WebApi.Data;
@@ -30,27 +28,5 @@ public static class ServicesExtensions
         // .UseCrystalCustomSignup();
 
         return services;
-    }
-}
-
-
-public static class CrystalBuilderExtensions
-{
-    /// <summary>
-    /// Use this method to add custom signup models
-    /// </summary>
-    /// <param name="builder"></param>
-    /// <returns></returns>
-    public static CrystalServiceBuilder<MyUser> UseCrystalCustomSignup(this CrystalServiceBuilder<MyUser> builder)
-    {
-        builder
-            .UseSignUpModel<MySignUpRequest>()
-            .UseExternalSignUpModel<MySignUpExternalRequest>();
-
-
-        builder.Services.AddScoped<ISignUpExternalEndpointEvents<MyUser, MySignUpExternalRequest>, SignUpExternalExtension>();
-        builder.Services.AddScoped<ISignUpEndpointEvents<MyUser, MySignUpRequest>, SignUpExtension>();
-
-        return builder;
     }
 }

@@ -19,6 +19,7 @@ export class AdminApi {
             this.adminApiPrefix +
                 `/users?page=${page}&pageSize=${pageSize}&searchTerm=${searchTerm}`,
         );
+        console.log(response.data);
         return response.data;
     }
 

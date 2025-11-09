@@ -3,8 +3,8 @@ export type User = {
     userName: string;
     email: string;
     emailConfirmed: boolean;
-    aboutMe: string;
-    mySiteUrl: string;
+    lastLoginDate?: string;  // Changed to camelCase
+    createdOn: string;        // Changed to camelCase
     roles: string[];
 };
 export type PaginatedResponse<T> = {

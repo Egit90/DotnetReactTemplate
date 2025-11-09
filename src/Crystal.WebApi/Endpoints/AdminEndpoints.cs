@@ -35,6 +35,61 @@ public static class AdminEndpoints
 
         // Resend Email Confirmation (Admin only)
         group.MapPost("/users/{userId}/resend-confirmation", ResendEmailConfirmation);
+
+        // lock user account
+        group.MapPost("/user/{userId}/lock", LockUser);
+
+        // Unlock user account
+        group.MapPost("/user/{userId}/unLock", UnlockUser);
+    }
+
+    private static async Task<IResult> LockUser(string userId, UserManager<MyUser> userManager, ILogger<Program> logger)
+    {
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null) return Results.NotFound(new { Error = "User was not found" });
+
+            var result = await userManager.SetLockoutEnabledAsync(user, true);
+            if (!result.Succeeded) return Results.BadRequest(new { result.Errors });
+
+            logger.LogInformation("User {userEmail} was locked", user.Email);
+            return Results.Ok(new { Message = $"User was locked" });
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error locking user. UserId: {UserId}", userId);
+            return Results.Problem(
+                title: "Unexpected error",
+                detail: "An unexpected error occurred. Please try again later.",
+                statusCode: 500
+            );
+        }
+    }
+    private static async Task<IResult> UnlockUser(string userId, UserManager<MyUser> userManager, ILogger<Program> logger)
+    {
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null) return Results.NotFound(new { Error = "User was not found" });
+
+            var result = await userManager.SetLockoutEnabledAsync(user, false);
+            if (!result.Succeeded) return Results.BadRequest(new { result.Errors });
+
+            logger.LogInformation("User {userEmail} was unlocked", user.Email);
+            return Results.Ok(new { Message = $"User was unlocked" });
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error unlocking user. UserId: {UserId}", userId);
+            return Results.Problem(
+                title: "Unexpected error",
+                detail: "An unexpected error occurred. Please try again later.",
+                statusCode: 500
+            );
+        }
     }
 
     private static async Task<IResult> UpdateUserRoles(
@@ -139,8 +194,8 @@ public static class AdminEndpoints
                     user.UserName,
                     user.Email,
                     user.EmailConfirmed,
-                    user.AboutMe,
-                    user.MySiteUrl,
+                    user.LastLoginDate,
+                    user.CreatedOn,
                     Roles = roles
                 });
             }
