@@ -1,4 +1,4 @@
-import { type AuthUser } from './types.js';
+import { AuthUser } from './account/types';
 
 const storagePrefix = 'crystal_';
 
