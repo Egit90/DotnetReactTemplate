@@ -14,9 +14,10 @@ export class AdminApi {
         this.adminApiPrefix = adminApiPrefix;
     }
 
-    async getUsers(page = 1, pageSize = 10): Promise<PaginatedResponse<User>> {
+    async getUsers(page = 1, pageSize = 10, searchTerm = ''): Promise<PaginatedResponse<User>> {
         const response = await this.axios.get<PaginatedResponse<User>>(
-            this.adminApiPrefix + `/users?page=${page}&pageSize=${pageSize}`,
+            this.adminApiPrefix +
+                `/users?page=${page}&pageSize=${pageSize}&searchTerm=${searchTerm}`,
         );
         return response.data;
     }

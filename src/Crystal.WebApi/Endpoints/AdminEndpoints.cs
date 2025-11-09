@@ -103,12 +103,21 @@ public static class AdminEndpoints
         UserManager<MyUser> userManager,
         ILogger<Program> logger,
         int page = 1,
-        int pageSize = 10)
+        int pageSize = 10,
+        string? searchTerm = null)
     {
         try
         {
-            var query = userManager.Users;
+            var query = userManager.Users.AsQueryable();
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var lowerSearchTerm = searchTerm.ToLower();
+                query = query.Where(u => u.UserName!.ToLower().Contains(lowerSearchTerm)
+                                        || u.Email!.ToLower().Contains(lowerSearchTerm));
+            }
+
             var usersPagedResult = await query.ToPagedResult(page, pageSize, logger);
+
 
             if (usersPagedResult.IsFailure)
             {
