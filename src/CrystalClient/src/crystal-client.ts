@@ -27,6 +27,7 @@ export class CrystalClient {
     }
 
     initAxiosInterceptors(onSignOut?: () => void) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const tryRefreshToken = async (originalConfig: any) => {
             try {
                 await this.account.refreshToken();
@@ -44,7 +45,7 @@ export class CrystalClient {
             (value) => value,
             async (error) => {
                 if (!Axios.isAxiosError(error)) return Promise.reject(error);
-
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const originalConfig = error.config as any;
                 const expired = error.response?.headers
                     ? error.response.headers['x-token-expired']
