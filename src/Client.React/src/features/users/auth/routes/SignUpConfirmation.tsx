@@ -1,8 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { SignUpResponse } from 'crystal-client/src/types.ts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { House, Mail, CheckCircle2 } from "lucide-react";
+import { SignUpResponse } from "crystal-client/src/account/types";
 
 export const SignUpConfirmation = () => {
     const location = useLocation();

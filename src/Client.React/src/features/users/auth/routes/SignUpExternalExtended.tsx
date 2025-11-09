@@ -15,7 +15,7 @@ export const SignUpExternalExtended = () => {
     });
 
     const onSubmit: SubmitHandler<FormModel> = data => {
-        return authClient.signUpExternal({
+        return authClient.account.signUpExternal({
             aboutMe: data.aboutMe,
             mySiteUrl: data.mySiteUrl,
         }).then(() => {

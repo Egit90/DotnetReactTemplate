@@ -1,6 +1,6 @@
 ﻿import { useAuth } from "@/providers/AuthProvider.tsx";
+import { ChallengeMode } from "crystal-client/src/account/types";
 import { useState } from "react";
-import { ChallengeMode } from "crystal-client/src/types.ts";
 
 export const ExternalProviders = ({ mode, hide }: { mode: ChallengeMode, hide?: string[] }) => {
     const { authClient } = useAuth();
@@ -8,7 +8,7 @@ export const ExternalProviders = ({ mode, hide }: { mode: ChallengeMode, hide?: 
 
     const challenge = (provider: string) => {
         if (disabled) return;
-        authClient.externalChallenge({ provider, mode });
+        authClient.account.externalChallenge({ provider, mode });
         setDisabled(true);
     };
 

@@ -3,7 +3,7 @@ import { useAuth } from "@/providers/AuthProvider.tsx";
 
 export const SignOut = () => {
     const { authClient } = useAuth();
-    authClient.signOut().then(() => {
+    authClient.account.signOut().then(() => {
         // Do nothing
     }).catch(() => {
         // Do nothing

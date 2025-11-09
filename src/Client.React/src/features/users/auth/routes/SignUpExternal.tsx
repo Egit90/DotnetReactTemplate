@@ -7,7 +7,7 @@ export const SignUpExternal = () => {
     const { authClient } = useAuth();
 
     useEffect(() => {
-        authClient.signUpExternal({}).then(() => {
+        authClient.account.signUpExternal({}).then(() => {
             navigate("/profile")
         }).catch(() => {
             navigate("/signin?error=external-signin-failed")

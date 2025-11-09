@@ -14,7 +14,7 @@ export const SignUpFormExtended = () => {
         resolver: zodResolver(validationSchema),
     });
     const onSubmit: SubmitHandler<FormModel> = data => {
-        return authClient.signUp({
+        return authClient.account.signUp({
             email: data.email,
             password: data.password,
             aboutMe: data.aboutMe,
