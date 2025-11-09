@@ -6,6 +6,6 @@ namespace WebApi.Data;
 
 public class MyUser : IdentityUser, ICrystalUser
 {
-    public string? AboutMe { get; set; }
-    public string? MySiteUrl { get; set; }
+    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+    public DateTime? LastLoginDate { get; set; }
 }

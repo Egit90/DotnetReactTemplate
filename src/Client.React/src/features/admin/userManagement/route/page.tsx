@@ -130,8 +130,8 @@ export const UserManagement = () => {
                                         <TableHead>Email</TableHead>
                                         <TableHead>Roles</TableHead>
                                         <TableHead>Status</TableHead>
-                                        <TableHead>About Me</TableHead>
-                                        <TableHead>Website</TableHead>
+                                        <TableHead>Created On</TableHead>
+                                        <TableHead>Last Login Date</TableHead>
                                         <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -161,19 +161,14 @@ export const UserManagement = () => {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="max-w-xs truncate">
-                                                {user.aboutMe || '-'}
+                                                {new Date(user.createdOn).toLocaleString()}
                                             </TableCell>
                                             <TableCell>
-                                                {user.mySiteUrl ? (
-                                                    <a
-                                                        href={user.mySiteUrl}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-1 text-primary hover:underline"
-                                                    >
-                                                        Visit <ExternalLink className="h-3 w-3" />
-                                                    </a>
-                                                ) : '-'}
+                                                {user.lastLoginDate ? (
+                                                    new Date(user.lastLoginDate).toLocaleString()
+                                                ) : (
+                                                    <span className="text-muted-foreground text-sm">Never</span>
+                                                )}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">

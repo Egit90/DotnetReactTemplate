@@ -5,6 +5,8 @@ using Serilog;
 using WebApi;
 using WebApi.Endpoints;
 using Crystal.Core.Extensions;
+using Crystal.Core.Endpoints.SignIn;
+using WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
@@ -20,6 +22,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.SetupCrystal(builder.Configuration);
+builder.Services.AddScoped<ISignInEndpointEvents<MyUser>, SignInEvents>();
 
 builder.Services.Configure<IdentityOptions>(options => { options.SignIn.RequireConfirmedEmail = true; });
 
