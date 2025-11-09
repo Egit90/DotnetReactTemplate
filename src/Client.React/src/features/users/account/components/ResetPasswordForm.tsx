@@ -24,7 +24,7 @@ export const ResetPasswordForm = () => {
 
     const onSubmit: SubmitHandler<FormModel> = async (data) => {
         try {
-            await authClient.resetPassword({ email: data.email, password: data.password, code: code });
+            await authClient.account.resetPassword({ email: data.email, password: data.password, code: code });
             toast.success("Password reset successfully! Redirecting to login...");
             setTimeout(() => navigate("/reset-password/confirmation"), 1500);
         } catch (error) {

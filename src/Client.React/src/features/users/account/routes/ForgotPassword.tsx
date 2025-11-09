@@ -55,7 +55,7 @@ export const ForgotPasswordComp = () => {
 
     const onSubmit: SubmitHandler<FormModel> = async (data) => {
         try {
-            await authClient.forgotPassword(data.email);
+            await authClient.account.forgotPassword(data.email);
             setSentEmail(data.email);
             setEmailSent(true);
             toast.success("Password reset email sent!", {

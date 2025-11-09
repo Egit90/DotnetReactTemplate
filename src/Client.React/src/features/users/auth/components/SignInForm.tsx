@@ -31,7 +31,7 @@ export function SignInForm({ className, ...props }: React.ComponentProps<"div">)
     const { authClient } = useAuth();
     const onSubmit: SubmitHandler<FormModel> = async data => {
         try {
-            await authClient.signIn({ email: data.email, password: data.password })
+            await authClient.account.signIn({ email: data.email, password: data.password })
             navigate("/");
         } catch (error) {
             const errors = extractApiErrors(error) ?? ["Error occurred"];

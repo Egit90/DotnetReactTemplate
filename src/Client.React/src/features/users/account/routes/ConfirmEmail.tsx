@@ -20,7 +20,7 @@ export const ConfirmEmail = () => {
             if (valid) {
                 setLoading(true);
                 try {
-                    await authClient.confirmEmail(code, userId);
+                    await authClient.account.confirmEmail(code, userId);
                     setSuccess(true);
                 } catch {
                     setSuccess(false);

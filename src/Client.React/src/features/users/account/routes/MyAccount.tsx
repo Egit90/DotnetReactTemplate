@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 import { ChangePasswordForm } from '../components/ChangePasswordForm.tsx';
 import { useAuth } from '@/providers/AuthProvider.tsx';
-import { AccountInfoResponse } from 'crystal-client/src/types.ts';
 import { useSearchParams } from 'react-router-dom';
 import { ExternalProviders } from "../../auth/components/ExternalProviders.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, Key, Link2, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { AccountInfoResponse } from 'crystal-client/src/account/types.ts';
 
 export const MyAccount = () => {
     const { authClient } = useAuth();
     const [user, setUser] = useState<AccountInfoResponse>();
 
     useEffect(() => {
-        authClient.accountInfo().then((res) => {
+        authClient.account.accountInfo().then((res) => {
             setUser(res);
         });
     }, []);
@@ -29,7 +29,7 @@ export const MyAccount = () => {
         if (failed) {
             toast.error("Failed to link account");
         } else {
-            authClient.linkLogin().then((res) => {
+            authClient.account.linkLogin().then((res) => {
                 setUser(res);
                 toast.success("Account linked successfully");
             }).catch(() => {

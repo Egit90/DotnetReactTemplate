@@ -16,7 +16,7 @@ export const ChangePasswordForm = () => {
 
     const onSubmit: SubmitHandler<FormModel> = async (data) => {
         try {
-            await authClient.changePassword({ password: data.password, newPassword: data.newPassword });
+            await authClient.account.changePassword({ password: data.password, newPassword: data.newPassword });
             toast.success("Password changed successfully");
             reset();
         } catch (error) {

@@ -19,7 +19,7 @@ export const ResendEmailConfirmation = () => {
         resolver: zodResolver(validationSchema),
     });
     const onSubmit: SubmitHandler<FormModel> = data => {
-        return authClient.resendEmailConfirmation(data.email).then(() => {
+        return authClient.account.resendEmailConfirmation(data.email).then(() => {
             setApiErrors(null);
             setNotification("Email sent successfully");
             reset();

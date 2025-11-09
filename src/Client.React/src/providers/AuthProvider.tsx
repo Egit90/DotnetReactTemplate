@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { CrystalClient } from 'crystal-client/src/crystal-client.ts';
 import { createAxiosInstance } from 'crystal-client/src/axios-utils.ts';
-import { AuthUser } from 'crystal-client/src/types.ts';
+import { AuthUser } from 'crystal-client/src/account/types';
 
 export const axios = createAxiosInstance(import.meta.env.VITE_API_URL);
 export const authClient = new CrystalClient({
@@ -13,13 +13,13 @@ export const authClient = new CrystalClient({
 const AuthContext = createContext<AuthContextProps>({ user: null } as AuthContextProps);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [user, setUser] = React.useState<AuthUser | null>(authClient.getUser());
+    const [user, setUser] = React.useState<AuthUser | null>(authClient.account.getUser());
 
     authClient.initAxiosInterceptors(() => {
         setUser(null);
     });
 
-    authClient.onEvents({
+    authClient.account.onEvents({
         onSignIn: (user) => {
             setUser(user);
         },

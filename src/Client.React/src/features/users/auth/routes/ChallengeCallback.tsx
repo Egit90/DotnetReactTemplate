@@ -13,7 +13,7 @@ export const ChallengeCallback = () => {
         if (failed) {
             navigate("/signin")
         } else if (!signup) {
-            authClient.signInExternal().then(() => {
+            authClient.account.signInExternal().then(() => {
                 navigate("/profile")
             }).catch(() => {
                 navigate("/signin?error=external-signin-failed")
