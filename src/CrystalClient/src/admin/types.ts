@@ -3,8 +3,10 @@ export type User = {
     userName: string;
     email: string;
     emailConfirmed: boolean;
-    lastLoginDate?: string;  // Changed to camelCase
-    createdOn: string;        // Changed to camelCase
+    lastLoginDate?: string;
+    createdOn: string;
+    lockoutEnd?: string;       // When lockout ends (null = not locked)
+    isLockedOut: boolean;      // Computed: is user currently locked?
     roles: string[];
 };
 export type PaginatedResponse<T> = {

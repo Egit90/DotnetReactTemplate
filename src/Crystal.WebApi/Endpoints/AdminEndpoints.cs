@@ -50,8 +50,12 @@ public static class AdminEndpoints
             var user = await userManager.FindByIdAsync(userId);
             if (user == null) return Results.NotFound(new { Error = "User was not found" });
 
-            var result = await userManager.SetLockoutEnabledAsync(user, true);
+            // Set lockout end date to far future (permanent lock)
+            var result = await userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
             if (!result.Succeeded) return Results.BadRequest(new { result.Errors });
+
+            // Also ensure lockout is enabled for this user
+            await userManager.SetLockoutEnabledAsync(user, true);
 
             logger.LogInformation("User {userEmail} was locked", user.Email);
             return Results.Ok(new { Message = $"User was locked" });
@@ -74,7 +78,8 @@ public static class AdminEndpoints
             var user = await userManager.FindByIdAsync(userId);
             if (user == null) return Results.NotFound(new { Error = "User was not found" });
 
-            var result = await userManager.SetLockoutEnabledAsync(user, false);
+            // Remove lockout by setting end date to null
+            var result = await userManager.SetLockoutEndDateAsync(user, null);
             if (!result.Succeeded) return Results.BadRequest(new { result.Errors });
 
             logger.LogInformation("User {userEmail} was unlocked", user.Email);
@@ -196,6 +201,8 @@ public static class AdminEndpoints
                     user.EmailConfirmed,
                     user.LastLoginDate,
                     user.CreatedOn,
+                    user.LockoutEnd,
+                    IsLockedOut = user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow,
                     Roles = roles
                 });
             }
