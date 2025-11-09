@@ -1,6 +1,6 @@
 import { useAuth } from "@/providers/AuthProvider"
 import { extractApiErrors } from "crystal-client/src/axios-utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Table,
     TableBody,
@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, Trash2, ExternalLink, Mail, KeyRound } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Loader2, Trash2, ExternalLink, Mail, KeyRound, Search } from "lucide-react"
 import { EditUserDialog } from "../components/EditUserDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,11 +24,21 @@ export const UserManagement = () => {
     const queryClient = useQueryClient();
     const [page, setPage] = useState(1)
     const [pageSize] = useState(10)
+    const [searchQuery, setSearchQuery] = useState("")
+    const [debouncedSearch, setDebouncedSearch] = useState("")
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ['users', page, pageSize],
-        queryFn: () => authClient.admin.getUsers(page, pageSize),
+        queryKey: ['users', page, pageSize, debouncedSearch],
+        queryFn: () => authClient.admin.getUsers(page, pageSize, debouncedSearch),
     })
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery)
+        }, 500)
+
+        return () => clearTimeout(timer)
+    }, [searchQuery])
 
     const users = data?.data ?? [];
     const totalCount = data?.totalCount ?? 0;
@@ -73,10 +84,27 @@ export const UserManagement = () => {
         <div className="space-y-4">
             <Card>
                 <CardHeader>
-                    <CardTitle>User Management</CardTitle>
-                    <CardDescription>
-                        Manage all users in the system
-                    </CardDescription>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <CardTitle>User Management</CardTitle>
+                            <CardDescription>
+                                Manage all users in the system
+                            </CardDescription>
+                        </div>
+                        <div className="relative w-72">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                type="search"
+                                placeholder="Search users by email or username..."
+                                className="pl-8 pr-8"
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value)
+                                    setPage(1) // Reset to first page on search
+                                }}
+                            />
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     {error && (
