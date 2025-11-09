@@ -70,7 +70,7 @@ export const UserManagement = () => {
     })
 
     const changePasswordMutation = useMutation({
-        mutationFn: (email: string) => authClient.forgotPassword(email),
+        mutationFn: (email: string) => authClient.account.forgotPassword(email),
         onSuccess: () => {
             toast.success('Confirmation email sent');
         },
