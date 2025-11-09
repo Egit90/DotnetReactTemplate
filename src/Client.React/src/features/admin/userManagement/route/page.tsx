@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Loader2, Trash2, ExternalLink, ChevronLeft, ChevronRight, Mail, KeyRound } from "lucide-react"
+import { Loader2, Trash2, ExternalLink, Mail, KeyRound } from "lucide-react"
 import { EditUserDialog } from "../components/EditUserDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Pagination } from "@/components/Pagination";
 
 export const UserManagement = () => {
     const { authClient } = useAuth();
@@ -180,40 +180,13 @@ export const UserManagement = () => {
                         </div>
                     )}
 
-                    {/* Pagination Controls */}
                     {!isLoading && users.length > 0 && (
-                        <div className="flex items-center justify-between px-2 py-4">
-                            <div className="text-sm text-muted-foreground">
-                                Showing <span className="font-medium">{(page - 1) * pageSize + 1}</span> to{" "}
-                                <span className="font-medium">{Math.min(page * pageSize, totalCount)}</span> of{" "}
-                                <span className="font-medium">{totalCount}</span> users
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setPage(page - 1)}
-                                    disabled={!hasPreviousPage}
-                                >
-                                    <ChevronLeft className="h-4 w-4 mr-1" />
-                                    Previous
-                                </Button>
-                                <div className="flex items-center gap-1">
-                                    <span className="text-sm">
-                                        Page {page} of {totalPages}
-                                    </span>
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setPage(page + 1)}
-                                    disabled={!hasNextPage}
-                                >
-                                    Next
-                                    <ChevronRight className="h-4 w-4 ml-1" />
-                                </Button>
-                            </div>
-                        </div>
+                        <Pagination hasNextPage={hasNextPage}
+                            hasPreviousPage={hasPreviousPage}
+                            page={page} pageSize={pageSize}
+                            setPage={setPage}
+                            totalCount={totalCount}
+                            totalPages={totalPages} />
                     )}
                 </CardContent>
             </Card>
