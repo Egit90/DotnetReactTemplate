@@ -5,6 +5,19 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from "./AuthProvider.tsx";
 import { ThemeProvider } from "./ThemeProvider.tsx";
 import { Toaster } from "sonner";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            retry: 1,
+            refetchOnWindowFocus: false,
+            staleTime: 5 * 60 * 1000
+        }
+    }
+})
+
 
 const ErrorFallback = () => {
     return (
@@ -26,25 +39,28 @@ type AppProviderProps = {
 
 export const AppProvider = ({ children }: AppProviderProps) => {
     return (
-        <React.Suspense
-            fallback={
-                <div className="flex items-center justify-center w-screen h-screen">
-                    ...loading
-                </div>
-            }
-        >
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
-                <HelmetProvider>
-                    <ThemeProvider defaultTheme="system" storageKey="crystal-ui-theme">
-                        <AuthProvider>
-                            <Router>
-                                {children}
-                                <Toaster closeButton richColors position="top-right" />
-                            </Router>
-                        </AuthProvider>
-                    </ThemeProvider>
-                </HelmetProvider>
-            </ErrorBoundary>
-        </React.Suspense>
+        <QueryClientProvider client={queryClient}>
+            <React.Suspense
+                fallback={
+                    <div className="flex items-center justify-center w-screen h-screen">
+                        ...loading
+                    </div>
+                }
+            >
+                <ErrorBoundary FallbackComponent={ErrorFallback}>
+                    <HelmetProvider>
+                        <ThemeProvider defaultTheme="system" storageKey="crystal-ui-theme">
+                            <AuthProvider>
+                                <Router>
+                                    {children}
+                                    <Toaster closeButton richColors position="top-right" />
+                                </Router>
+                            </AuthProvider>
+                        </ThemeProvider>
+                    </HelmetProvider>
+                </ErrorBoundary>
+            </React.Suspense>
+            <ReactQueryDevtools />
+        </QueryClientProvider>
     );
 };
