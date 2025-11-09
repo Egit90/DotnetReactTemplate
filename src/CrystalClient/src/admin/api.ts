@@ -48,4 +48,12 @@ export class AdminApi {
     async resendEmailConfirmation(userId: string): Promise<void> {
         await this.axios.post(`${this.adminApiPrefix}/users/${userId}/resend-confirmation`);
     }
+
+    async lockUser(userId: string): Promise<void> {
+        await this.axios.post(`${this.adminApiPrefix}/user/${userId}/lock`);
+    }
+
+    async unlockUser(userId: string): Promise<void> {
+        await this.axios.post(`${this.adminApiPrefix}/user/${userId}/unLock`);
+    }
 }

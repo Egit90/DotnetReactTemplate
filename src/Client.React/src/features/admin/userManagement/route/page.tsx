@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Loader2, Trash2, ExternalLink, Mail, KeyRound, Search } from "lucide-react"
+import { Loader2, Trash2, Mail, KeyRound, Search, Lock, Unlock } from "lucide-react"
 import { EditUserDialog } from "../components/EditUserDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -76,6 +76,30 @@ export const UserManagement = () => {
         },
         onError: (error) => {
             const errors = extractApiErrors(error) || ['failed to resend confirmation'];
+            errors.forEach(err => toast.error(err))
+        }
+    })
+
+    const lockMutation = useMutation({
+        mutationFn: (userId: string) => authClient.admin.lockUser(userId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            toast.success('User locked successfully');
+        },
+        onError: (error) => {
+            const errors = extractApiErrors(error) || ['Failed to lock user'];
+            errors.forEach(err => toast.error(err))
+        }
+    })
+
+    const unlockMutation = useMutation({
+        mutationFn: (userId: string) => authClient.admin.unlockUser(userId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            toast.success('User unlocked successfully');
+        },
+        onError: (error) => {
+            const errors = extractApiErrors(error) || ['Failed to unlock user'];
             errors.forEach(err => toast.error(err))
         }
     })
@@ -193,6 +217,21 @@ export const UserManagement = () => {
                                                         title="Send password reset email"
                                                     >
                                                         <KeyRound className="h-4 w-4" />
+                                                    </ConfirmDialog>
+                                                    <ConfirmDialog
+                                                        msg={user.isLockedOut
+                                                            ? "Are you sure you want to unlock this user?"
+                                                            : "Are you sure you want to lock this user?"}
+                                                        onConfirm={() => user.isLockedOut
+                                                            ? unlockMutation.mutate(user.id)
+                                                            : lockMutation.mutate(user.id)}
+                                                        title={user.isLockedOut ? "Unlock user" : "Lock user"}
+                                                    >
+                                                        {user.isLockedOut ? (
+                                                            <Unlock className="h-4 w-4 text-green-600" />
+                                                        ) : (
+                                                            <Lock className="h-4 w-4 text-orange-600" />
+                                                        )}
                                                     </ConfirmDialog>
                                                 </div>
                                             </TableCell>
