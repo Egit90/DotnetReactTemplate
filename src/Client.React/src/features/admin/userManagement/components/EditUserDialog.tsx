@@ -12,10 +12,12 @@ import {
 import { useAuth } from "@/providers/AuthProvider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { RolesResponse, User } from "crystal-client/src/admin/types"
+import { User } from "crystal-client/src/admin/types"
 import { extractApiErrors } from "crystal-client/src/axios-utils"
 import { Edit, Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 type EditUserDialogProps = {
     user: User
@@ -24,28 +26,13 @@ type EditUserDialogProps = {
 
 export function EditUserDialog({ user, onUserUpdated }: EditUserDialogProps) {
     const { authClient } = useAuth();
-    const [roles, setRoles] = useState<RolesResponse[]>([]);
-    const [selectedRoles, setSelectedRoles] = useState<string[]>(user.roles || []);
-    const [loading, setLoading] = useState(false);
-    const [fetchingRoles, setFetchingRoles] = useState(true);
-    const [errors, setErrors] = useState<string[]>([]);
-    const [open, setOpen] = useState(false);
 
-    useEffect(() => {
-        const fetchRoles = async () => {
-            try {
-                setFetchingRoles(true);
-                const rolesResponse = await authClient.admin.getAllRoles();
-                setRoles(rolesResponse);
-            } catch (error) {
-                console.error(error);
-                setErrors(extractApiErrors(error) || ['Failed to load roles']);
-            } finally {
-                setFetchingRoles(false);
-            }
-        }
-        fetchRoles();
-    }, [authClient])
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['roles'],
+        queryFn: () => authClient.admin.getAllRoles(),
+    })
+    const [selectedRoles, setSelectedRoles] = useState<string[]>(user.roles || []);
+    const [open, setOpen] = useState(false);
 
     const handleRoleToggle = (roleName: string, checked: boolean) => {
         if (checked) {
@@ -55,25 +42,30 @@ export function EditUserDialog({ user, onUserUpdated }: EditUserDialogProps) {
         }
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setErrors([]);
-
-        try {
-            await authClient.admin.updateUserRoles(user.id, selectedRoles);
+    const updateRolesMutation = useMutation({
+        mutationFn: ({ id, roleNames }: { id: string, roleNames: string[] }) => authClient.admin.updateUserRoles(id, roleNames),
+        onSuccess: () => {
             setOpen(false);
             onUserUpdated?.();
-        } catch (error) {
-            console.error(error);
-            setErrors(extractApiErrors(error) || ['Failed to update user roles']);
-        } finally {
-            setLoading(false);
+            toast.success('User roles updated successfully');
+        }, onError: (error) => {
+            const errors = extractApiErrors(error) || ['Failed to update user roles'];
+            errors.forEach(err => toast.error(err));
         }
+    })
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        updateRolesMutation.mutate({ id: user.id, roleNames: selectedRoles })
+    }
+
+    function handleOpenChanged(newOpen: boolean): void {
+        setOpen(newOpen)
+        if (newOpen) setSelectedRoles(user.roles || [])
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen} >
+        <Dialog open={open} onOpenChange={handleOpenChanged} >
             <DialogTrigger asChild>
                 <Button variant="ghost" size="sm" title="Edit user roles">
                     <Edit className="h-4 w-4" />
@@ -87,24 +79,20 @@ export function EditUserDialog({ user, onUserUpdated }: EditUserDialogProps) {
                             Manage roles for {user.email}
                         </DialogDescription>
                     </DialogHeader>
-
-                    {errors.length > 0 && (
-                        <div className="my-4 p-3 bg-destructive/10 text-destructive text-sm rounded-lg">
-                            {errors.map((error, idx) => (
-                                <p key={idx}>{error}</p>
-                            ))}
+                    {error && (
+                        <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
+                            <p>{extractApiErrors(error)?.[0] || 'Failed to load users'}</p>
                         </div>
                     )}
-
                     <div className="grid gap-4 py-4">
-                        {fetchingRoles ? (
+                        {isLoading ? (
                             <div className="flex items-center justify-center py-4">
                                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                             </div>
                         ) : (
                             <div className="space-y-3">
                                 <Label>Roles</Label>
-                                {roles.map((role) => (
+                                {data?.map((role) => (
                                     <div key={role.id} className="flex items-center space-x-2">
                                         <Checkbox
                                             id={role.id}
@@ -125,12 +113,12 @@ export function EditUserDialog({ user, onUserUpdated }: EditUserDialogProps) {
 
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button type="button" variant="outline" disabled={loading}>
+                            <Button type="button" variant="outline" disabled={updateRolesMutation.isPending}>
                                 Cancel
                             </Button>
                         </DialogClose>
-                        <Button type="submit" disabled={loading || fetchingRoles}>
-                            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        <Button type="submit" disabled={updateRolesMutation.isPending || isLoading}>
+                            {updateRolesMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             Save changes
                         </Button>
                     </DialogFooter>

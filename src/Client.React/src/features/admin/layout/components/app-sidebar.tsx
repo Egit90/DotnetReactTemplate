@@ -28,12 +28,12 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/admin",
       icon: LayoutDashboardIcon,
     },
     {
       title: "Manage Users",
-      url: "#",
+      url: "/admin/user-management",
       icon: UsersIcon,
     },
   ],

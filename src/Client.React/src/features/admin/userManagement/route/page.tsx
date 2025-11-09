@@ -1,7 +1,6 @@
 import { useAuth } from "@/providers/AuthProvider"
-import { User } from "crystal-client/src/admin/types";
 import { extractApiErrors } from "crystal-client/src/axios-utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
     Table,
     TableBody,
@@ -16,78 +15,59 @@ import { Button } from "@/components/ui/button"
 import { Loader2, Trash2, ExternalLink, ChevronLeft, ChevronRight, Mail, KeyRound } from "lucide-react"
 import { EditUserDialog } from "../components/EditUserDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const UserManagement = () => {
     const { authClient } = useAuth();
-    const [users, setUsers] = useState<User[]>([])
-    const [errors, setErrors] = useState<string[]>([])
-    const [loading, setLoading] = useState(true)
+    const queryClient = useQueryClient();
     const [page, setPage] = useState(1)
     const [pageSize] = useState(10)
-    const [totalCount, setTotalCount] = useState(0)
-    const [totalPages, setTotalPages] = useState(0)
-    const [hasNextPage, setHasNextPage] = useState(false)
-    const [hasPreviousPage, setHasPreviousPage] = useState(false)
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                setLoading(true)
-                const response = await authClient.admin.getUsers(page, pageSize);
-                setUsers(response.data);
-                setTotalCount(response.totalCount);
-                setTotalPages(response.totalPages);
-                setHasNextPage(response.hasNextPage);
-                setHasPreviousPage(response.hasPreviousPage);
-                setErrors([])
-            } catch (error) {
-                console.error(error)
-                setErrors(extractApiErrors(error) || ['Failed to load users']);
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchUsers();
-    }, [authClient, page, pageSize])
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['users', page, pageSize],
+        queryFn: () => authClient.admin.getUsers(page, pageSize),
+    })
 
-    const refetchUsers = async () => {
-        try {
-            const response = await authClient.admin.getUsers(page, pageSize);
-            setUsers(response.data);
-            setTotalCount(response.totalCount);
-            setTotalPages(response.totalPages);
-            setHasNextPage(response.hasNextPage);
-            setHasPreviousPage(response.hasPreviousPage);
-        } catch (error) {
-            console.error(error);
-            setErrors(extractApiErrors(error) || ['Failed to refresh user list']);
-        }
-    }
+    const users = data?.data ?? [];
+    const totalCount = data?.totalCount ?? 0;
+    const totalPages = data?.totalPages ?? 0;
+    const hasNextPage = data?.hasNextPage ?? false;
+    const hasPreviousPage = data?.hasPreviousPage ?? false;
 
-    const handleDelete = async (userId: string) => {
-        try {
-            await authClient.admin.deleteUser(userId);
-            await refetchUsers();
-        } catch (error) {
-            setErrors(extractApiErrors(error) || ['Failed to delete user']);
+    const deleteMutation = useMutation({
+        mutationFn: (userId: string) => authClient.admin.deleteUser(userId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            toast.success('User deleted successfully');
+        },
+        onError: (error) => {
+            const errors = extractApiErrors(error) || ['Error while deleting the user'];
+            errors.forEach(err => toast.error(err))
         }
-    }
+    })
 
-    const handleResendEmailConfirmation = async (id: string) => {
-        try {
-            await authClient.admin.resendEmailConfirmation(id);
-        } catch (error) {
-            setErrors(extractApiErrors(error) || ['Failed to resend confirmation user']);
+    const resendEmailMutation = useMutation({
+        mutationFn: (id: string) => authClient.admin.resendEmailConfirmation(id),
+        onSuccess: () => {
+            toast.success('Confirmation email sent');
+        },
+        onError: (error) => {
+            const errors = extractApiErrors(error) || ['failed to resend confirmation'];
+            errors.forEach(err => toast.error(err))
         }
-    }
+    })
 
-    const handleSendChangePassword = async (email: string) => {
-        try {
-            await authClient.forgotPassword(email);
-        } catch (error) {
-            setErrors(extractApiErrors(error) || ['Failed to send password reset email.']);
+    const changePasswordMutation = useMutation({
+        mutationFn: (email: string) => authClient.forgotPassword(email),
+        onSuccess: () => {
+            toast.success('Confirmation email sent');
+        },
+        onError: (error) => {
+            const errors = extractApiErrors(error) || ['failed to resend confirmation'];
+            errors.forEach(err => toast.error(err))
         }
-    }
+    })
 
     return (
         <div className="space-y-4">
@@ -99,15 +79,13 @@ export const UserManagement = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {errors.length > 0 && (
+                    {error && (
                         <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
-                            {errors.map((error, idx) => (
-                                <p key={idx}>{error}</p>
-                            ))}
+                            <p>{extractApiErrors(error)?.[0] || 'Failed to load users'}</p>
                         </div>
                     )}
 
-                    {loading ? (
+                    {isLoading ? (
                         <div className="flex items-center justify-center py-8">
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                         </div>
@@ -171,24 +149,24 @@ export const UserManagement = () => {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
-                                                    <EditUserDialog user={user} onUserUpdated={refetchUsers} />
+                                                    <EditUserDialog user={user} onUserUpdated={() => queryClient.invalidateQueries({ queryKey: ['users'] })} />
                                                     <ConfirmDialog
                                                         msg="Are you sure you want to delete this user?"
-                                                        onConfirm={() => handleDelete(user.id)}
+                                                        onConfirm={() => deleteMutation.mutate(user.id)}
                                                         title="Delete user"
                                                     >
                                                         <Trash2 className="h-4 w-4 text-destructive" />
                                                     </ConfirmDialog>
                                                     <ConfirmDialog
                                                         msg="Are you sure you want to resend confirmation?"
-                                                        onConfirm={() => handleResendEmailConfirmation(user.id)}
+                                                        onConfirm={() => resendEmailMutation.mutate(user.id)}
                                                         title="Resend confirmation email"
                                                     >
                                                         <Mail className="h-4 w-4" />
                                                     </ConfirmDialog>
                                                     <ConfirmDialog
                                                         msg="Are you sure you want to send change password email?"
-                                                        onConfirm={() => handleSendChangePassword(user.email)}
+                                                        onConfirm={() => changePasswordMutation.mutate(user.email)}
                                                         title="Send password reset email"
                                                     >
                                                         <KeyRound className="h-4 w-4" />
@@ -203,7 +181,7 @@ export const UserManagement = () => {
                     )}
 
                     {/* Pagination Controls */}
-                    {!loading && users.length > 0 && (
+                    {!isLoading && users.length > 0 && (
                         <div className="flex items-center justify-between px-2 py-4">
                             <div className="text-sm text-muted-foreground">
                                 Showing <span className="font-medium">{(page - 1) * pageSize + 1}</span> to{" "}
