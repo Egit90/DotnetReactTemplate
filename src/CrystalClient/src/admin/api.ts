@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { PaginatedResponse, RolesResponse, User } from './types';
+import { PaginatedResponse, RolesResponse, User, StatsResponse } from './types';
 
 /**
  * Admin API - handles all admin-related endpoints
@@ -54,5 +54,10 @@ export class AdminApi {
 
     async unlockUser(userId: string): Promise<void> {
         await this.axios.post(`${this.adminApiPrefix}/user/${userId}/unLock`);
+    }
+
+    async getStats(): Promise<StatsResponse> {
+        const response = await this.axios.get<StatsResponse>(`${this.adminApiPrefix}/stats`);
+        return response.data;
     }
 }

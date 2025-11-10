@@ -248,12 +248,19 @@ public static class AdminEndpoints
     {
         var totalUsers = userManager.Users.Count();
         var confirmedUsers = userManager.Users.Count(u => u.EmailConfirmed);
+        var lockedUsers = userManager.Users.Count(u => u.LockoutEnd.HasValue && u.LockoutEnd > DateTimeOffset.UtcNow);
+
+        // Active users: logged in within the last 30 days
+        var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
+        var activeUsers = userManager.Users.Count(u => u.LastLoginDate.HasValue && u.LastLoginDate > thirtyDaysAgo);
 
         return Results.Ok(new
         {
             TotalUsers = totalUsers,
             ConfirmedUsers = confirmedUsers,
-            UnconfirmedUsers = totalUsers - confirmedUsers
+            UnconfirmedUsers = totalUsers - confirmedUsers,
+            LockedUsers = lockedUsers,
+            ActiveUsers = activeUsers
         });
     }
 

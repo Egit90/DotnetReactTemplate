@@ -17,7 +17,7 @@ import { ConfirmEmail } from '@/features/users/account/routes/ConfirmEmail.tsx';
 import { Unauthorized } from '@/features/users/misc/routes/Unauthorized.tsx';
 import { RoleProtectedRoute } from './ProtectedRoutes.tsx';
 import MainLayout from '@/features/users/MainLayout.tsx';
-import AdminHome from '@/features/admin/home/home.tsx';
+import AdminHome from '@/features/admin/home/route/home.tsx';
 import { AdminLayout } from '@/features/admin/layout/admin-layout.tsx';
 import { UserManagement } from '@/features/admin/userManagement/route/page.tsx';
 
