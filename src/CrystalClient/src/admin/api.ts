@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { PaginatedResponse, RolesResponse, User, StatsResponse } from './types';
+import { PaginatedResponse, RolesResponse, User, StatsResponse, LogEntry } from './types';
 
 /**
  * Admin API - handles all admin-related endpoints
@@ -58,6 +58,18 @@ export class AdminApi {
 
     async getStats(): Promise<StatsResponse> {
         const response = await this.axios.get<StatsResponse>(`${this.adminApiPrefix}/stats`);
+        return response.data;
+    }
+
+    async getLogs(page = 1, pageSize = 50, level?: string): Promise<PaginatedResponse<LogEntry>> {
+        const params = new URLSearchParams({
+            page: page.toString(),
+            pageSize: pageSize.toString(),
+            ...(level && { level })
+        });
+        const response = await this.axios.get<PaginatedResponse<LogEntry>>(
+            `${this.adminApiPrefix}/logs?${params}`
+        );
         return response.data;
     }
 }

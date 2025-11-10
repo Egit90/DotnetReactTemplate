@@ -55,36 +55,103 @@ public static class AdminEndpoints
     {
         try
         {
-            // Query logs from the Logs table created by Serilog.Sinks.PostgreSQL
-            var query = dbContext.Database
-                .SqlQuery<LogEntry>(@$"
-                    SELECT ""Id"", ""Timestamp"", ""Level"", ""Message"", ""Exception"", ""Properties""
-                    FROM ""Logs""
-                    {(string.IsNullOrEmpty(level) ? "" : $"WHERE \"Level\" = {level}")}
-                    ORDER BY ""Timestamp"" DESC
-                ")
-                .AsQueryable();
+            // Validate pagination parameters
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 100) pageSize = 50;
 
-            var logsPagedResult = await query.ToPagedResult(page, pageSize, logger);
+            // Query logs from the logs table created by Serilog.Sinks.PostgreSQL
+            // Note: Serilog stores log levels as integers: Verbose=0, Debug=1, Information=2, Warning=3, Error=4, Fatal=5
 
-            if (logsPagedResult.IsFailure)
+            // Map level name to integer if filtering
+            int? levelInt = null;
+            if (!string.IsNullOrEmpty(level))
             {
-                return Results.Problem(
-                    title: "Error fetching logs",
-                    detail: logsPagedResult.Error,
-                    statusCode: 500
-                );
+                levelInt = level switch
+                {
+                    "Verbose" => 0,
+                    "Debug" => 1,
+                    "Information" => 2,
+                    "Warning" => 3,
+                    "Error" => 4,
+                    "Fatal" => 5,
+                    _ => -1
+                };
             }
+
+            // Get total count
+            var countQuery = levelInt.HasValue
+                ? dbContext.Database.SqlQuery<int>($"SELECT COUNT(*) as Value FROM logs WHERE level = {levelInt.Value}")
+                : dbContext.Database.SqlQuery<int>($"SELECT COUNT(*) as Value FROM logs");
+
+            var totalCount = await countQuery.FirstOrDefaultAsync();
+
+            // Get paginated logs
+            var offset = (page - 1) * pageSize;
+            List<LogEntry> logs;
+
+            if (levelInt.HasValue)
+            {
+                logs = await dbContext.Database
+                    .SqlQuery<LogEntry>($"""
+                        SELECT
+                            ROW_NUMBER() OVER (ORDER BY timestamp DESC) as Id,
+                            timestamp as Timestamp,
+                            CASE level
+                                WHEN 0 THEN 'Verbose'
+                                WHEN 1 THEN 'Debug'
+                                WHEN 2 THEN 'Information'
+                                WHEN 3 THEN 'Warning'
+                                WHEN 4 THEN 'Error'
+                                WHEN 5 THEN 'Fatal'
+                                ELSE 'Unknown'
+                            END as Level,
+                            message as Message,
+                            exception as Exception,
+                            log_event::text as Properties
+                        FROM logs
+                        WHERE level = {levelInt.Value}
+                        ORDER BY timestamp DESC
+                        LIMIT {pageSize} OFFSET {offset}
+                        """)
+                    .ToListAsync();
+            }
+            else
+            {
+                logs = await dbContext.Database
+                    .SqlQuery<LogEntry>($"""
+                        SELECT
+                            ROW_NUMBER() OVER (ORDER BY timestamp DESC) as Id,
+                            timestamp as Timestamp,
+                            CASE level
+                                WHEN 0 THEN 'Verbose'
+                                WHEN 1 THEN 'Debug'
+                                WHEN 2 THEN 'Information'
+                                WHEN 3 THEN 'Warning'
+                                WHEN 4 THEN 'Error'
+                                WHEN 5 THEN 'Fatal'
+                                ELSE 'Unknown'
+                            END as Level,
+                            message as Message,
+                            exception as Exception,
+                            log_event::text as Properties
+                        FROM logs
+                        ORDER BY timestamp DESC
+                        LIMIT {pageSize} OFFSET {offset}
+                        """)
+                    .ToListAsync();
+            }
+
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
             return Results.Ok(new
             {
-                Data = logsPagedResult.Value.Items,
-                Page = logsPagedResult.Value.CurrentPage,
-                PageSize = logsPagedResult.Value.PageSize,
-                TotalCount = logsPagedResult.Value.TotalCount,
-                TotalPages = logsPagedResult.Value.TotalPages,
-                HasNextPage = logsPagedResult.Value.CurrentPage < logsPagedResult.Value.TotalPages,
-                HasPreviousPage = logsPagedResult.Value.CurrentPage > 1
+                Data = logs,
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                HasNextPage = page < totalPages,
+                HasPreviousPage = page > 1
             });
         }
         catch (Exception ex)

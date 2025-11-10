@@ -4,6 +4,7 @@ import {
   ClipboardListIcon,
   DatabaseIcon,
   FileIcon,
+  FileTextIcon,
   LayoutDashboardIcon,
   SearchIcon,
   SettingsIcon,
@@ -35,6 +36,11 @@ const data = {
       title: "Manage Users",
       url: "/admin/user-management",
       icon: UsersIcon,
+    },
+    {
+      title: "Logs",
+      url: "/admin/logs",
+      icon: FileTextIcon,
     },
   ],
   navSecondary: [
