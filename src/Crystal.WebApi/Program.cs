@@ -7,6 +7,7 @@ using WebApi.Endpoints;
 using Crystal.Core.Extensions;
 using Crystal.Core.Endpoints.SignIn;
 using WebApi.Services;
+using WebApi.Endpoints.Admin;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
