@@ -55,97 +55,63 @@ public static class AdminEndpoints
     {
         try
         {
-            // Validate pagination parameters
             if (page < 1) page = 1;
             if (pageSize < 1 || pageSize > 100) pageSize = 50;
 
-            // Query logs from the logs table created by Serilog.Sinks.PostgreSQL
-            // Note: Serilog stores log levels as integers: Verbose=0, Debug=1, Information=2, Warning=3, Error=4, Fatal=5
+            var query = dbContext.Logs.AsQueryable();
 
-            // Map level name to integer if filtering
-            int? levelInt = null;
-            if (!string.IsNullOrEmpty(level))
+            // Optional filter
+            if (!string.IsNullOrWhiteSpace(level))
             {
-                levelInt = level switch
+                var levelInt = level.ToLower() switch
                 {
-                    "Verbose" => 0,
-                    "Debug" => 1,
-                    "Information" => 2,
-                    "Warning" => 3,
-                    "Error" => 4,
-                    "Fatal" => 5,
+                    "verbose" => 0,
+                    "debug" => 1,
+                    "information" => 2,
+                    "warning" => 3,
+                    "error" => 4,
+                    "fatal" => 5,
                     _ => -1
                 };
+
+                if (levelInt >= 0)
+                    query = query.Where(l => l.Level == levelInt);
             }
 
-            // Get total count
-            var countQuery = levelInt.HasValue
-                ? dbContext.Database.SqlQuery<int>($"SELECT COUNT(*) as Value FROM logs WHERE level = {levelInt.Value}")
-                : dbContext.Database.SqlQuery<int>($"SELECT COUNT(*) as Value FROM logs");
+            var totalCount = await query.CountAsync();
 
-            var totalCount = await countQuery.FirstOrDefaultAsync();
+            var logs = await query
+                .OrderByDescending(l => l.Timestamp)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-            // Get paginated logs
-            var offset = (page - 1) * pageSize;
-            List<LogEntry> logs;
-
-            if (levelInt.HasValue)
-            {
-                logs = await dbContext.Database
-                    .SqlQuery<LogEntry>($"""
-                        SELECT
-                            ROW_NUMBER() OVER (ORDER BY timestamp DESC) as Id,
-                            timestamp as Timestamp,
-                            CASE level
-                                WHEN 0 THEN 'Verbose'
-                                WHEN 1 THEN 'Debug'
-                                WHEN 2 THEN 'Information'
-                                WHEN 3 THEN 'Warning'
-                                WHEN 4 THEN 'Error'
-                                WHEN 5 THEN 'Fatal'
-                                ELSE 'Unknown'
-                            END as Level,
-                            message as Message,
-                            exception as Exception,
-                            log_event::text as Properties
-                        FROM logs
-                        WHERE level = {levelInt.Value}
-                        ORDER BY timestamp DESC
-                        LIMIT {pageSize} OFFSET {offset}
-                        """)
-                    .ToListAsync();
-            }
-            else
-            {
-                logs = await dbContext.Database
-                    .SqlQuery<LogEntry>($"""
-                        SELECT
-                            ROW_NUMBER() OVER (ORDER BY timestamp DESC) as Id,
-                            timestamp as Timestamp,
-                            CASE level
-                                WHEN 0 THEN 'Verbose'
-                                WHEN 1 THEN 'Debug'
-                                WHEN 2 THEN 'Information'
-                                WHEN 3 THEN 'Warning'
-                                WHEN 4 THEN 'Error'
-                                WHEN 5 THEN 'Fatal'
-                                ELSE 'Unknown'
-                            END as Level,
-                            message as Message,
-                            exception as Exception,
-                            log_event::text as Properties
-                        FROM logs
-                        ORDER BY timestamp DESC
-                        LIMIT {pageSize} OFFSET {offset}
-                        """)
-                    .ToListAsync();
-            }
+            var data = logs
+                .Select((l, index) => new
+                {
+                    Id = (page - 1) * pageSize + index + 1,
+                    l.Timestamp,
+                    Level = l.Level switch
+                    {
+                        0 => "Verbose",
+                        1 => "Debug",
+                        2 => "Information",
+                        3 => "Warning",
+                        4 => "Error",
+                        5 => "Fatal",
+                        _ => "Unknown"
+                    },
+                    l.Message,
+                    l.Exception,
+                    l.Properties
+                })
+                .ToList();
 
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
             return Results.Ok(new
             {
-                Data = logs,
+                Data = data,
                 Page = page,
                 PageSize = pageSize,
                 TotalCount = totalCount,
@@ -156,7 +122,10 @@ public static class AdminEndpoints
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error occurred while fetching logs. Page: {Page}, PageSize: {PageSize}", page, pageSize);
+            logger.LogError(ex,
+                "Unexpected error occurred while fetching logs. Page: {Page}, PageSize: {PageSize}",
+                page, pageSize);
+
             return Results.Problem(
                 title: "Unexpected error",
                 detail: "An unexpected error occurred. Please try again later.",
@@ -430,12 +399,3 @@ public static class AdminEndpoints
 
 internal record UpdateUserRolesRequest(string[] RoleNames);
 
-internal class LogEntry
-{
-    public int Id { get; set; }
-    public DateTime? Timestamp { get; set; }
-    public string? Level { get; set; }
-    public string? Message { get; set; }
-    public string? Exception { get; set; }
-    public string? Properties { get; set; }
-}
