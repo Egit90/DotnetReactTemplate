@@ -31,3 +31,12 @@ export type StatsResponse = {
     lockedUsers: number;
     activeUsers: number;
 };
+
+export type LogEntry = {
+    id: number;
+    timestamp?: string;
+    level?: string;
+    message?: string;
+    exception?: string;
+    properties?: string;
+};
