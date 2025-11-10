@@ -23,3 +23,11 @@ export type RolesResponse = {
     id: string;
     name: string;
 };
+
+export type StatsResponse = {
+    totalUsers: number;
+    confirmedUsers: number;
+    unconfirmedUsers: number;
+    lockedUsers: number;
+    activeUsers: number;
+};
