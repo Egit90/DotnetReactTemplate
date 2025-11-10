@@ -1,12 +1,15 @@
 #!/usr/bin/env dotnet-script
 /*
- * Seed Fake Users Script
+ * Seed Fake Users Script (PostgreSQL)
  *
- * This script creates 10 fake users in the database for testing purposes.
+ * This script creates 10 fake users in the PostgreSQL database for testing purposes.
  *
  * Prerequisites:
  * 1. Install dotnet-script tool globally:
  *    dotnet tool install -g dotnet-script
+ *
+ * 2. Make sure PostgreSQL is running:
+ *    docker-compose up -d postgres
  *
  * How to run:
  * 1. Navigate to the Scripts directory:
@@ -19,10 +22,9 @@
  * The script will skip users that already exist in the database.
  */
 
-#r "nuget: Microsoft.AspNetCore.Identity.EntityFrameworkCore, 8.0.0"
-#r "nuget: Microsoft.EntityFrameworkCore.Sqlite, 8.0.0"
-#r "nuget: Microsoft.EntityFrameworkCore, 8.0.0"
-#r "nuget: SQLitePCLRaw.bundle_e_sqlite3, 2.1.6"
+#r "nuget: Microsoft.AspNetCore.Identity.EntityFrameworkCore, 9.0.0"
+#r "nuget: Npgsql.EntityFrameworkCore.PostgreSQL, 9.0.2"
+#r "nuget: Microsoft.EntityFrameworkCore, 9.0.0"
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,8 +32,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
-SQLitePCL.Batteries_V2.Init();
 
 // MyUser class
 public class MyUser : IdentityUser
@@ -52,7 +52,7 @@ await SeedUsersAsync();
 async Task SeedUsersAsync()
 {
     var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-    optionsBuilder.UseSqlite("Data Source=../Crystal.WebApi/app.db");
+    optionsBuilder.UseNpgsql("Host=localhost;Database=crystal_db;Username=crystal;Password=crystal_dev_password");
 
     using var context = new AppDbContext(optionsBuilder.Options);
     var userStore = new UserStore<MyUser>(context);

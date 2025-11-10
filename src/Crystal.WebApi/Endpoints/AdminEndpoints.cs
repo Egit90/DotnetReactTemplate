@@ -41,6 +41,61 @@ public static class AdminEndpoints
 
         // Unlock user account
         group.MapPost("/user/{userId}/unLock", UnlockUser);
+
+        // Get logs (Admin only)
+        group.MapGet("/logs", GetLogs);
+    }
+
+    private static async Task<IResult> GetLogs(
+        ApplicationDbContext dbContext,
+        ILogger<Program> logger,
+        int page = 1,
+        int pageSize = 50,
+        string? level = null)
+    {
+        try
+        {
+            // Query logs from the Logs table created by Serilog.Sinks.PostgreSQL
+            var query = dbContext.Database
+                .SqlQuery<LogEntry>(@$"
+                    SELECT ""Id"", ""Timestamp"", ""Level"", ""Message"", ""Exception"", ""Properties""
+                    FROM ""Logs""
+                    {(string.IsNullOrEmpty(level) ? "" : $"WHERE \"Level\" = {level}")}
+                    ORDER BY ""Timestamp"" DESC
+                ")
+                .AsQueryable();
+
+            var logsPagedResult = await query.ToPagedResult(page, pageSize, logger);
+
+            if (logsPagedResult.IsFailure)
+            {
+                return Results.Problem(
+                    title: "Error fetching logs",
+                    detail: logsPagedResult.Error,
+                    statusCode: 500
+                );
+            }
+
+            return Results.Ok(new
+            {
+                Data = logsPagedResult.Value.Items,
+                Page = logsPagedResult.Value.CurrentPage,
+                PageSize = logsPagedResult.Value.PageSize,
+                TotalCount = logsPagedResult.Value.TotalCount,
+                TotalPages = logsPagedResult.Value.TotalPages,
+                HasNextPage = logsPagedResult.Value.CurrentPage < logsPagedResult.Value.TotalPages,
+                HasPreviousPage = logsPagedResult.Value.CurrentPage > 1
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error occurred while fetching logs. Page: {Page}, PageSize: {PageSize}", page, pageSize);
+            return Results.Problem(
+                title: "Unexpected error",
+                detail: "An unexpected error occurred. Please try again later.",
+                statusCode: 500
+            );
+        }
     }
 
     private static async Task<IResult> LockUser(string userId, UserManager<MyUser> userManager, ILogger<Program> logger)
@@ -307,3 +362,13 @@ public static class AdminEndpoints
 }
 
 internal record UpdateUserRolesRequest(string[] RoleNames);
+
+internal class LogEntry
+{
+    public int Id { get; set; }
+    public DateTime? Timestamp { get; set; }
+    public string? Level { get; set; }
+    public string? Message { get; set; }
+    public string? Exception { get; set; }
+    public string? Properties { get; set; }
+}
