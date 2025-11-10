@@ -43,7 +43,7 @@ export function UsersTable() {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
     const [page] = useState(1)
-    const [pageSize] = useState(100) // Get more for client-side filtering/sorting
+    const [pageSize] = useState(100)
     const [searchQuery, setSearchQuery] = useState("")
     const [debouncedSearch, setDebouncedSearch] = useState("")
 
