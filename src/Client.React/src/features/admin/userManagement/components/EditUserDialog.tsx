@@ -68,7 +68,7 @@ export function EditUserDialog({ user, onUserUpdated }: EditUserDialogProps) {
         <Dialog open={open} onOpenChange={handleOpenChanged} >
             <DialogTrigger asChild>
                 <Button variant="ghost" size="sm" title="Edit user roles">
-                    <Edit className="h-4 w-4" />
+                    Edit User Roles
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
