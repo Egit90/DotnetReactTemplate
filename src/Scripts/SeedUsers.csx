@@ -62,7 +62,7 @@ async Task SeedUsersAsync()
         new PasswordHasher<MyUser>(),
         null,
         null,
-        null,
+        new UpperInvariantLookupNormalizer(), // ← FIX: Add normalizer for email/username
         null,
         null,
         null

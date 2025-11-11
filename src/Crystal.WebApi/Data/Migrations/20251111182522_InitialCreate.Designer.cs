@@ -12,8 +12,8 @@ using WebApi.Data;
 namespace WebApi.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251110022419_InitialPostgreSQ")]
-    partial class InitialPostgreSQ
+    [Migration("20251111182522_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -174,6 +174,39 @@ namespace WebApi.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("WebApi.Data.LogEntry", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Exception")
+                        .HasColumnType("text")
+                        .HasColumnName("exception");
+
+                    b.Property<int?>("Level")
+                        .HasColumnType("integer")
+                        .HasColumnName("level");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text")
+                        .HasColumnName("message");
+
+                    b.Property<string>("MessageTemplate")
+                        .HasColumnType("text")
+                        .HasColumnName("message_template");
+
+                    b.Property<DateTime?>("Timestamp")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("timestamp");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("logs", (string)null);
+                });
+
             modelBuilder.Entity("WebApi.Data.MyUser", b =>
                 {
                     b.Property<string>("Id")
@@ -244,6 +277,22 @@ namespace WebApi.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("WebApi.Data.SystemSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemSettings");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -292,6 +341,177 @@ namespace WebApi.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WebApi.Data.LogEntry", b =>
+                {
+                    b.OwnsOne("WebApi.Data.LogEvent", "LogEvent", b1 =>
+                        {
+                            b1.Property<long>("LogEntryId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<string>("Exception")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Level")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("MessageTemplate")
+                                .HasColumnType("text");
+
+                            b1.Property<DateTimeOffset>("Timestamp")
+                                .HasColumnType("timestamp with time zone");
+
+                            b1.HasKey("LogEntryId");
+
+                            b1.ToTable("logs");
+
+                            b1.ToJson("log_event");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LogEntryId");
+
+                            b1.OwnsOne("WebApi.Data.LogProperties", "Properties", b2 =>
+                                {
+                                    b2.Property<long>("LogEventLogEntryId")
+                                        .HasColumnType("bigint");
+
+                                    b2.Property<string>("Application")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("CommandText")
+                                        .HasColumnType("text");
+
+                                    b2.Property<int?>("CommandTimeout")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<string>("CommandType")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("ConnectionId")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("ContextType")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("CorrelationId")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("Elapsed")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("Error")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("MachineName")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("NewLine")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("Newline")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("RemoteIpAddress")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("RequestId")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("RequestMethod")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("RequestPath")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("SourceContext")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("UserAgent")
+                                        .HasColumnType("text");
+
+                                    b2.HasKey("LogEventLogEntryId");
+
+                                    b2.ToTable("logs");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("LogEventLogEntryId");
+
+                                    b2.OwnsOne("WebApi.Data.EventId", "EventId", b3 =>
+                                        {
+                                            b3.Property<long>("LogPropertiesLogEventLogEntryId")
+                                                .HasColumnType("bigint");
+
+                                            b3.Property<int>("Id")
+                                                .HasColumnType("integer");
+
+                                            b3.Property<string>("Name")
+                                                .HasColumnType("text");
+
+                                            b3.HasKey("LogPropertiesLogEventLogEntryId");
+
+                                            b3.ToTable("logs");
+
+                                            b3.WithOwner()
+                                                .HasForeignKey("LogPropertiesLogEventLogEntryId");
+                                        });
+
+                                    b2.Navigation("EventId");
+                                });
+
+                            b1.Navigation("Properties");
+                        });
+
+                    b.Navigation("LogEvent");
+                });
+
+            modelBuilder.Entity("WebApi.Data.SystemSettings", b =>
+                {
+                    b.OwnsOne("WebApi.Data.AppSettings", "Settings", b1 =>
+                        {
+                            b1.Property<int>("SystemSettingsId")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("SystemSettingsId");
+
+                            b1.ToTable("SystemSettings");
+
+                            b1.ToJson("Settings");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SystemSettingsId");
+
+                            b1.OwnsOne("WebApi.Data.MaintenanceModeSettings", "MaintenanceMode", b2 =>
+                                {
+                                    b2.Property<int>("AppSettingsSystemSettingsId")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<bool>("Enabled")
+                                        .HasColumnType("boolean");
+
+                                    b2.Property<DateTime?>("EnabledAt")
+                                        .HasColumnType("timestamp with time zone");
+
+                                    b2.Property<string>("EnabledBy")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("Reason")
+                                        .HasColumnType("text");
+
+                                    b2.HasKey("AppSettingsSystemSettingsId");
+
+                                    b2.ToTable("SystemSettings");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("AppSettingsSystemSettingsId");
+                                });
+
+                            b1.Navigation("MaintenanceMode")
+                                .IsRequired();
+                        });
+
+                    b.Navigation("Settings")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
