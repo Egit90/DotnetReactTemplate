@@ -76,7 +76,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapCrystalEndpoints();
-app.MapRoleEndpoints();
 app.MapAdminEndpoints();
 
 app.MapFallbackToFile("index.html");
