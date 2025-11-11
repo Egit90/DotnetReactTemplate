@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using WebApi.Features.UserManagement.Models;
 
-namespace WebApi.Features.Lock.Endpoints;
+namespace WebApi.Features.AccountLocking.Endpoints;
 
 public static class AccountLockEndpoint
 {
