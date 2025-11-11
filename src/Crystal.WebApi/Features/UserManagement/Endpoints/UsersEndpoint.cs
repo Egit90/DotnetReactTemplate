@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using WebApi.Data;
 using WebApi.Extensions;
+using WebApi.Features.UserManagement.Models;
 
-namespace WebApi.Endpoints.Admin.Users;
+namespace WebApi.Features.UserManagement.Endpoints;
 
 public static class UsersEndpoints
 {

@@ -5,6 +5,7 @@ using Crystal.Core.Extensions;
 using Crystal.EntityFrameworkCore;
 using Crystal.FluentEmail;
 using WebApi.Data;
+using WebApi.Features.UserManagement.Models;
 
 namespace WebApi;
 

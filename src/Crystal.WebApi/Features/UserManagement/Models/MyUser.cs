@@ -1,8 +1,7 @@
-﻿using Crystal.Core;
-using Crystal.Core.Abstractions;
+﻿using Crystal.Core.Abstractions;
 using Microsoft.AspNetCore.Identity;
 
-namespace WebApi.Data;
+namespace WebApi.Features.UserManagement.Models;
 
 public class MyUser : IdentityUser, ICrystalUser
 {

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using WebApi.Features.UserManagement.Models;
 
 namespace WebApi.Data;
 

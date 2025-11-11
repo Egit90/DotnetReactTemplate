@@ -1,12 +1,12 @@
-using WebApi.Endpoints.Admin.Lock;
-using WebApi.Endpoints.Admin.Logs;
-using WebApi.Endpoints.Admin.Users;
+using WebApi.Features.Lock.Endpoints;
+using WebApi.Features.Logs.Endpoints;
+using WebApi.Features.UserManagement.Endpoints;
 
-namespace WebApi.Endpoints.Admin;
+namespace WebApi.Features;
 
-public static class AdminEndpointsRegistration
+public static class FeaturesRegistration
 {
-    public static void MapAdminEndpoints(this IEndpointRouteBuilder app)
+    public static void MapFeaturesEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/admin")
             .WithTags("Admin")

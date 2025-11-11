@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using WebApi;
-using WebApi.Endpoints;
 using Crystal.Core.Extensions;
 using Crystal.Core.Endpoints.SignIn;
 using WebApi.Services;
-using WebApi.Endpoints.Admin;
 using WebApi.Middleware;
+using WebApi.Features.UserManagement.Models;
+using WebApi.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
@@ -17,8 +17,6 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfigura
     .WriteTo.Console());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddSingleton<IMaintenanceService, MaintenanceService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -41,10 +39,6 @@ using (var scope = app.Services.CreateScope())
     {
         // Seed roles
         await RoleSeeder.SeedRolesAsync(services);
-
-        // Initialize maintenance mode from database
-        var maintenanceService = services.GetRequiredService<IMaintenanceService>();
-        await maintenanceService.InitializeAsync();
     }
     catch (Exception ex)
     {
@@ -76,7 +70,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapCrystalEndpoints();
-app.MapAdminEndpoints();
+app.MapFeaturesEndpoints();
 
 app.MapFallbackToFile("index.html");
 
