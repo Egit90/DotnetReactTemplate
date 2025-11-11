@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { ChangePasswordForm } from '../components/ChangePasswordForm.tsx';
 import { useAuth } from '@/providers/AuthProvider.tsx';
 import { useSearchParams } from 'react-router-dom';
@@ -6,37 +5,56 @@ import { ExternalProviders } from "../../auth/components/ExternalProviders.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, Key, Link2, Shield } from "lucide-react";
-import { toast } from "sonner";
-import { AccountInfoResponse } from 'crystal-client/src/account/types.ts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { useEffect } from 'react';
+import { extractApiErrors } from 'crystal-client/src/axios-utils.ts';
 
 export const MyAccount = () => {
     const { authClient } = useAuth();
-    const [user, setUser] = useState<AccountInfoResponse>();
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        authClient.account.accountInfo().then((res) => {
-            setUser(res);
-        });
-    }, []);
+    const { data, error } = useQuery({
+        queryKey: ['user'],
+        queryFn: () => authClient.account.accountInfo(),
+    })
 
     const [params] = useSearchParams();
     const link = params.get("link");
     const failed = params.get("failed");
 
+    // Handle account linking callback
     useEffect(() => {
         if (!link) return;
 
         if (failed) {
-            toast.error("Failed to link account");
+            toast.error("Failed to link account", {
+                description: "Could not link your external account. Please try again."
+            });
         } else {
-            authClient.account.linkLogin().then((res) => {
-                setUser(res);
-                toast.success("Account linked successfully");
-            }).catch(() => {
-                toast.error("Failed to link account");
+            authClient.account.linkLogin()
+                .then(() => {
+                    queryClient.invalidateQueries({ queryKey: ['user'] });
+                    toast.success("Account linked successfully", {
+                        description: "You can now sign in with this provider."
+                    });
+                })
+                .catch((error) => {
+                    toast.error("Failed to link account", {
+                        description: error?.message || "An unexpected error occurred."
+                    });
+                });
+        }
+    }, [link, failed, authClient, queryClient]);
+
+    // Show error toast when account info fails to load
+    useEffect(() => {
+        if (error) {
+            toast.error("Failed to load account information", {
+                description: extractApiErrors(error)
             });
         }
-    }, [link, failed]);
+    }, [error]);
 
     return (
         <div className="max-w-7xl mx-auto p-6">
@@ -58,14 +76,14 @@ export const MyAccount = () => {
                             {/* Email */}
                             <div className="flex flex-col gap-2">
                                 <dt className="text-sm font-medium text-foreground">Email address</dt>
-                                <dd className="text-sm text-muted-foreground">{user?.email}</dd>
+                                <dd className="text-sm text-muted-foreground">{data?.email}</dd>
                             </div>
 
                             {/* Logins */}
                             <div className="flex flex-col gap-2">
                                 <dt className="text-sm font-medium text-foreground">Linked logins</dt>
                                 <dd className="flex flex-wrap gap-2">
-                                    {user?.logins.map((login) => (
+                                    {data?.logins.map((login) => (
                                         <Badge key={login} variant="secondary" className="capitalize">
                                             {login}
                                         </Badge>
@@ -77,7 +95,7 @@ export const MyAccount = () => {
                             <div className="flex flex-col gap-2">
                                 <dt className="text-sm font-medium text-foreground">Roles</dt>
                                 <dd className="flex flex-wrap gap-2">
-                                    {user?.roles.map((role) => (
+                                    {data?.roles.map((role) => (
                                         <Badge key={role} variant="outline" className="capitalize">
                                             <Shield className="h-3 w-3 mr-1" />
                                             {role}
@@ -100,7 +118,7 @@ export const MyAccount = () => {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <ExternalProviders mode="LinkLogin" hide={user?.logins} />
+                            <ExternalProviders mode="LinkLogin" hide={data?.logins} />
                         </CardContent>
                     </Card>
                 </div>
@@ -108,7 +126,7 @@ export const MyAccount = () => {
                 {/* Right Column */}
                 <div>
                     {/* Change Password Card */}
-                    {user?.hasPassword && (
+                    {data?.hasPassword && (
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
