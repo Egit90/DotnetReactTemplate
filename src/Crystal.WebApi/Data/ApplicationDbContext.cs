@@ -45,17 +45,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<SystemSettings>(entity =>
         {
-            entity.HasKey(e => e.Id);
-
-            entity.Property(e => e.UpdatedAt)
-                .IsRequired();
-
-            // Configure Settings as owned entity with JSON storage
             entity.OwnsOne(s => s.Settings, settings =>
             {
                 settings.ToJson();
-
-                // Configure nested owned type
                 settings.OwnsOne(a => a.MaintenanceMode);
             });
         });
