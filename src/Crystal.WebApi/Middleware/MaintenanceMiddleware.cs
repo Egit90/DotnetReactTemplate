@@ -13,14 +13,17 @@ public class MaintenanceMiddleware(RequestDelegate _next, IMaintenanceService _s
             // Allow admin endpoints, health checks, and login so admins can disable maintenance
             if (!path.StartsWith("/api/admin") &&
                 !path.StartsWith("/health") &&
-                !path.StartsWith("/api/login") &&
-                !path.StartsWith("/api/signin"))
+                !path.StartsWith("/api/auth/"))
             {
                 _logger.LogInformation("Blocked {Path} during maintenance", path);
                 context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                context.Response.ContentType = "application/problem+json";
                 await context.Response.WriteAsJsonAsync(new
                 {
-                    message = "System is under maintenance. Please try again later.",
+                    type = "https://tools.ietf.org/html/rfc7231#section-6.6.4",
+                    title = "Service Unavailable",
+                    status = 503,
+                    detail = "System is under maintenance. Please try again later.",
                     maintenanceMode = true
                 });
                 return;

@@ -67,10 +67,10 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseCrystalMiddlewares(); // Add correlation ID and maintenance middleware to all requests
-app.UseStaticFiles();
 app.UseRouting();
 app.UseCors();
+app.UseCrystalMiddlewares(); // Add correlation ID and maintenance middleware to all requests
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

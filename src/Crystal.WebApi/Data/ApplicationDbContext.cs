@@ -1,4 +1,3 @@
-using Crystal.Core;
 using Crystal.Core.Models;
 using Crystal.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -20,8 +19,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<LogEntry>(entity =>
         {
             entity.ToTable("logs");
-            entity.HasNoKey();
-
+            entity.HasKey(e => e.Id);
             entity.Property(e => e.Timestamp)
                 .HasColumnName("timestamp");
 
@@ -61,6 +59,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 public class LogEntry
 {
+    public long Id { get; set; }
     public DateTime? Timestamp { get; set; }
     public int? Level { get; set; }
     public string? Message { get; set; }
