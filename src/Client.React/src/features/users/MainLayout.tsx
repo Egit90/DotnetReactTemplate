@@ -8,7 +8,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CircleIcon, User } from "lucide-react";
+import { CircleIcon, User, ShieldCheck } from "lucide-react";
 import { Suspense, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useRole } from "@/hooks/useRoles.ts";
@@ -79,6 +79,17 @@ function UserMenu() {
                         My Account
                     </Link>
                 </DropdownMenuItem>
+                {isAdmin() && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link to="/admin" className="cursor-pointer bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950 dark:to-indigo-950">
+                                <ShieldCheck className="mr-2 h-4 w-4 text-purple-600 dark:text-purple-400" />
+                                <span className="font-medium text-purple-600 dark:text-purple-400">Admin Panel</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="text-red-600 focus:text-red-600">
                     <Link to="/signout" className="cursor-pointer">

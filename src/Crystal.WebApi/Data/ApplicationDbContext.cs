@@ -1,4 +1,4 @@
-﻿using Crystal.Core;
+using Crystal.Core;
 using Crystal.Core.Models;
 using Crystal.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -14,7 +14,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
         builder.ApplyCrystalModel();
 
         builder.Entity<LogEntry>(entity =>
@@ -34,11 +33,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.Exception)
                 .HasColumnName("exception");
 
-            entity.Property(e => e.Properties)
-                .HasColumnName("log_event");
-
-            entity.Property<string?>("message_template")
+            entity.Property(e => e.MessageTemplate)
                 .HasColumnName("message_template");
+
+            // jsonb → POCO mapping
+            entity.Property(e => e.LogEvent)
+                .HasColumnName("log_event")
+                .HasColumnType("jsonb");
         });
     }
 }
@@ -49,5 +50,53 @@ public class LogEntry
     public int? Level { get; set; }
     public string? Message { get; set; }
     public string? Exception { get; set; }
-    public string? Properties { get; set; }
+
+    // Map jsonb to a POCO
+    public LogEvent? LogEvent { get; set; }
+    public string? MessageTemplate { get; set; }
+}
+
+public class LogEvent
+{
+    public string? Level { get; set; }
+    public string? Exception { get; set; }
+    public DateTimeOffset Timestamp { get; set; }
+    public LogProperties? Properties { get; set; }
+    public string? MessageTemplate { get; set; }
+}
+
+public class LogProperties
+{
+    public EventId? EventId { get; set; }
+
+    // Common properties
+    public string? Application { get; set; }
+    public string? MachineName { get; set; }
+    public string? SourceContext { get; set; }
+
+    // Optional ones (may appear or not)
+    public string? Elapsed { get; set; }
+    public string? Error { get; set; }
+    public string? NewLine { get; set; }
+    public string? Newline { get; set; }  // Some logs have lowercase
+    public string? RequestId { get; set; }
+    public string? RequestPath { get; set; }
+    public string? RequestMethod { get; set; }
+    public string? UserAgent { get; set; }
+    public string? CorrelationId { get; set; }
+
+    // Contextual fields
+    public string? ContextType { get; set; }
+    public string? CommandText { get; set; }
+    public string? CommandType { get; set; }
+    public int? CommandTimeout { get; set; }
+
+    public string? ConnectionId { get; set; }
+    public string? RemoteIpAddress { get; set; }
+}
+
+public class EventId
+{
+    public int Id { get; set; }
+    public string? Name { get; set; }
 }
