@@ -8,6 +8,7 @@ using Crystal.Core.Extensions;
 using Crystal.Core.Endpoints.SignIn;
 using WebApi.Services;
 using WebApi.Endpoints.Admin;
+using WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
@@ -58,6 +59,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseCorrelationId(); // Add correlation ID to all requests
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors();

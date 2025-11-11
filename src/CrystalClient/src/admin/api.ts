@@ -61,11 +61,13 @@ export class AdminApi {
         return response.data;
     }
 
-    async getLogs(page = 1, pageSize = 50, level?: string): Promise<PaginatedResponse<LogEntry>> {
+    async getLogs(page = 1, pageSize = 50, level?: string, correlationId?: string, requestPath?: string): Promise<PaginatedResponse<LogEntry>> {
         const params = new URLSearchParams({
             page: page.toString(),
             pageSize: pageSize.toString(),
-            ...(level && { level })
+            ...(level && { level }),
+            ...(correlationId && { correlationId }),
+            ...(requestPath && { requestPath })
         });
         const response = await this.axios.get<PaginatedResponse<LogEntry>>(
             `${this.adminApiPrefix}/logs?${params}`

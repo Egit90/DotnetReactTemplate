@@ -38,5 +38,13 @@ export type LogEntry = {
     level?: string;
     message?: string;
     exception?: string;
-    properties?: string;
+    correlationId?: string;
+    requestPath?: string;
+    requestMethod?: string;
+    userAgent?: string;
+    remoteIpAddress?: string;
+    application?: string;
+    contextType?: string;
+    error?: string;
+    sourceContext?: string;
 };
