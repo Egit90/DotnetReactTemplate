@@ -6,7 +6,6 @@ import { SignUp } from '@/features/users/auth/routes/SignUp.tsx';
 import { SignUpExternal } from '@/features/users/auth/routes/SignUpExternal.tsx';
 import { MyAccount } from '@/features/users/account/routes/MyAccount.tsx';
 import { Home } from '@/features/users/misc/routes/Home.tsx';
-import { Features } from '@/features/users/misc/routes/Features.tsx';
 import { SignUpConfirmation } from '@/features/users/auth/routes/SignUpConfirmation.tsx';
 import { ResendEmailConfirmation } from '@/features/users/account/routes/ResendEmailConfirmation.tsx';
 import { ChallengeCallback } from '@/features/users/auth/routes/ChallengeCallback.tsx';
@@ -15,6 +14,7 @@ import { ResetPassword } from '@/features/users/account/routes/ResetPassword.tsx
 import { ResetPasswordConfirmation } from '@/features/users/account/routes/ResetPasswordConfirmation.tsx';
 import { ConfirmEmail } from '@/features/users/account/routes/ConfirmEmail.tsx';
 import { Unauthorized } from '@/features/users/misc/routes/Unauthorized.tsx';
+import { NotFound } from '@/features/users/misc/routes/NotFound.tsx';
 import { RoleProtectedRoute } from './ProtectedRoutes.tsx';
 import MainLayout from '@/features/users/MainLayout.tsx';
 import AdminHome from '@/features/admin/home/route/home.tsx';
@@ -40,7 +40,6 @@ export const AppRoutes = () => {
             children: [
                 { path: '/profile', element: <ProtectedRoute><MyAccount /></ProtectedRoute> },
                 { path: '/', element: <Home /> },
-                { path: '/features', element: <Features /> },
                 { path: '/signup/confirmation', element: <SignUpConfirmation /> },
                 { path: '/resend-confirm-email', element: <ResendEmailConfirmation /> },
                 { path: '/external-challenge-callback/:provider', element: <ChallengeCallback /> },
@@ -49,6 +48,7 @@ export const AppRoutes = () => {
                 { path: '/reset-password/confirmation', element: <ResetPasswordConfirmation /> },
                 { path: '/confirm-email', element: <ConfirmEmail /> },
                 { path: '/unauthorized', element: <Unauthorized /> },
+                { path: '*', element: <NotFound /> },
             ]
         },
         {
@@ -58,7 +58,8 @@ export const AppRoutes = () => {
                 { index: true, element: <AdminHome /> },
                 { path: 'user-management', element: <UserManagement /> },
                 { path: 'logs', element: <Logs /> },
-                { path: 'settings', element: <SettingsPage /> }
+                { path: 'settings', element: <SettingsPage /> },
+                { path: '*', element: <NotFound /> }
             ]
         }
     ];
