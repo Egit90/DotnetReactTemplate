@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WebApi.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialPostgreSQ : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,6 +64,38 @@ namespace WebApi.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CrystalRefreshTokens", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "logs",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    level = table.Column<int>(type: "integer", nullable: true),
+                    message = table.Column<string>(type: "text", nullable: true),
+                    exception = table.Column<string>(type: "text", nullable: true),
+                    message_template = table.Column<string>(type: "text", nullable: true),
+                    log_event = table.Column<string>(type: "jsonb", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_logs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SystemSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Settings = table.Column<string>(type: "jsonb", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemSettings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -230,6 +262,12 @@ namespace WebApi.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "CrystalRefreshTokens");
+
+            migrationBuilder.DropTable(
+                name: "logs");
+
+            migrationBuilder.DropTable(
+                name: "SystemSettings");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
