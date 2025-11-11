@@ -5,8 +5,8 @@ export type User = {
     emailConfirmed: boolean;
     lastLoginDate?: string;
     createdOn: string;
-    lockoutEnd?: string;       // When lockout ends (null = not locked)
-    isLockedOut: boolean;      // Computed: is user currently locked?
+    lockoutEnd?: string; // When lockout ends (null = not locked)
+    isLockedOut: boolean; // Computed: is user currently locked?
     roles: string[];
 };
 export type PaginatedResponse<T> = {
@@ -47,4 +47,13 @@ export type LogEntry = {
     contextType?: string;
     error?: string;
     sourceContext?: string;
+};
+
+export type MaintenanceStatus = {
+    enabled: boolean;
+};
+
+export type ToggleMaintenanceStatus = {
+    enabled: boolean;
+    message: string;
 };

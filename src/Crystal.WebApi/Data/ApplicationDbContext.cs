@@ -10,6 +10,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<CrystalRefreshToken> RefreshTokens { get; set; }
     public DbSet<LogEntry> Logs { get; set; }
+    public DbSet<SystemSettings> SystemSettings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -40,6 +41,23 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.LogEvent)
                 .HasColumnName("log_event")
                 .HasColumnType("jsonb");
+        });
+
+        builder.Entity<SystemSettings>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.UpdatedAt)
+                .IsRequired();
+
+            // Configure Settings as owned entity with JSON storage
+            entity.OwnsOne(s => s.Settings, settings =>
+            {
+                settings.ToJson();
+
+                // Configure nested owned type
+                settings.OwnsOne(a => a.MaintenanceMode);
+            });
         });
     }
 }
@@ -99,4 +117,24 @@ public class EventId
 {
     public int Id { get; set; }
     public string? Name { get; set; }
+}
+
+public class SystemSettings
+{
+    public int Id { get; set; }
+    public AppSettings Settings { get; set; } = new();
+    public DateTime UpdatedAt { get; set; }
+}
+
+public class AppSettings
+{
+    public MaintenanceModeSettings MaintenanceMode { get; set; } = new();
+}
+
+public class MaintenanceModeSettings
+{
+    public bool Enabled { get; set; }
+    public DateTime? EnabledAt { get; set; }
+    public string? EnabledBy { get; set; }
+    public string? Reason { get; set; }
 }

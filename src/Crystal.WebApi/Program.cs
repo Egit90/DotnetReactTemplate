@@ -18,8 +18,11 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfigura
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<IMaintenanceService, MaintenanceService>();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -30,18 +33,23 @@ builder.Services.Configure<IdentityOptions>(options => { options.SignIn.RequireC
 
 var app = builder.Build();
 
-// Seed roles
+// Initialize services and seed data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
+        // Seed roles
         await RoleSeeder.SeedRolesAsync(services);
+
+        // Initialize maintenance mode from database
+        var maintenanceService = services.GetRequiredService<IMaintenanceService>();
+        await maintenanceService.InitializeAsync();
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding roles");
+        logger.LogError(ex, "An error occurred during startup initialization");
     }
 }
 
@@ -59,7 +67,7 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseCorrelationId(); // Add correlation ID to all requests
+app.UseCrystalMiddlewares(); // Add correlation ID and maintenance middleware to all requests
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors();

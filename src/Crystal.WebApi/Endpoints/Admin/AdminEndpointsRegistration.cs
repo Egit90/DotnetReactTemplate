@@ -1,5 +1,6 @@
 using WebApi.Endpoints.Admin.Lock;
 using WebApi.Endpoints.Admin.Logs;
+using WebApi.Endpoints.Admin.Maintenance;
 using WebApi.Endpoints.Admin.Users;
 
 namespace WebApi.Endpoints.Admin;
@@ -16,5 +17,6 @@ public static class AdminEndpointsRegistration
         LogsEndpoint.Map(group);
         UsersEndpoints.Map(group);
         AccountLockEndpoint.Map(group);
+        MaintenanceEndpoint.Map(group);
     }
 }
