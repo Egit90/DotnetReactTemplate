@@ -21,6 +21,7 @@ import AdminHome from '@/features/admin/home/route/home.tsx';
 import { AdminLayout } from '@/features/admin/layout/admin-layout.tsx';
 import { UserManagement } from '@/features/admin/userManagement/route/page.tsx';
 import { Logs } from '@/features/admin/logs/route/page.tsx';
+import { SettingsPage } from '@/features/admin/settings/route/page.tsx';
 
 export const AppRoutes = () => {
     const routes = [
@@ -56,7 +57,8 @@ export const AppRoutes = () => {
             children: [
                 { index: true, element: <AdminHome /> },
                 { path: 'user-management', element: <UserManagement /> },
-                { path: 'logs', element: <Logs /> }
+                { path: 'logs', element: <Logs /> },
+                { path: 'settings', element: <SettingsPage /> }
             ]
         }
     ];

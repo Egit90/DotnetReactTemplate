@@ -6,7 +6,6 @@ import {
   FileIcon,
   FileTextIcon,
   LayoutDashboardIcon,
-  SearchIcon,
   SettingsIcon,
   UsersIcon,
 } from "lucide-react"
@@ -46,13 +45,8 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/admin/settings",
       icon: SettingsIcon,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: SearchIcon,
     },
   ],
   documents: [
