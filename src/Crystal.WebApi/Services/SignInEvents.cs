@@ -1,6 +1,6 @@
 using Crystal.Core.Endpoints.SignIn;
 using Microsoft.AspNetCore.Identity;
-using WebApi.Data;
+using WebApi.Features.UserManagement.Models;
 namespace WebApi.Services;
 
 public class SignInEvents(

@@ -2,6 +2,7 @@ using Crystal.Core.Models;
 using Crystal.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Features.UserManagement.Models;
 
 namespace WebApi.Data;
 
