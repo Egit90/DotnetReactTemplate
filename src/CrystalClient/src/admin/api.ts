@@ -1,13 +1,5 @@
 import { AxiosInstance } from 'axios';
-import {
-    PaginatedResponse,
-    RolesResponse,
-    User,
-    StatsResponse,
-    LogEntry,
-    MaintenanceStatus,
-    ToggleMaintenanceStatus,
-} from './types';
+import { PaginatedResponse, RolesResponse, User, StatsResponse, LogEntry } from './types';
 
 /**
  * Admin API - handles all admin-related endpoints
@@ -86,21 +78,6 @@ export class AdminApi {
         const response = await this.axios.get<PaginatedResponse<LogEntry>>(
             `${this.adminApiPrefix}/logs?${params}`,
         );
-        return response.data;
-    }
-
-    async getMaintenanceStatus(): Promise<MaintenanceStatus> {
-        const response = await this.axios.get<MaintenanceStatus>(`${this.adminApiPrefix}/maintenance/status`);
-        return response.data;
-    }
-
-    async toggleMaintenanceStatus(enable: boolean): Promise<ToggleMaintenanceStatus> {
-        if (enable) {
-            const response = await this.axios.post<ToggleMaintenanceStatus>(`${this.adminApiPrefix}/maintenance/enable`);
-            return response.data;
-        }
-
-        const response = await this.axios.post<ToggleMaintenanceStatus>(`${this.adminApiPrefix}/maintenance/disable`);
         return response.data;
     }
 }

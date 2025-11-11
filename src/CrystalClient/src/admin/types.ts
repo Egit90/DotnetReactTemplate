@@ -48,12 +48,3 @@ export type LogEntry = {
     error?: string;
     sourceContext?: string;
 };
-
-export type MaintenanceStatus = {
-    enabled: boolean;
-};
-
-export type ToggleMaintenanceStatus = {
-    enabled: boolean;
-    message: string;
-};
