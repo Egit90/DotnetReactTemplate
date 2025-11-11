@@ -37,10 +37,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.MessageTemplate)
                 .HasColumnName("message_template");
 
-            // jsonb → POCO mapping
-            entity.Property(e => e.LogEvent)
-                .HasColumnName("log_event")
-                .HasColumnType("jsonb");
+            // Configure LogEvent as owned entity with JSON storage
+            entity.OwnsOne(e => e.LogEvent, logEvent =>
+            {
+                logEvent.ToJson("log_event");
+                logEvent.OwnsOne(l => l.Properties, props =>
+                {
+                    props.OwnsOne(p => p.EventId);
+                });
+            });
         });
 
         builder.Entity<SystemSettings>(entity =>
