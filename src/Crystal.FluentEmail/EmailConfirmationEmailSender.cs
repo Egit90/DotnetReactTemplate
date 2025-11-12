@@ -12,9 +12,9 @@ public class EmailConfirmationEmailSender<TUser>(
     IOptions<FluentEmailOptions> fluentEmailOptions,
     CrystalFluentEmailFactory emailFactory,
     ILogger<EmailConfirmationEmailSender<TUser>> logger) : ICrystalEmailConfirmationEmailSender<TUser>
-    where TUser : IdentityUser, ICrystalUser
+    where TUser : IdentityUser<Guid>, ICrystalUser
 {
-    protected virtual object PrepareEmailConfirmationModel(IdentityUser user, string confirmationLink)
+    protected virtual object PrepareEmailConfirmationModel(IdentityUser<Guid> user, string confirmationLink)
     {
         return new
         {

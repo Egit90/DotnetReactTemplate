@@ -1,6 +1,6 @@
 using Crystal.Core.Abstractions;
 using Crystal.Core.Services.EmailSender;
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Crystal.Core.AuthSchemes;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -16,7 +16,7 @@ namespace Crystal.Core.Endpoints.SignUp;
 
 public class SignUpExternalEndpoint<TUser, TModel> : IAuthEndpoint
     where TModel : class
-    where TUser : IdentityUser, ICrystalUser, new()
+    where TUser : IdentityUser<Guid>, ICrystalUser, new()
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

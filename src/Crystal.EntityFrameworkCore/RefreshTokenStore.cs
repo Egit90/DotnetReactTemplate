@@ -8,7 +8,7 @@ namespace Crystal.EntityFrameworkCore;
 
 public class RefreshTokenStore<TContext, TUser>(TContext context) : IRefreshTokenStore
     where TContext : DbContext, ICrystalDbContext<TUser>
-    where TUser : IdentityUser, ICrystalUser
+    where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public async Task<CrystalRefreshToken?> FindByUserIdAsync(string userId, CancellationToken ct)
     {

@@ -1,7 +1,7 @@
 using Crystal.Core.Abstractions;
 using Crystal.Core.Models;
 using Crystal.Core.Options;
-﻿using Crystal.Core.AuthSchemes;
+using Crystal.Core.AuthSchemes;
 using Crystal.Core.Endpoints;
 using Crystal.Core.Endpoints.SignUp;
 using Microsoft.AspNetCore.Authentication;
@@ -16,7 +16,7 @@ namespace Crystal.Core.Services;
 /// Can be used to configure the services and endpoints of Crystal.
 /// </summary>
 /// <typeparam name="TUser"></typeparam>
-public class CrystalServiceBuilder<TUser> where TUser : IdentityUser, ICrystalUser, new()
+public class CrystalServiceBuilder<TUser> where TUser : IdentityUser<Guid>, ICrystalUser, new()
 {
     public CrystalOptions CrystalOptions { get; set; }
     public IdentityBuilder IdentityBuilder { get; }
@@ -117,7 +117,7 @@ public class CrystalServiceBuilder<TUser> where TUser : IdentityUser, ICrystalUs
         CrystalOptions.Internal.CustomExternalSignUpFlow = true;
         return this;
     }
-    
+
     public CrystalServiceBuilder<TUser> AddProvider(string provider, Action<AuthenticationBuilder, CrystalOptions> authBuilder)
     {
         AuthenticationBuilder.AddProviderIfConfigured(provider, CrystalOptions, b =>

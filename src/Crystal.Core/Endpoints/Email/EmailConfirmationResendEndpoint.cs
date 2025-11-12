@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Endpoints.Email;
 
-public class EmailConfirmationResendEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
+public class EmailConfirmationResendEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

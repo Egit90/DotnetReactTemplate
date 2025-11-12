@@ -34,7 +34,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 // MyUser class
-public class MyUser : IdentityUser
+public class MyUser : IdentityUser<Guid>
 {
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
     public DateTime? LastLoginDate { get; set; }

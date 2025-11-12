@@ -11,7 +11,7 @@ public class CrystalEmailSenderManager<TUser>(
     IOptions<IdentityOptions> _identityOptions,
     ILogger<CrystalEmailSenderManager<TUser>> logger)
     : ICrystalEmailSenderManager<TUser>
-    where TUser : IdentityUser, ICrystalUser
+    where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public Task SendEmailConfirmationAsync(TUser user, string confirmationLink)
     {

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Password;
 
-public class PasswordChangeEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
+public class PasswordChangeEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Email;
 
-public class EmailConfirmEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
+public class EmailConfirmEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

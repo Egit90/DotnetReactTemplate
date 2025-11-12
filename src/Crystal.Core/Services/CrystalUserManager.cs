@@ -1,7 +1,7 @@
 using Crystal.Core.Abstractions;
 using Crystal.Core.Models;
 using Crystal.Core.Options;
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Crystal.Core.Abstractions;
 using Crystal.Core.Endpoints;
 using Crystal.Core.Endpoints.SignUp;
@@ -18,7 +18,7 @@ using Microsoft.Extensions.Options;
 namespace Crystal.Core.Services;
 
 public class CrystalUserManager<TUser> : UserManager<TUser>, ICrystalUserManager
-    where TUser : IdentityUser, ICrystalUser, new()
+    where TUser : IdentityUser<Guid>, ICrystalUser, new()
 {
     private readonly IOptions<CrystalOptions> _options;
     private readonly ILogger<CrystalUserManager<TUser>> _logger;

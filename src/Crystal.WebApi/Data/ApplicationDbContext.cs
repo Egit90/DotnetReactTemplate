@@ -1,12 +1,13 @@
 using Crystal.Core.Models;
 using Crystal.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Features.UserManagement.Models;
 
 namespace WebApi.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<MyUser>(options), ICrystalDbContext<MyUser>
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<MyUser, IdentityRole<Guid>, Guid>(options), ICrystalDbContext<MyUser>
 {
     public DbSet<CrystalRefreshToken> RefreshTokens { get; set; }
     public DbSet<LogEntry> Logs { get; set; }

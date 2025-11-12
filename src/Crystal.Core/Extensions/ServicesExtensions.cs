@@ -34,7 +34,7 @@ public static class ServicesExtensions
     /// <exception cref="Exception"></exception>
     public static CrystalServiceBuilder<TUser> AddCrystal<TUser>(
         this IServiceCollection services, IConfiguration configuration, Action<CrystalOptions>? configureOptions = null)
-        where TUser : IdentityUser, ICrystalUser, new()
+        where TUser : IdentityUser<Guid>, ICrystalUser, new()
     {
         var opts = configuration.GetSection(CrystalOptions.SectionPath).Get<CrystalOptions>()
                    ?? throw new("CrystalOptions is not configured in appsettings.json");
@@ -86,7 +86,7 @@ public static class ServicesExtensions
             .AddIdentityCore<TUser>()
             .AddSignInManager<CrystalSignInManager<TUser>>()
             .AddUserManager<CrystalUserManager<TUser>>()
-            .AddRoles<IdentityRole>()
+            .AddRoles<IdentityRole<Guid>>()
             .AddDefaultTokenProviders();
 
         services.AddScoped<ICrystalUserManager>(sp => sp.GetRequiredService<CrystalUserManager<TUser>>());

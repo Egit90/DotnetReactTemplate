@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Account;
 
-public class AccountInfoEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
+public class AccountInfoEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

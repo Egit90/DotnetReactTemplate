@@ -179,7 +179,7 @@ public static class UsersEndpoints
 
     }
 
-    private static async Task<IResult> GetAllRoles(RoleManager<IdentityRole> roleManager, ILogger<Program> logger)
+    private static async Task<IResult> GetAllRoles(RoleManager<IdentityRole<Guid>> roleManager, ILogger<Program> logger)
     {
         try
         {

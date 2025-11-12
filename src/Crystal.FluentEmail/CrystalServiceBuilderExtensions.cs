@@ -17,7 +17,7 @@ public static class CrystalServiceBuilderExtensions
 {
     public static CrystalServiceBuilder<TUser> AddFluentEmail<TUser>(
         this CrystalServiceBuilder<TUser> builder,
-        bool registerMailKitSender = true) where TUser : IdentityUser, ICrystalUser, new()
+        bool registerMailKitSender = true) where TUser : IdentityUser<Guid>, ICrystalUser, new()
     {
         if (builder.Configuration.GetSection(FluentEmailOptions.SectionName).Exists())
         {

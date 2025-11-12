@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Endpoints.SignIn;
 
-public class SignInExternalEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, ICrystalUser, new()
+public class SignInExternalEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser<Guid>, ICrystalUser, new()
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

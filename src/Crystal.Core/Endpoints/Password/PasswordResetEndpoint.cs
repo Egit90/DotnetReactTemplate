@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Password;
 
-public class PasswordResetEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
+public class PasswordResetEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -39,7 +39,7 @@ public class PasswordResetEndpoint<TUser> : IAccountEndpoint where TUser : Ident
                     if (result.Succeeded)
                     {
                         //clear refresh token on password reset
-                        await refreshTokenManager.ClearTokenAsync(user.Id);
+                        await refreshTokenManager.ClearTokenAsync(user.Id.ToString());
 
                         logger.LogInformation("User: {UserId} reset password successfully", user.Id);
                         return TypedResults.Ok();

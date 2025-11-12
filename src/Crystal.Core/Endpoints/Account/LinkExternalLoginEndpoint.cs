@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Account;
 
-public class LinkExternalLoginEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser, new()
+public class LinkExternalLoginEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser<Guid>, ICrystalUser, new()
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

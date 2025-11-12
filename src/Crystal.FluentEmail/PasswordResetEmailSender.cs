@@ -11,7 +11,7 @@ public class PasswordResetEmailSender<TUser>(
     IOptions<FluentEmailOptions> fluentEmailOptions,
     CrystalFluentEmailFactory emailFactory,
     ILogger<EmailConfirmationEmailSender<TUser>> logger) : ICrystalPasswordResetEmailSender<TUser>
-    where TUser : IdentityUser, ICrystalUser
+    where TUser : IdentityUser<Guid>, ICrystalUser
 {
     protected virtual object PrepareForgotPasswordModel(TUser user, string confirmationLink)
     {

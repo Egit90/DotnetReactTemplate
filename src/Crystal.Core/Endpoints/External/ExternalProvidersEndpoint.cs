@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Crystal.Core.Endpoints.External;
 
-public class ExternalProvidersEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, ICrystalUser
+public class ExternalProvidersEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Crystal.EntityFrameworkCore;
 
-public interface ICrystalDbContext<TUser> where TUser : IdentityUser
+public interface ICrystalDbContext<TUser> where TUser : IdentityUser<Guid>
 {
     DbSet<CrystalRefreshToken> RefreshTokens { get; set; }
 }

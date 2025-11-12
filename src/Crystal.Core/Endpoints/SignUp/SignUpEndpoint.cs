@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Endpoints.SignUp;
 
-public class SignUpEndpoint<TUser, TModel> : IAuthEndpoint where TModel : SignUpRequest where TUser : IdentityUser, ICrystalUser, new()
+public class SignUpEndpoint<TUser, TModel> : IAuthEndpoint where TModel : SignUpRequest where TUser : IdentityUser<Guid>, ICrystalUser, new()
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

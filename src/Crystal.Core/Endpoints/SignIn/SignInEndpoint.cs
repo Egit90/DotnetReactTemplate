@@ -12,7 +12,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Crystal.Core.Endpoints.SignIn;
 
-public class SignInEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, ICrystalUser
+public class SignInEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

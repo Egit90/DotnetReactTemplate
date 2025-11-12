@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Endpoints.Password;
 
-public class PasswordForgotEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
+public class PasswordForgotEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

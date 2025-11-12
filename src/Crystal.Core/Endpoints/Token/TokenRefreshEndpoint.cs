@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Crystal.Core.Endpoints.Token;
 
-public class TokenRefreshEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, ICrystalUser
+public class TokenRefreshEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -34,7 +34,7 @@ public class TokenRefreshEndpoint<TUser> : IAuthEndpoint where TUser : IdentityU
                         return TypedResults.Unauthorized();
                     }
 
-                    if (!await refreshTokenManager.ValidateAsync(user.Id, token))
+                    if (!await refreshTokenManager.ValidateAsync(user.Id.ToString(), token))
                     {
                         return TypedResults.Unauthorized();
                     }
