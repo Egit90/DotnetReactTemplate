@@ -5,13 +5,15 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Services.EmailSender;
 
-public class CrystalEmailSenderManager<TUser>(
-    ICrystalEmailConfirmationEmailSender<TUser>? _confirmationSender,
-    ICrystalPasswordResetEmailSender<TUser>? _passwordResetSender,
+public class CrystalEmailSenderManager<TUser, TKey>(
+    ICrystalEmailConfirmationEmailSender<TUser, TKey>? _confirmationSender,
+    ICrystalPasswordResetEmailSender<TUser, TKey>? _passwordResetSender,
     IOptions<IdentityOptions> _identityOptions,
-    ILogger<CrystalEmailSenderManager<TUser>> logger)
-    : ICrystalEmailSenderManager<TUser>
-    where TUser : IdentityUser<Guid>, ICrystalUser
+    ILogger<CrystalEmailSenderManager<TUser, TKey>> logger)
+    : ICrystalEmailSenderManager<TUser, TKey>
+    where TKey : IEquatable<TKey>
+    where TUser : IdentityUser<TKey>
+    , ICrystalUser<TKey>
 {
     public Task SendEmailConfirmationAsync(TUser user, string confirmationLink)
     {
@@ -50,7 +52,9 @@ public class CrystalEmailSenderManager<TUser>(
     }
 }
 
-public interface ICrystalEmailSenderManager<T> where T : ICrystalUser
+public interface ICrystalEmailSenderManager<T, TKey>
+        where T : ICrystalUser<TKey>
+        where TKey : IEquatable<TKey>
 {
     Task SendEmailConfirmationAsync(T user, string confirmationLink);
     Task SendPasswordResetAsync(T user, string resetLink);

@@ -8,13 +8,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Account;
 
-public class AccountInfoEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
+public class AccountInfoEndpoint<TUser, TKey> : IAccountEndpoint
+        where TKey : IEquatable<TKey>
+        where TUser : IdentityUser<TKey>
+        , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
         return builder.MapGet("/info", async Task<Results<Ok<AccountInfoResponse>, NotFound>> (
             HttpContext context,
-            ILogger<AccountInfoEndpoint<TUser>> logger,
+            ILogger<AccountInfoEndpoint<TUser, TKey>> logger,
             UserManager<TUser> userManager) =>
         {
             var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);

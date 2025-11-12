@@ -7,11 +7,13 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.FluentEmail;
 
-public class PasswordResetEmailSender<TUser>(
+public class PasswordResetEmailSender<TUser, TKey>(
     IOptions<FluentEmailOptions> fluentEmailOptions,
     CrystalFluentEmailFactory emailFactory,
-    ILogger<EmailConfirmationEmailSender<TUser>> logger) : ICrystalPasswordResetEmailSender<TUser>
-    where TUser : IdentityUser<Guid>, ICrystalUser
+    ILogger<EmailConfirmationEmailSender<TUser, TKey>> logger) : ICrystalPasswordResetEmailSender<TUser, TKey>
+    where TKey : IEquatable<TKey>
+    where TUser : IdentityUser<TKey>
+    , ICrystalUser<TKey>
 {
     protected virtual object PrepareForgotPasswordModel(TUser user, string confirmationLink)
     {

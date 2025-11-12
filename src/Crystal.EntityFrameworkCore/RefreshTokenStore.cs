@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Crystal.EntityFrameworkCore;
 
-public class RefreshTokenStore<TContext, TUser>(TContext context) : IRefreshTokenStore
-    where TContext : DbContext, ICrystalDbContext<TUser>
-    where TUser : IdentityUser<Guid>, ICrystalUser
+public class RefreshTokenStore<TContext, TUser, TKey>(TContext context) : IRefreshTokenStore
+    where TKey : IEquatable<TKey>
+    where TContext : DbContext
+    , ICrystalDbContext<TUser, TKey>
+    where TUser : IdentityUser<TKey>, ICrystalUser<TKey>
 {
     public async Task<CrystalRefreshToken?> FindByUserIdAsync(string userId, CancellationToken ct)
     {

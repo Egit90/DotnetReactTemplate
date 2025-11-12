@@ -12,7 +12,10 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Crystal.Core.Endpoints.SignIn;
 
-public class SignInEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
+public class SignInEndpoint<TUser, TKey> : IAuthEndpoint
+    where TKey : IEquatable<TKey>
+    where TUser : IdentityUser<TKey>
+    , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -21,15 +24,15 @@ public class SignInEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser<Gu
                 [FromQuery] bool? useCookie,
                 HttpContext context,
                 [FromServices] IOptions<CrystalOptions> options,
-                [FromServices] CrystalSignInManager<TUser> signInManager,
+                [FromServices] CrystalSignInManager<TUser, TKey> signInManager,
                 [FromServices] UserManager<TUser> userManager,
                 [FromServices] IServiceProvider serviceProvider,
-                [FromServices] ILogger<SignInEndpoint<TUser>> logger) =>
+                [FromServices] ILogger<SignInEndpoint<TUser, TKey>> logger) =>
             {
                 ArgumentException.ThrowIfNullOrWhiteSpace(req.Email);
                 ArgumentException.ThrowIfNullOrWhiteSpace(req.Password);
 
-                var events = serviceProvider.GetService<ISignInEndpointEvents<TUser>>();
+                var events = serviceProvider.GetService<ISignInEndpointEvents<TKey, TUser>>();
 
                 var user = await userManager.FindByEmailAsync(req.Email);
                 if (user == null)

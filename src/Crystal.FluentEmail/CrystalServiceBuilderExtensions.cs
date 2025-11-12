@@ -1,5 +1,4 @@
-﻿using Crystal.Core;
-using Crystal.Core.Abstractions;
+﻿using Crystal.Core.Abstractions;
 using Crystal.Core.Services;
 using Crystal.Core.Services.EmailSender;
 using FluentEmail.Core.Defaults;
@@ -15,9 +14,12 @@ namespace Crystal.FluentEmail;
 
 public static class CrystalServiceBuilderExtensions
 {
-    public static CrystalServiceBuilder<TUser> AddFluentEmail<TUser>(
-        this CrystalServiceBuilder<TUser> builder,
-        bool registerMailKitSender = true) where TUser : IdentityUser<Guid>, ICrystalUser, new()
+    public static CrystalServiceBuilder<TUser, TKey> AddFluentEmail<TUser, TKey>(
+        this CrystalServiceBuilder<TUser, TKey> builder,
+        bool registerMailKitSender = true)
+        where TKey : IEquatable<TKey>
+        where TUser : IdentityUser<TKey>
+        , ICrystalUser<TKey>, new()
     {
         if (builder.Configuration.GetSection(FluentEmailOptions.SectionName).Exists())
         {
@@ -52,8 +54,8 @@ public static class CrystalServiceBuilderExtensions
         }
 
         builder.Services.AddScoped<CrystalFluentEmailFactory>();
-        builder.Services.AddTransient<ICrystalEmailConfirmationEmailSender<TUser>, EmailConfirmationEmailSender<TUser>>();
-        builder.Services.AddTransient<ICrystalPasswordResetEmailSender<TUser>, PasswordResetEmailSender<TUser>>();
+        builder.Services.AddTransient<ICrystalEmailConfirmationEmailSender<TUser, TKey>, EmailConfirmationEmailSender<TUser, TKey>>();
+        builder.Services.AddTransient<ICrystalPasswordResetEmailSender<TUser, TKey>, PasswordResetEmailSender<TUser, TKey>>();
 
         return builder;
     }

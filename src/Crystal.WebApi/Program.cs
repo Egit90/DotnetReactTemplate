@@ -25,7 +25,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.SetupCrystal(builder.Configuration);
-builder.Services.AddScoped<ISignInEndpointEvents<MyUser>, SignInEvents>();
+builder.Services.AddScoped<ISignInEndpointEvents<Guid, MyUser>, SignInEvents>();
 
 builder.Services.Configure<IdentityOptions>(options => { options.SignIn.RequireConfirmedEmail = true; });
 

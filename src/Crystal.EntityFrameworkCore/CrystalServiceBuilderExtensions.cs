@@ -8,12 +8,14 @@ namespace Crystal.EntityFrameworkCore;
 
 public static class CrystalServiceBuilderExtensions
 {
-    public static CrystalServiceBuilder<TUser> AddEntityFrameworkStore<TContext, TUser>(this CrystalServiceBuilder<TUser> builder)
-        where TUser : IdentityUser<Guid>, ICrystalUser, new()
-        where TContext : DbContext, ICrystalDbContext<TUser>
+    public static CrystalServiceBuilder<TUser, TKey> AddEntityFrameworkStore<TContext, TUser, TKey>(this CrystalServiceBuilder<TUser, TKey> builder)
+        where TKey : IEquatable<TKey>
+        where TUser : IdentityUser<TKey>,
+        ICrystalUser<TKey>, new()
+        where TContext : DbContext, ICrystalDbContext<TUser, TKey>
     {
         builder.IdentityBuilder.AddEntityFrameworkStores<TContext>();
-        builder.Services.AddScoped<IRefreshTokenStore, RefreshTokenStore<TContext, TUser>>();
+        builder.Services.AddScoped<IRefreshTokenStore, RefreshTokenStore<TContext, TUser, TKey>>();
 
         return builder;
     }

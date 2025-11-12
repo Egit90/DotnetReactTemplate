@@ -8,13 +8,15 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.FluentEmail;
 
-public class EmailConfirmationEmailSender<TUser>(
+public class EmailConfirmationEmailSender<TUser, TKey>(
     IOptions<FluentEmailOptions> fluentEmailOptions,
     CrystalFluentEmailFactory emailFactory,
-    ILogger<EmailConfirmationEmailSender<TUser>> logger) : ICrystalEmailConfirmationEmailSender<TUser>
-    where TUser : IdentityUser<Guid>, ICrystalUser
+    ILogger<EmailConfirmationEmailSender<TUser, TKey>> logger) : ICrystalEmailConfirmationEmailSender<TUser, TKey>
+    where TKey : IEquatable<TKey>
+    where TUser : IdentityUser<TKey>
+    , ICrystalUser<TKey>
 {
-    protected virtual object PrepareEmailConfirmationModel(IdentityUser<Guid> user, string confirmationLink)
+    protected virtual object PrepareEmailConfirmationModel(IdentityUser<TKey> user, string confirmationLink)
     {
         return new
         {

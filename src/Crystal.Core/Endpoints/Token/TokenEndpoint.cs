@@ -10,14 +10,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Token;
 
-public class TokenEndpoint<TUser> : IAuthEndpoint where TUser : class, ICrystalUser
+public class TokenEndpoint<TUser, TKey> : IAuthEndpoint
+        where TKey : IEquatable<TKey>
+        where TUser : class
+        , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
         return builder.MapPost("/token", async Task<Results<SignInHttpResult, ProblemHttpResult, EmptyHttpResult>>
             ([FromBody, Required] TokenRequest req,
                 [FromServices] SignInManager<TUser> manager,
-                [FromServices] ILogger<TokenEndpoint<TUser>> logger) =>
+                [FromServices] ILogger<TokenEndpoint<TUser, TKey>> logger) =>
             {
                 ArgumentException.ThrowIfNullOrWhiteSpace(req.Email);
                 ArgumentException.ThrowIfNullOrWhiteSpace(req.Password);

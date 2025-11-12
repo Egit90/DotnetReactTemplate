@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Crystal.Core.Models;
 
-public record CheckLoginResult<TUser> where TUser : IdentityUser<Guid>, ICrystalUser, new()
+public record CheckLoginResult<TUser, TKey>
+    where TKey : IEquatable<TKey>
+    where TUser : IdentityUser<TKey>
+    , ICrystalUser<TKey>, new()
 {
     public required string ProviderKey { get; set; }
     public TUser? User { get; set; }

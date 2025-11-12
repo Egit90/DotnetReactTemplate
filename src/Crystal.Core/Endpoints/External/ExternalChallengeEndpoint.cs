@@ -9,7 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Crystal.Core.Endpoints.External;
 
-public class ExternalChallengeEndpoint<TUser> : IAuthEndpoint where TUser : ICrystalUser
+public class ExternalChallengeEndpoint<TUser, TKey> : IAuthEndpoint
+            where TKey : IEquatable<TKey>
+            where TUser : ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

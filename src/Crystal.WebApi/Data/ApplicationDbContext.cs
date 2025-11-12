@@ -7,7 +7,7 @@ using WebApi.Features.UserManagement.Models;
 
 namespace WebApi.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<MyUser, IdentityRole<Guid>, Guid>(options), ICrystalDbContext<MyUser>
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<MyUser, IdentityRole<Guid>, Guid>(options), ICrystalDbContext<MyUser, Guid>
 {
     public DbSet<CrystalRefreshToken> RefreshTokens { get; set; }
     public DbSet<LogEntry> Logs { get; set; }

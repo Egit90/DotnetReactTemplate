@@ -13,7 +13,11 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Endpoints.SignUp;
 
-public class SignUpEndpoint<TUser, TModel> : IAuthEndpoint where TModel : SignUpRequest where TUser : IdentityUser<Guid>, ICrystalUser, new()
+public class SignUpEndpoint<TUser, TKey, TModel> : IAuthEndpoint
+        where TKey : IEquatable<TKey>
+        where TModel : SignUpRequest
+        where TUser : IdentityUser<TKey>,
+        ICrystalUser<TKey>, new()
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -21,8 +25,8 @@ public class SignUpEndpoint<TUser, TModel> : IAuthEndpoint where TModel : SignUp
                 async Task<Results<Ok<SignUpResponse>, BadRequest, ProblemHttpResult>>
                 ([FromBody] TModel req,
                     [FromServices] UserManager<TUser> manager,
-                    [FromServices] ILogger<SignUpEndpoint<TUser, TModel>> logger,
-                    [FromServices] ICrystalEmailSenderManager<TUser> emailSender,
+                    [FromServices] ILogger<SignUpEndpoint<TUser, TKey, TModel>> logger,
+                    [FromServices] ICrystalEmailSenderManager<TUser, TKey> emailSender,
                     [FromServices] IOptions<CrystalOptions> options,
                     [FromServices] IServiceProvider serviceProvider,
                     [FromServices] IOptions<IdentityOptions> identityOptions,
@@ -43,7 +47,7 @@ public class SignUpEndpoint<TUser, TModel> : IAuthEndpoint where TModel : SignUp
                         Email = req.Email,
                     };
 
-                    var events = serviceProvider.GetService<ISignUpEndpointEvents<TUser, TModel>>();
+                    var events = serviceProvider.GetService<ISignUpEndpointEvents<TKey, TUser, TModel>>();
                     if (events is not null)
                     {
                         var userCreatingRes = await events.UserCreatingAsync(req, httpRequest, user);

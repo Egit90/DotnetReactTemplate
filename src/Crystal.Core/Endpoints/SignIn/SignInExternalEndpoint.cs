@@ -12,16 +12,19 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Endpoints.SignIn;
 
-public class SignInExternalEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser<Guid>, ICrystalUser, new()
+public class SignInExternalEndpoint<TUser, TKey> : IAuthEndpoint
+            where TKey : IEquatable<TKey>
+            where TUser : IdentityUser<TKey>
+            , ICrystalUser<TKey>, new()
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
         return builder.MapPost("/signin/external",
                 async Task<Results<EmptyHttpResult, UnauthorizedHttpResult, ProblemHttpResult>> (
                     [FromQuery] bool? useCookie,
-                    [FromServices] CrystalUserManager<TUser> userManager,
-                    [FromServices] CrystalSignInManager<TUser> signInManager,
-                    [FromServices] ILogger<SignInExternalEndpoint<TUser>> logger,
+                    [FromServices] CrystalUserManager<TUser, TKey> userManager,
+                    [FromServices] CrystalSignInManager<TUser, TKey> signInManager,
+                    [FromServices] ILogger<SignInExternalEndpoint<TUser, TKey>> logger,
                     HttpContext context,
                     IOptions<CrystalOptions> options,
                     ClaimsPrincipal claimsPrincipal) =>

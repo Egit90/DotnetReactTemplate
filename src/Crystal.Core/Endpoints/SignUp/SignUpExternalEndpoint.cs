@@ -1,5 +1,3 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Services.EmailSender;
 using System.Security.Claims;
 using Crystal.Core.AuthSchemes;
 using Microsoft.AspNetCore.Authentication;
@@ -14,9 +12,10 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Endpoints.SignUp;
 
-public class SignUpExternalEndpoint<TUser, TModel> : IAuthEndpoint
+public class SignUpExternalEndpoint<TUser, TKey, TModel> : IAuthEndpoint
+    where TKey : IEquatable<TKey>
     where TModel : class
-    where TUser : IdentityUser<Guid>, ICrystalUser, new()
+    where TUser : IdentityUser<TKey>, ICrystalUser<TKey>, new()
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -25,9 +24,9 @@ public class SignUpExternalEndpoint<TUser, TModel> : IAuthEndpoint
                     EmptyHttpResult>>
                 ([FromBody] TModel req,
                     [FromQuery] bool? useCookie,
-                    [FromServices] CrystalUserManager<TUser> userManager,
-                    [FromServices] CrystalSignInManager<TUser> signInManager,
-                    [FromServices] ILogger<SignUpExternalEndpoint<TUser, TModel>> logger,
+                    [FromServices] CrystalUserManager<TUser, TKey> userManager,
+                    [FromServices] CrystalSignInManager<TUser, TKey> signInManager,
+                    [FromServices] ILogger<SignUpExternalEndpoint<TUser, TKey, TModel>> logger,
                     ClaimsPrincipal claimsPrincipal,
                     IOptions<CrystalOptions> options,
                     HttpContext context) =>
@@ -105,9 +104,10 @@ public class SignUpExternalEndpoint<TUser, TModel> : IAuthEndpoint
 /// </summary>
 /// <typeparam name="TUser"></typeparam>
 /// <typeparam name="TModel"></typeparam>
-public interface ISignUpExternalEndpointEvents<TUser, TModel>
+public interface ISignUpExternalEndpointEvents<TKey, TUser, TModel>
+    where TKey : IEquatable<TKey>
     where TModel : class
-    where TUser : ICrystalUser, new()
+    where TUser : ICrystalUser<TKey>, new()
 {
     /// <summary>
     /// Called when a user is being created. <br/>

@@ -13,7 +13,7 @@ public static class ServicesExtensions
 {
     public static IServiceCollection SetupCrystal(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddCrystal<MyUser>(configuration)
+        services.AddCrystal<MyUser, Guid>(configuration)
             .AddProvider(GitHubAuthenticationDefaults.AuthenticationScheme, (auth, options) =>
             {
                 auth.AddGitHub(o => o.Configure(GitHubAuthenticationDefaults.AuthenticationScheme, options));
@@ -23,7 +23,7 @@ public static class ServicesExtensions
                 auth.AddDiscord(o => o.Configure(DiscordAuthenticationDefaults.AuthenticationScheme, options));
             })
             .AddDefaultCorsPolicy()
-            .AddEntityFrameworkStore<ApplicationDbContext, MyUser>()
+            .AddEntityFrameworkStore<ApplicationDbContext, MyUser, Guid>()
             .AddFluentEmail();
         // Uncomment the line below to use custom signup models
         // .UseCrystalCustomSignup();

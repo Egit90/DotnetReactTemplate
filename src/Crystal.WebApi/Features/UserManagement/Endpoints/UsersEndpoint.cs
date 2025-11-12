@@ -147,7 +147,7 @@ public static class UsersEndpoints
     }
 
     // POST /api/admin/users/{userId}/resend-confirmation
-    private static async Task<IResult> ResendEmailConfirmation(string userId, UserManager<MyUser> userManager, ICrystalEmailSenderManager<MyUser> emailSender, IOptions<CrystalOptions> options,
+    private static async Task<IResult> ResendEmailConfirmation(string userId, UserManager<MyUser> userManager, ICrystalEmailSenderManager<MyUser, Guid> emailSender, IOptions<CrystalOptions> options,
         ILogger<Program> logger,
         HttpRequest httpRequest)
     {

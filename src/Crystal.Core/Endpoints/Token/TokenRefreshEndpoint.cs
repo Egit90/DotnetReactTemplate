@@ -9,7 +9,10 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Crystal.Core.Endpoints.Token;
 
-public class TokenRefreshEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
+public class TokenRefreshEndpoint<TUser, TKey> : IAuthEndpoint
+        where TKey : IEquatable<TKey>
+        where TUser : IdentityUser<TKey>
+        , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

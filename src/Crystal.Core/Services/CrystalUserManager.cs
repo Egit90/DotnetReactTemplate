@@ -1,12 +1,5 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Models;
-using Crystal.Core.Options;
 using System.Security.Claims;
-using Crystal.Core.Abstractions;
-using Crystal.Core.Endpoints;
 using Crystal.Core.Endpoints.SignUp;
-using Crystal.Core.Models;
-using Crystal.Core.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,11 +10,13 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Services;
 
-public class CrystalUserManager<TUser> : UserManager<TUser>, ICrystalUserManager
-    where TUser : IdentityUser<Guid>, ICrystalUser, new()
+public class CrystalUserManager<TUser, TKey> : UserManager<TUser>, ICrystalUserManager
+    where TKey : IEquatable<TKey>
+    where TUser : IdentityUser<TKey>
+    , ICrystalUser<TKey>, new()
 {
     private readonly IOptions<CrystalOptions> _options;
-    private readonly ILogger<CrystalUserManager<TUser>> _logger;
+    private readonly ILogger<CrystalUserManager<TUser, TKey>> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IAuthenticationSchemeProvider _schemes;
 
@@ -163,7 +158,7 @@ public class CrystalUserManager<TUser> : UserManager<TUser>, ICrystalUserManager
         return userToLink;
     }
 
-    public async Task<(CheckLoginResult<TUser>? result, string? error)> CheckLogin(ClaimsIdentity identity)
+    public async Task<(CheckLoginResult<TUser, TKey>? result, string? error)> CheckLogin(ClaimsIdentity identity)
     {
         var providerKey = identity.FindFirst(ClaimTypes.NameIdentifier);
         if (providerKey is null)
@@ -179,10 +174,10 @@ public class CrystalUserManager<TUser> : UserManager<TUser>, ICrystalUserManager
         var user = await FindByLoginAsync(identity.AuthenticationType, providerKey.Value);
         if (user is null)
         {
-            return (new CheckLoginResult<TUser> { ProviderKey = providerKey.Value }, null);
+            return (new CheckLoginResult<TUser, TKey> { ProviderKey = providerKey.Value }, null);
         }
 
-        return (new CheckLoginResult<TUser> { User = user, ProviderKey = providerKey.Value }, null);
+        return (new CheckLoginResult<TUser, TKey> { User = user, ProviderKey = providerKey.Value }, null);
 
     }
 
@@ -201,7 +196,7 @@ public class CrystalUserManager<TUser> : UserManager<TUser>, ICrystalUserManager
             EmailConfirmed = false,
         };
 
-        var events = _serviceProvider.GetService<ISignUpExternalEndpointEvents<TUser, TModel>>();
+        var events = _serviceProvider.GetService<ISignUpExternalEndpointEvents<TKey, TUser, TModel>>();
         if (events is not null)
         {
             var userCreatingProblem = await events.UserCreatingAsync(req, context.Request, user);
@@ -267,7 +262,7 @@ public class CrystalUserManager<TUser> : UserManager<TUser>, ICrystalUserManager
         ILookupNormalizer keyNormalizer,
         IdentityErrorDescriber errors,
         IServiceProvider services,
-        ILogger<CrystalUserManager<TUser>> logger,
+        ILogger<CrystalUserManager<TUser, TKey>> logger,
         IAuthenticationSchemeProvider schemes)
         : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
     {

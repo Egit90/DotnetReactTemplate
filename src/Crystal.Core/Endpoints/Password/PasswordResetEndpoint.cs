@@ -11,7 +11,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Password;
 
-public class PasswordResetEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser<Guid>, ICrystalUser
+public class PasswordResetEndpoint<TUser, TKey> : IAccountEndpoint
+        where TKey : IEquatable<TKey>
+        where TUser : IdentityUser<TKey>
+        , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -20,7 +23,7 @@ public class PasswordResetEndpoint<TUser> : IAccountEndpoint where TUser : Ident
                 async Task<Results<Ok, BadRequest, ProblemHttpResult>> (
                     [FromBody, Required] PasswordResetRequest req,
                     [FromServices] UserManager<TUser> manager,
-                    [FromServices] ILogger<PasswordResetEndpoint<TUser>> logger,
+                    [FromServices] ILogger<PasswordResetEndpoint<TUser, TKey>> logger,
                     [FromServices] IRefreshTokenManager refreshTokenManager) =>
                 {
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.Code);

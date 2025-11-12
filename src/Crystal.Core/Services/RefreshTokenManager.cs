@@ -1,7 +1,4 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Models;
-using Crystal.Core.Options;
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Services;
@@ -41,7 +38,7 @@ public class RefreshTokenManager : IRefreshTokenManager
         var id = user.FindFirst(ClaimTypes.NameIdentifier);
         if (id == null)
             throw new Exception("The user does not have a name identifier claim!");
-        
+
         var refreshToken = new CrystalRefreshToken
         {
             UserId = id.Value,
