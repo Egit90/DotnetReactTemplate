@@ -20,7 +20,7 @@ public class TokenRefreshEndpoint<TUser, TKey> : IAuthEndpoint
                 "/token/refresh",
                 async Task<Results<SignInHttpResult, UnauthorizedHttpResult>> (
                     [FromServices] UserManager<TUser> manager,
-                    [FromServices] IRefreshTokenManager refreshTokenManager,
+                    [FromServices] IRefreshTokenManager<TKey> refreshTokenManager,
                     HttpContext context) =>
                 {
                     var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -37,7 +37,7 @@ public class TokenRefreshEndpoint<TUser, TKey> : IAuthEndpoint
                         return TypedResults.Unauthorized();
                     }
 
-                    if (!await refreshTokenManager.ValidateAsync(user.Id.ToString(), token))
+                    if (!await refreshTokenManager.ValidateAsync(user.Id, token))
                     {
                         return TypedResults.Unauthorized();
                     }

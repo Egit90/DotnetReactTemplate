@@ -7,13 +7,14 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.AuthSchemes;
 
-public class CrystalSignInJwtBearerHandler(
+public class CrystalSignInJwtBearerHandler<TKey>(
     IOptionsMonitor<CrystalJwtBearerOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder,
-    IJwtTokenService tokenService,
-    IRefreshTokenManager refreshTokenManager)
+    IJwtTokenService<TKey> tokenService,
+    IRefreshTokenManager<TKey> refreshTokenManager)
     : SignInAuthenticationHandler<CrystalJwtBearerOptions>(options, logger, encoder)
+    where TKey : IEquatable<TKey>
 {
     protected override async Task HandleSignInAsync(ClaimsPrincipal user, AuthenticationProperties? properties)
     {
@@ -59,7 +60,15 @@ public class CrystalSignInJwtBearerHandler(
 
     protected override Task HandleSignOutAsync(AuthenticationProperties? properties)
     {
-        refreshTokenManager.ClearTokenAsync(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var userIdString = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userIdString != null)
+        {
+            TKey userId = typeof(TKey) == typeof(Guid)
+                        ? (TKey)(object)Guid.Parse(userIdString)
+                        : (TKey)Convert.ChangeType(userIdString, typeof(TKey));
+
+            refreshTokenManager.ClearTokenAsync(userId);
+        }
         Context.Response.Cookies.Delete(CrystalAuthSchemeDefaults.RefreshTokenCookieName);
         return Task.CompletedTask;
     }

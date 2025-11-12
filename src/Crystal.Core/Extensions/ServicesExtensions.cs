@@ -50,8 +50,8 @@ public static class ServicesExtensions
             o.SigningKey = opts.JwtBearer.SigningKey;
         });
 
-        services.AddScoped<IRefreshTokenManager, RefreshTokenManager>()
-                .AddScoped<IJwtTokenService, JwtTokenService>()
+        services.AddScoped<IRefreshTokenManager<TKey>, RefreshTokenManager<TKey>>()
+                .AddScoped<IJwtTokenService<TKey>, JwtTokenService<TKey>>()
                 .AddScoped<ICrystalEmailSenderManager<TUser, TKey>, CrystalEmailSenderManager<TUser, TKey>>();
 
         if (opts.EnableEmailPasswordFlow)
@@ -118,8 +118,8 @@ public static class ServicesExtensions
                     };
                     o.ConfigureBearerAuth(opts.JwtBearer);
                 })
-            .AddScheme<CrystalJwtBearerOptions, CrystalSignInJwtBearerHandler>(CrystalAuthSchemeDefaults.BearerSignInScheme, _ => { })
-            .AddScheme<CrystalJwtBearerOptions, CrystalTokenJwtBearerHandler>(CrystalAuthSchemeDefaults.BearerTokenScheme, _ => { })
+            .AddScheme<CrystalJwtBearerOptions, CrystalSignInJwtBearerHandler<TKey>>(CrystalAuthSchemeDefaults.BearerSignInScheme, _ => { })
+            .AddScheme<CrystalJwtBearerOptions, CrystalTokenJwtBearerHandler<TKey>>(CrystalAuthSchemeDefaults.BearerTokenScheme, _ => { })
             .AddJwtBearer(CrystalAuthSchemeDefaults.RefreshTokenScheme, o =>
             {
                 o.Events ??= new JwtBearerEvents();

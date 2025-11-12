@@ -9,5 +9,5 @@ public interface ICrystalDbContext<TUser, TKey>
         where TKey : IEquatable<TKey>
         where TUser : IdentityUser<TKey>
 {
-    DbSet<CrystalRefreshToken> RefreshTokens { get; set; }
+    DbSet<CrystalRefreshToken<TKey>> RefreshTokens { get; set; }
 }

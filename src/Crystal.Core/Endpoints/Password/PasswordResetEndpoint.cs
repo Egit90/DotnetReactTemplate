@@ -24,7 +24,7 @@ public class PasswordResetEndpoint<TUser, TKey> : IAccountEndpoint
                     [FromBody, Required] PasswordResetRequest req,
                     [FromServices] UserManager<TUser> manager,
                     [FromServices] ILogger<PasswordResetEndpoint<TUser, TKey>> logger,
-                    [FromServices] IRefreshTokenManager refreshTokenManager) =>
+                    [FromServices] IRefreshTokenManager<TKey> refreshTokenManager) =>
                 {
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.Code);
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.Email);
@@ -42,7 +42,7 @@ public class PasswordResetEndpoint<TUser, TKey> : IAccountEndpoint
                     if (result.Succeeded)
                     {
                         //clear refresh token on password reset
-                        await refreshTokenManager.ClearTokenAsync(user.Id.ToString());
+                        await refreshTokenManager.ClearTokenAsync(user.Id);
 
                         logger.LogInformation("User: {UserId} reset password successfully", user.Id);
                         return TypedResults.Ok();

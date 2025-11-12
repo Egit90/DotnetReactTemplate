@@ -7,10 +7,10 @@ using Microsoft.IdentityModel.Tokens;
 namespace Crystal.Core.Services;
 
 /// <summary>
-/// Default implementation of <see cref="IJwtTokenService"/> 
+/// Default implementation of <see cref="IJwtTokenService"/>
 /// </summary>
 /// <param name="options"></param>
-public class JwtTokenService(IOptions<CrystalOptions> options) : IJwtTokenService
+public class JwtTokenService<TKey>(IOptions<CrystalOptions> options) : IJwtTokenService<TKey> where TKey : IEquatable<TKey>
 {
     public (string token, DateTime expiresAt) CreateAccessToken(ClaimsPrincipal user)
     {
@@ -36,7 +36,7 @@ public class JwtTokenService(IOptions<CrystalOptions> options) : IJwtTokenServic
         return (handler.WriteToken(handler.CreateToken(descriptor)), expiresAt);
     }
 
-    public (string token, DateTime expiresAt) CreateBearerRefreshToken(CrystalRefreshToken token)
+    public (string token, DateTime expiresAt) CreateBearerRefreshToken(CrystalRefreshToken<TKey> token)
     {
         if (options.Value.JwtBearer.SigningKey is null)
         {
@@ -50,7 +50,7 @@ public class JwtTokenService(IOptions<CrystalOptions> options) : IJwtTokenServic
             IssuedAt = DateTime.UtcNow,
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, token.UserId),
+                new Claim(ClaimTypes.NameIdentifier, token.UserId.ToString()!),
                 new Claim(CrystalClaimTypes.RefreshToken, token.RefreshToken)
             }),
             Expires = token.ExpiresAt,

@@ -15,7 +15,7 @@ public static class CrystalServiceBuilderExtensions
         where TContext : DbContext, ICrystalDbContext<TUser, TKey>
     {
         builder.IdentityBuilder.AddEntityFrameworkStores<TContext>();
-        builder.Services.AddScoped<IRefreshTokenStore, RefreshTokenStore<TContext, TUser, TKey>>();
+        builder.Services.AddScoped<IRefreshTokenStore<TKey>, RefreshTokenStore<TContext, TUser, TKey>>();
 
         return builder;
     }

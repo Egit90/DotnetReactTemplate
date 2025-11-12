@@ -6,7 +6,7 @@ namespace Crystal.Core.Abstractions;
 /// <summary>
 /// Service for creating JWT tokens
 /// </summary>
-public interface IJwtTokenService
+public interface IJwtTokenService<TKey> where TKey : IEquatable<TKey>
 {
     /// <summary>
     ///
@@ -20,5 +20,5 @@ public interface IJwtTokenService
     /// </summary>
     /// <param name="token"></param>
     /// <returns></returns>
-    (string token, DateTime expiresAt) CreateBearerRefreshToken(CrystalRefreshToken token);
+    (string token, DateTime expiresAt) CreateBearerRefreshToken(CrystalRefreshToken<TKey> token);
 }

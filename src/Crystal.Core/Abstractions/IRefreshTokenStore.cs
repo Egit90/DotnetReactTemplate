@@ -5,7 +5,7 @@ namespace Crystal.Core.Abstractions;
 /// <summary>
 /// Store for refresh tokens
 /// </summary>
-public interface IRefreshTokenStore
+public interface IRefreshTokenStore<TKey> where TKey : IEquatable<TKey>
 {
     /// <summary>
     /// 
@@ -13,20 +13,20 @@ public interface IRefreshTokenStore
     /// <param name="userId"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<CrystalRefreshToken?> FindByUserIdAsync(string userId, CancellationToken ct);
-    
+    Task<CrystalRefreshToken<TKey>?> FindByUserIdAsync(TKey userId, CancellationToken ct);
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="refreshToken"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task SaveAsync(CrystalRefreshToken refreshToken, CancellationToken ct);
-    
+    Task SaveAsync(CrystalRefreshToken<TKey> refreshToken, CancellationToken ct);
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task DeleteByUserIdAsync(string userId);
+    Task DeleteByUserIdAsync(TKey userId);
 }

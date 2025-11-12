@@ -22,7 +22,7 @@ public class SignInRefreshEndpoint<TUser, TKey> : IAuthEndpoint
                 async Task<Results<SignInHttpResult, UnauthorizedHttpResult, EmptyHttpResult>> (
                     [FromQuery] bool? useCookie,
                     [FromServices] UserManager<TUser> manager,
-                    [FromServices] IRefreshTokenManager refreshTokenManager,
+                    [FromServices] IRefreshTokenManager<TKey> refreshTokenManager,
                     [FromServices] CrystalSignInManager<TUser, TKey> signInManager,
                     HttpContext context) =>
                 {
@@ -40,7 +40,7 @@ public class SignInRefreshEndpoint<TUser, TKey> : IAuthEndpoint
                         return TypedResults.Unauthorized();
                     }
 
-                    if (!await refreshTokenManager.ValidateAsync(user.Id.ToString(), token))
+                    if (!await refreshTokenManager.ValidateAsync(user.Id, token))
                     {
                         return TypedResults.Unauthorized();
                     }

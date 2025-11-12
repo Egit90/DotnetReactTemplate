@@ -6,18 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Crystal.EntityFrameworkCore;
 
-public class RefreshTokenStore<TContext, TUser, TKey>(TContext context) : IRefreshTokenStore
+public class RefreshTokenStore<TContext, TUser, TKey>(TContext context) : IRefreshTokenStore<TKey>
     where TKey : IEquatable<TKey>
     where TContext : DbContext
     , ICrystalDbContext<TUser, TKey>
     where TUser : IdentityUser<TKey>, ICrystalUser<TKey>
 {
-    public async Task<CrystalRefreshToken?> FindByUserIdAsync(string userId, CancellationToken ct)
+    public async Task<CrystalRefreshToken<TKey>?> FindByUserIdAsync(TKey userId, CancellationToken ct)
     {
         return await context.RefreshTokens.FindAsync(userId);
     }
 
-    public async Task SaveAsync(CrystalRefreshToken refreshToken, CancellationToken ct)
+    public async Task SaveAsync(CrystalRefreshToken<TKey> refreshToken, CancellationToken ct)
     {
         // We need to upsert the refresh token
         // Upsert operation is database specific, and it is not supported by EF Core
@@ -36,8 +36,8 @@ public class RefreshTokenStore<TContext, TUser, TKey>(TContext context) : IRefre
         await context.SaveChangesAsync(ct);
     }
 
-    public Task DeleteByUserIdAsync(string userId)
+    public Task DeleteByUserIdAsync(TKey userId)
     {
-        return context.RefreshTokens.Where(t => t.UserId == userId).ExecuteDeleteAsync();
+        return context.RefreshTokens.Where(t => t.UserId!.Equals(userId)).ExecuteDeleteAsync();
     }
 }
