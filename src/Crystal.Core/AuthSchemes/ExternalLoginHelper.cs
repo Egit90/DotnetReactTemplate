@@ -1,11 +1,5 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Models;
-using Crystal.Core.Options;
-﻿using System.Security.Claims;
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -42,7 +36,7 @@ public static class ExternalLoginHelper
         oauth.ClientSecret = provider.ClientSecret ?? throw new($"ClientSecret for provider {scheme} is not configured");
         oauth.CallbackPath = crystalOptions.AuthApiBasePath + "/external/callback/" + scheme.ToLower();
         oauth.SignInScheme = CrystalAuthSchemeDefaults.SignInExternalPolicyScheme;
-        
+
         foreach (var scope in provider.Scopes ?? [])
         {
             oauth.Scope.Add(scope);
@@ -53,10 +47,10 @@ public static class ExternalLoginHelper
         {
             context.HandleResponse();
             context.Properties ??= new();
-            
+
             var redirectUri = context.Properties.RedirectUri + "?failed=true";
             context.Response.Redirect(redirectUri);
-            
+
             return Task.CompletedTask;
         };
     }
@@ -89,7 +83,7 @@ public static class ExternalLoginHelper
         catch (Exception e)
         {
             logger.LogError(e, "Error while creating ticket");
-            
+
             // Context is lost if there is an exception, so we need to handle it here
             context.Properties.RedirectUri += "?failed=true";
             context.Properties.SetParameter("failed", true);

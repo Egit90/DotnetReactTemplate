@@ -34,14 +34,14 @@ using System.Linq;
 using System.Threading.Tasks;
 
 // MyUser class
-public class MyUser : IdentityUser
+public class MyUser : IdentityUser<Guid>
 {
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
     public DateTime? LastLoginDate { get; set; }
 }
 
 // DbContext
-public class AppDbContext : IdentityDbContext<MyUser>
+public class AppDbContext : IdentityDbContext<MyUser, IdentityRole<Guid>, Guid>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 }
@@ -55,7 +55,7 @@ async Task SeedUsersAsync()
     optionsBuilder.UseNpgsql("Host=localhost;Database=crystal_db;Username=crystal;Password=crystal_dev_password");
 
     using var context = new AppDbContext(optionsBuilder.Options);
-    var userStore = new UserStore<MyUser>(context);
+    var userStore = new UserStore<MyUser, IdentityRole<Guid>, AppDbContext, Guid>(context);
     var userManager = new UserManager<MyUser>(
         userStore,
         null,

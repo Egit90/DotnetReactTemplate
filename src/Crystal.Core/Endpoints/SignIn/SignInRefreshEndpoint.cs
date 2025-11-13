@@ -10,7 +10,10 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Crystal.Core.Endpoints.SignIn;
 
-public class SignInRefreshEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, ICrystalUser
+public class SignInRefreshEndpoint<TUser, TKey> : IAuthEndpoint
+        where TKey : IEquatable<TKey>
+        where TUser : IdentityUser<TKey>
+        , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -19,8 +22,8 @@ public class SignInRefreshEndpoint<TUser> : IAuthEndpoint where TUser : Identity
                 async Task<Results<SignInHttpResult, UnauthorizedHttpResult, EmptyHttpResult>> (
                     [FromQuery] bool? useCookie,
                     [FromServices] UserManager<TUser> manager,
-                    [FromServices] IRefreshTokenManager refreshTokenManager,
-                    [FromServices] CrystalSignInManager<TUser> signInManager,
+                    [FromServices] IRefreshTokenManager<TKey> refreshTokenManager,
+                    [FromServices] CrystalSignInManager<TUser, TKey> signInManager,
                     HttpContext context) =>
                 {
                     var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);

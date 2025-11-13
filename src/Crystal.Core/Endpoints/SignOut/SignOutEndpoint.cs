@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Crystal.Core.Endpoints.SignOut;
 
-public class SignOutEndpoint<TUser> : IAuthEndpoint where TUser : ICrystalUser
+public class SignOutEndpoint<TUser, TKey> : IAuthEndpoint
+        where TKey : IEquatable<TKey>
+        where TUser : ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {

@@ -1,12 +1,11 @@
 using System.Security.Claims;
-using Crystal.Core.Models;
 
 namespace Crystal.Core.Abstractions;
 
 /// <summary>
 /// Manager for refresh tokens
 /// </summary>
-public interface IRefreshTokenManager
+public interface IRefreshTokenManager<TKey> where TKey : IEquatable<TKey>
 {
     /// <summary>
     /// Validates a refresh token associated with a user
@@ -15,7 +14,7 @@ public interface IRefreshTokenManager
     /// <param name="token"></param>
     /// <param name="ct"></param>
     /// <returns>True if the token is valid, false otherwise</returns>
-    Task<bool> ValidateAsync(string userId, string token, CancellationToken ct = default);
+    Task<bool> ValidateAsync(TKey userId, string token, CancellationToken ct = default);
 
     /// <summary>
     /// Creates a refresh token for a user
@@ -23,12 +22,12 @@ public interface IRefreshTokenManager
     /// <param name="user"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<CrystalRefreshToken> CreateTokenAsync(ClaimsPrincipal user, CancellationToken ct = default);
+    Task<CrystalRefreshToken<TKey>> CreateTokenAsync(ClaimsPrincipal user, CancellationToken ct = default);
 
     /// <summary>
     ///
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task ClearTokenAsync(string? userId);
+    Task ClearTokenAsync(TKey? userId);
 }

@@ -5,7 +5,7 @@ namespace WebApi.Services;
 
 public class SignInEvents(
     UserManager<MyUser> userManager,
-    ILogger<SignInEvents> logger) : ISignInEndpointEvents<MyUser>
+    ILogger<SignInEvents> logger) : ISignInEndpointEvents<Guid, MyUser>
 {
     public Task SignInFailedAsync(SignInRequest request, HttpContext context, SignInResult result)
     {

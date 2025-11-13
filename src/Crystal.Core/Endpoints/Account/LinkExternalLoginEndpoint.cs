@@ -11,14 +11,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Account;
 
-public class LinkExternalLoginEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser, new()
+public class LinkExternalLoginEndpoint<TUser, TKey> : IAccountEndpoint
+    where TKey : IEquatable<TKey>
+    where TUser : IdentityUser<TKey>
+    , ICrystalUser<TKey>, new()
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
         return builder.MapPost("/link/external",
                 async Task<Results<Ok<AccountInfoResponse>, UnauthorizedHttpResult, ProblemHttpResult>> (
-                    [FromServices] CrystalUserManager<TUser> userManager,
-                    [FromServices] ILogger<LinkExternalLoginEndpoint<TUser>> logger,
+                    [FromServices] CrystalUserManager<TUser, TKey> userManager,
+                    [FromServices] ILogger<LinkExternalLoginEndpoint<TUser, TKey>> logger,
                     HttpContext context) =>
                 {
                     var singInExternalAuthenticateResult = await context.AuthenticateAsync(CrystalAuthSchemeDefaults.SignInExternalScheme);

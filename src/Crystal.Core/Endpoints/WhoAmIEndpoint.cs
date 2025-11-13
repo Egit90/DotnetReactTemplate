@@ -1,13 +1,15 @@
 using Crystal.Core.Abstractions;
 using Crystal.Core.Services.EmailSender;
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 namespace Crystal.Core.Endpoints;
 
-public class WhoAmIEndpoint<TUser> : IAuthEndpoint where TUser : ICrystalUser
+public class WhoAmIEndpoint<TUser, TKey> : IAuthEndpoint
+        where TKey : IEquatable<TKey>
+        where TUser : ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -19,7 +21,7 @@ public class WhoAmIEndpoint<TUser> : IAuthEndpoint where TUser : ICrystalUser
                 Email = context.User.FindFirstValue(ClaimTypes.Email),
                 Roles = context.User.FindAll(ClaimTypes.Role).Select(c => c.Value)
             };
-            
+
             return TypedResults.Ok(response);
         }).RequireAuthorization();
     }

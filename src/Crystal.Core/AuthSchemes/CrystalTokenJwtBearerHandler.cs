@@ -1,25 +1,20 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Models;
-using Crystal.Core.Options;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Crystal.Core.AuthSchemes;
 
-public class CrystalTokenJwtBearerHandler(
+public class CrystalTokenJwtBearerHandler<TKey>(
     IOptionsMonitor<CrystalJwtBearerOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder,
-    IJwtTokenService tokenService,
-    IRefreshTokenManager refreshTokenManager)
+    IJwtTokenService<TKey> tokenService,
+    IRefreshTokenManager<TKey> refreshTokenManager)
     : SignInAuthenticationHandler<CrystalJwtBearerOptions>(options, logger, encoder)
+    where TKey : IEquatable<TKey>
 {
     protected override async Task HandleSignInAsync(ClaimsPrincipal user, AuthenticationProperties? properties)
     {

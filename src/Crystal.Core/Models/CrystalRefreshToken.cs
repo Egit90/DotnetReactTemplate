@@ -3,9 +3,9 @@
 /// <summary>
 /// Represents a refresh token
 /// </summary>
-public class CrystalRefreshToken
+public class CrystalRefreshToken<TKey>
 {
-    public required string UserId { get; set; }
+    public required TKey UserId { get; set; }
     public required string RefreshToken { get; set; }
     public DateTime ExpiresAt { get; set; }
 }

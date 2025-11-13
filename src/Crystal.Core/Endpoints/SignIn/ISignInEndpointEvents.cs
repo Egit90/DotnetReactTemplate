@@ -7,7 +7,9 @@ namespace Crystal.Core.Endpoints.SignIn;
 /// Extension point for the SignInEndpoint.
 /// </summary>
 /// <typeparam name="TUser"></typeparam>
-public interface ISignInEndpointEvents<in TUser> where TUser : ICrystalUser
+public interface ISignInEndpointEvents<TKey, in TUser>
+        where TKey : IEquatable<TKey>
+        where TUser : ICrystalUser<TKey>
 {
     Task SignInSucceededAsync(TUser user, HttpContext context);
 

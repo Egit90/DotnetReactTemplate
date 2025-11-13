@@ -1,7 +1,4 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Models;
-using Crystal.Core.Options;
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Services;
@@ -10,18 +7,9 @@ namespace Crystal.Core.Services;
 /// <summary>
 /// Default implementation of IRefreshTokenManager
 /// </summary>
-public class RefreshTokenManager : IRefreshTokenManager
+public class RefreshTokenManager<TKey>(IRefreshTokenStore<TKey> _refreshTokenStore, IOptions<CrystalOptions> Options) : IRefreshTokenManager<TKey> where TKey : IEquatable<TKey>
 {
-    public IOptions<CrystalOptions> Options { get; }
-    private readonly IRefreshTokenStore _refreshTokenStore;
-
-    public RefreshTokenManager(IRefreshTokenStore refreshTokenStore, IOptions<CrystalOptions> options)
-    {
-        Options = options;
-        _refreshTokenStore = refreshTokenStore;
-    }
-
-    public async Task<bool> ValidateAsync(string userId, string token, CancellationToken ct = default)
+    public async Task<bool> ValidateAsync(TKey userId, string token, CancellationToken ct = default)
     {
         var refreshToken = await _refreshTokenStore.FindByUserIdAsync(userId, ct);
 
@@ -36,15 +24,20 @@ public class RefreshTokenManager : IRefreshTokenManager
         return true;
     }
 
-    public async Task<CrystalRefreshToken> CreateTokenAsync(ClaimsPrincipal user, CancellationToken ct = default)
+    public async Task<CrystalRefreshToken<TKey>> CreateTokenAsync(ClaimsPrincipal user, CancellationToken ct = default)
     {
         var id = user.FindFirst(ClaimTypes.NameIdentifier);
         if (id == null)
             throw new Exception("The user does not have a name identifier claim!");
-        
-        var refreshToken = new CrystalRefreshToken
+
+        // Convert string claim value to TKey
+        TKey userId = typeof(TKey) == typeof(Guid)
+                      ? (TKey)(object)Guid.Parse(id.Value)
+                      : (TKey)Convert.ChangeType(id.Value, typeof(TKey));
+
+        var refreshToken = new CrystalRefreshToken<TKey>
         {
-            UserId = id.Value,
+            UserId = userId,
             RefreshToken = Guid.NewGuid().ToString(),
             ExpiresAt = DateTime.UtcNow.AddHours(Options.Value.JwtBearer.RefreshTokenExpireInHours)
         };
@@ -54,7 +47,7 @@ public class RefreshTokenManager : IRefreshTokenManager
         return refreshToken;
     }
 
-    public Task ClearTokenAsync(string? userId)
+    public Task ClearTokenAsync(TKey? userId)
     {
         if (userId is null) return Task.CompletedTask;
 

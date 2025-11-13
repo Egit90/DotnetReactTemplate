@@ -1,4 +1,3 @@
-using Crystal.Core.Services.EmailSender;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
@@ -12,17 +11,20 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Endpoints.Password;
 
-public class PasswordForgotEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
+public class PasswordForgotEndpoint<TUser, TKey> : IAccountEndpoint
+    where TKey : IEquatable<TKey>
+    where TUser : IdentityUser<TKey>
+    , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
         return builder.MapPost("/password/forgot", async (
                 [FromBody, Required] PasswordForgotRequest req,
                 [FromServices] UserManager<TUser> manager,
-                [FromServices] ICrystalEmailSenderManager<TUser> emailSender,
+                [FromServices] ICrystalEmailSenderManager<TUser, TKey> emailSender,
                 [FromServices] IOptions<IdentityOptions> identityOptions,
                 [FromServices] IOptions<CrystalOptions> options,
-                [FromServices] ILogger<PasswordForgotEndpoint<TUser>> logger,
+                [FromServices] ILogger<PasswordForgotEndpoint<TUser, TKey>> logger,
                 HttpRequest httpRequest) =>
             {
                 ArgumentException.ThrowIfNullOrWhiteSpace(req.Email, nameof(req.Email));

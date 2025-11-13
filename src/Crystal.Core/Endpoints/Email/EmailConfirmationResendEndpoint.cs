@@ -11,7 +11,10 @@ using Microsoft.Extensions.Options;
 
 namespace Crystal.Core.Endpoints.Email;
 
-public class EmailConfirmationResendEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
+public class EmailConfirmationResendEndpoint<TUser, TKey> : IAccountEndpoint
+        where TKey : IEquatable<TKey>
+        where TUser : IdentityUser<TKey>
+        , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -19,7 +22,7 @@ public class EmailConfirmationResendEndpoint<TUser> : IAccountEndpoint where TUs
             "/email/confirm/resend",
              async ([FromBody, Required] EmailConfirmationResendRequest req,
                  [FromServices] UserManager<TUser> manager,
-                 [FromServices] ICrystalEmailSenderManager<TUser> emailSender,
+                 [FromServices] ICrystalEmailSenderManager<TUser, TKey> emailSender,
                  [FromServices] IOptions<CrystalOptions> options,
                  HttpRequest httpRequest) =>
             {

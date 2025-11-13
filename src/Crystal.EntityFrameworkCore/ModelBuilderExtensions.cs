@@ -6,9 +6,9 @@ namespace Crystal.EntityFrameworkCore;
 
 public static class ModelBuilderExtensions
 {
-    public static void ApplyCrystalModel(this ModelBuilder builder)
+    public static void ApplyCrystalModel<TKey>(this ModelBuilder builder)
     {
-        builder.Entity<CrystalRefreshToken>(b =>
+        builder.Entity<CrystalRefreshToken<TKey>>(b =>
         {
             b.ToTable("CrystalRefreshTokens");
             b.HasKey(x => x.UserId);

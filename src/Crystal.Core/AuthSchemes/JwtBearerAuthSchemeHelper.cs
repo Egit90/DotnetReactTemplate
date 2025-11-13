@@ -1,7 +1,4 @@
-using Crystal.Core.Abstractions;
-using Crystal.Core.Models;
-using Crystal.Core.Options;
-﻿using System.Text;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -26,7 +23,7 @@ public static class JwtBearerAuthSchemeHelper
             ValidAudience = jwtBearerOptions.Audience,
             ValidIssuer = jwtBearerOptions.Issuer,
         };
-        
+
         bearerOptions.Events ??= new JwtBearerEvents();
         bearerOptions.Events.OnAuthenticationFailed = context =>
         {

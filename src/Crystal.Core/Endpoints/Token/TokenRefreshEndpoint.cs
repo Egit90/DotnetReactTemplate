@@ -9,7 +9,10 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Crystal.Core.Endpoints.Token;
 
-public class TokenRefreshEndpoint<TUser> : IAuthEndpoint where TUser : IdentityUser, ICrystalUser
+public class TokenRefreshEndpoint<TUser, TKey> : IAuthEndpoint
+        where TKey : IEquatable<TKey>
+        where TUser : IdentityUser<TKey>
+        , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -17,7 +20,7 @@ public class TokenRefreshEndpoint<TUser> : IAuthEndpoint where TUser : IdentityU
                 "/token/refresh",
                 async Task<Results<SignInHttpResult, UnauthorizedHttpResult>> (
                     [FromServices] UserManager<TUser> manager,
-                    [FromServices] IRefreshTokenManager refreshTokenManager,
+                    [FromServices] IRefreshTokenManager<TKey> refreshTokenManager,
                     HttpContext context) =>
                 {
                     var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);

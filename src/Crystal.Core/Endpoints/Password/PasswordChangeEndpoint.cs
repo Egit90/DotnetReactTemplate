@@ -9,7 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Password;
 
-public class PasswordChangeEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
+public class PasswordChangeEndpoint<TUser, TKey> : IAccountEndpoint
+        where TKey : IEquatable<TKey>
+        where TUser : IdentityUser<TKey>
+        , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -18,7 +21,7 @@ public class PasswordChangeEndpoint<TUser> : IAccountEndpoint where TUser : Iden
                 ([FromBody, Required] ChangePasswordRequest req,
                     [FromServices] UserManager<TUser> manager,
                     HttpContext context,
-                    [FromServices] ILogger<PasswordChangeEndpoint<TUser>> logger) =>
+                    [FromServices] ILogger<PasswordChangeEndpoint<TUser, TKey>> logger) =>
                 {
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.Password);
                     ArgumentException.ThrowIfNullOrWhiteSpace(req.NewPassword);

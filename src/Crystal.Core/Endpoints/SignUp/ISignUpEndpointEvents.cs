@@ -8,7 +8,10 @@ namespace Crystal.Core.Endpoints.SignUp;
 /// </summary>
 /// <typeparam name="TUser"></typeparam>
 /// <typeparam name="TModel"></typeparam>
-public interface ISignUpEndpointEvents<in TUser, in TModel> where TModel : SignUpRequest where TUser : ICrystalUser
+public interface ISignUpEndpointEvents<TKey, in TUser, in TModel>
+        where TKey : IEquatable<TKey>
+        where TModel : SignUpRequest
+        where TUser : ICrystalUser<TKey>
 {
     /// <summary>
     /// Called when a user is being created. <br/>

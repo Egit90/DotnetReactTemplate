@@ -12,7 +12,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Crystal.Core.Endpoints.Email;
 
-public class EmailConfirmEndpoint<TUser> : IAccountEndpoint where TUser : IdentityUser, ICrystalUser
+public class EmailConfirmEndpoint<TUser, TKey> : IAccountEndpoint
+    where TKey : IEquatable<TKey>
+    where TUser : IdentityUser<TKey>
+    , ICrystalUser<TKey>
 {
     public RouteHandlerBuilder Map(IEndpointRouteBuilder builder)
     {
@@ -22,7 +25,7 @@ public class EmailConfirmEndpoint<TUser> : IAccountEndpoint where TUser : Identi
                 HttpContext ctx) =>
             {
                 var manager = ctx.RequestServices.GetRequiredService<UserManager<TUser>>();
-                var logger = ctx.RequestServices.GetRequiredService<ILogger<EmailConfirmEndpoint<TUser>>>();
+                var logger = ctx.RequestServices.GetRequiredService<ILogger<EmailConfirmEndpoint<TUser, TKey>>>();
 
                 var user = await manager.FindByIdAsync(userId);
                 if (user == null)
